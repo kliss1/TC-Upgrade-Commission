@@ -532,140 +532,99 @@ input,select,textarea,button{font-family:'Karla',sans-serif;font-size:15px}
 
 <script>
 // ══════════════════════════════════════════════════════
-//  PRICING DATA — from cost.pdf (Oct 22, 2025 to present)
-//  costTax = "Our Cost + Tax" = our actual material cost
-//  The insurance "allows" the std (first) option cost × qty
-//  HO is charged the UPGRADE DIFFERENCE (sel cost - std cost) × qty
-//  Commission = 100% of (selected cost - std cost) × qty. Rep keeps the full upgrade margin.
+//  PRICING — Active 4/20/2026 (4-20_tc_pricing.pdf)
+//  All costs are "Our Cost + Tax". Commission = 100% of upgrade margin.
 // ══════════════════════════════════════════════════════
-
-// Material definitions
-// unitType: 'sq' = per adjusted square, 'ridge' = ridge+hip LF, 'eave' = eave LF,
-//           'valley' = valley LF, 'count' = manual count entry
-// For selections: index 0 is always the insurance standard (no upgrade charge)
 
 const MATS = [
   {
     key:'shingle', name:'Shingles', unitType:'sq', unitLabel:'per square',
-    note:'** No 3-Tab except Weathered Wood & Charcoal. SAR for all other colors.',
-    // costTaxSq = our cost+tax per square
+    note:'Camelot II = 4 bundles/sq. All others = 3 bundles/sq.',
     opts:[
-      {name:'GAF Royal Sovereign',  costTaxSq:35.10, std:true},
-      {name:'GAF Natural Shadow',   costTaxSq:38.61},
-      {name:'GAF HDZ',              costTaxSq:39.42},
-      {name:'GAF UHDZ',             costTaxSq:46.98},
-      {name:'CT XT25',              costTaxSq:33.48, std:true},
-      {name:'CT Landmark AR',       costTaxSq:39.42},
-      {name:'CT Landmark Pro',      costTaxSq:41.04},
+      {name:'GAF Royal Sovereign',     costTaxSq:113.40, std:true, bdPerSq:3},
+      {name:'GAF Natural Shadow',      costTaxSq:118.26,           bdPerSq:3},
+      {name:'GAF HDZ & HDZ Bold',      costTaxSq:118.26,           bdPerSq:3},
+      {name:'GAF UHDZ',                costTaxSq:140.39,           bdPerSq:3},
+      {name:'GAF Armorshield II',      costTaxSq:159.83,           bdPerSq:3},
+      {name:'GAF Camelot II (4bd/sq)', costTaxSq:265.68,           bdPerSq:4},
+      {name:'GAF Slateline',           costTaxSq:260.27,           bdPerSq:3},
     ]
   },
   {
     key:'ridge', name:'Ridge Cap', unitType:'ridgehip', unitLabel:'per bundle',
-    lfPerBd:[30,30,30,28,18,30,18],
+    lfPerBd:[30, 25, 20, 33],
     opts:[
-      {name:'GAF Royal Sov. Ridge (30LF)', costTaxBd:35.10, std:true},
-      {name:'CT AR XT25 Ridge (30LF)',     costTaxBd:33.48, std:true},
-      {name:'GAF SAR 25 (30LF)',           costTaxBd:54.97},
-      {name:'CT Shadow H&R (28LF)',        costTaxBd:62.64},
-      {name:'GAF Timbertex (18LF)',        costTaxBd:58.32},
-      {name:'GAF Z Ridge (30LF)',          costTaxBd:126.95},
-      {name:'CT Cedar Crest (18LF)',       costTaxBd:79.12},
+      {name:'GAF Royal Sov. Ridge (30LF)',    costTaxBd:42.12,  std:true},
+      {name:'GAF SAR Armorshield II (25LF)', costTaxBd:102.60},
+      {name:'GAF Timbertex (20LF)',           costTaxBd:88.02},
+      {name:'GAF Z Ridge (33LF)',             costTaxBd:97.15},
     ]
   },
   {
     key:'starter', name:'Starter Strip', unitType:'eave', unitLabel:'per bundle (100LF)',
-    lfPerBd:[100,100,100],
+    lfPerBd:[100, 100],
     opts:[
-      {name:'GAF Pro Start (100LF)',       costTaxBd:56.16, std:true},
-      {name:'CT Swiftstart (100LF)',       costTaxBd:56.16, std:true},
-      {name:'GAF Weatherblocker (100LF)', costTaxBd:58.32},
+      {name:'GAF Pro Start (100LF)',       costTaxBd:58.32,   std:true},
+      {name:'GAF Weatherblocker (100LF)', costTaxBd:116.856},
     ]
   },
   {
-    key:'under', name:'Underlayment', unitType:'sq', unitLabel:'per square',
-    // stored per sq
+    key:'under', name:'Underlayment', unitType:'under', unitLabel:'per 10-sq roll',
     opts:[
-      {name:'15# Felt',               costTaxSq:1.13,  std:true},
-      {name:'Secure Grip Synthetic',  costTaxSq:8.208},
-      {name:'GAF Feltbuster',         costTaxSq:10.26},
-      {name:'CT Roofrunner Syn.',     costTaxSq:9.936},
-      {name:'GAF Tiger Paw',          costTaxSq:19.98},
-      {name:'GAF Deck Armor',         costTaxSq:33.75},
+      {name:'Secure Grip Synthetic', costTaxRoll:81.00,   std:true},
+      {name:'GAF Feltbuster',        costTaxRoll:102.546},
+      {name:'GAF Tiger Paw',         costTaxRoll:279.72},
     ]
   },
   {
-    key:'valley', name:'Valley', unitType:'valley', unitLabel:'per unit',
-    // lfPerUnit = how many LF each package covers
-    lfPerUnit:[50, 10, 66.67, 66.67, 66.67, 66.67],
+    key:'valley', name:'Valley / Ice & Water', unitType:'valley', unitLabel:'per unit',
+    lfPerUnit:[62, 10, 62],
     opts:[
-      {name:'Valley Metal (50LF/unit)',    costTaxUnit:54.00,  std:true},
-      {name:'W Metal Valley (10LF/unit)',  costTaxUnit:37.80,  std:true},
-      {name:'Resisto (66.67LF/unit)',      costTaxUnit:75.60},
-      {name:'GAF Weatherwatch (66.67LF)', costTaxUnit:91.80},
-      {name:'CT Winterguard (66.67LF)',    costTaxUnit:96.12},
-      {name:'GAF Stormguard (66.67LF)',    costTaxUnit:111.24},
+      {name:'Ice & Water Shield (62LF)', costTaxUnit:86.35,  std:true},
+      {name:'W Metal Valley (10LF)',     costTaxUnit:261.14},
+      {name:'GAF Stormguard (62LF)',     costTaxUnit:111.24},
     ]
   },
   {
-    key:'drip', name:'Gutter Apron / Drip Edge', unitType:'drip', unitLabel:'per piece (10\')',
+    key:'drip', name:'Drip Edge', unitType:'drip', unitLabel:"per piece (10')",
     opts:[
-      {name:'Drip Edge 4×2×10\'',          costTaxEa:9.67,  std:true},
-      {name:'Gutter Apron 4"×2"×10\'',     costTaxEa:7.94,  std:true},
+      {name:"Drip Edge 1.5×1.5×10'", costTaxEa:9.67, std:true},
     ]
   },
   {
     key:'boot', name:'Pipe Boots', unitType:'count', unitLabel:'per boot',
     opts:[
-      {name:'3-in-1 Neoprene',   costTaxEa:10.75, std:true},
-      {name:'Silicone Lifetime', costTaxEa:13.23},
+      {name:'3-in-1 Neoprene',   costTaxEa:66.42, std:true},
+      {name:'Silicone Lifetime', costTaxEa:33.53},
+      {name:'Lead Pipe Boot',    costTaxEa:20.27},
     ]
   },
   {
     key:'vent', name:'Ventilation', unitType:'vent', unitLabel:'mixed units',
-    // ventilation handled specially: existing vs desired counts per sub-type
     opts:[
-      {name:'Ridge Vent',   costTaxLf:17.82/4, std:true,  unit:'LF', note:'4LF/stick'},
-      {name:'Box Vents',    costTaxEa:5.83,    std:true,  unit:'ea'},
-      {name:'Power Vents',  costTaxEa:245.16,  unit:'ea'},
-      {name:'Solar Vent',   costTaxEa:491.40,  unit:'ea'},
-      {name:'Turbine',      costTaxEa:115.83,  unit:'ea'},
+      {name:'Ridge Vent',        costTaxLf:20.27/4, std:true, unit:'LF', note:'4LF/stick · $20.27/stick'},
+      {name:'Box Vents (metal)', costTaxEa:21.60,   std:true, unit:'ea'},
+      {name:'Power Vents',       costTaxEa:202.068,            unit:'ea'},
+      {name:'Solar Vent',        costTaxEa:491.40,             unit:'ea'},
+      {name:'Turbine',           costTaxEa:96.12,              unit:'ea'},
     ]
   },
   {
-    key:'warr', name:'Warranty', unitType:'sq', unitLabel:'per square',
+    key:'warr', name:'Warranty', unitType:'warr', unitLabel:'per job (sq-based)',
+    // Warranty pricing from PDF:
+    // Silver: ≤50sq flat $183.60 w/tax | >50sq flat $367.20 w/tax
+    // Golden: $8.64/sq w/tax for all job sizes
     opts:[
-      {name:'GAF Lim. Lifetime (incl.)',       costTaxSq:0,    std:true},
-      {name:'GAF Silver Pledge',               costTaxSq:5.40},
-      {name:'GAF Golden Pledge',               costTaxSq:10.80},
-      {name:'CT Surestart Lim. Lifetime',      costTaxSq:8.64},
+      {name:'No Warranty / GAF Lim. Lifetime (incl.)', std:true,    costFlat50:0,      costFlat51:0,      perSq:false},
+      {name:'GAF Silver Pledge',                        std:false,   costFlat50:183.60, costFlat51:367.20, perSq:false},
+      {name:'GAF Golden Pledge',                        std:false,   costPerSq:8.64,                       perSq:true},
     ]
   },
 ];
 
-// Get per-unit cost for a given option
-function oc(mat, opt) {
-  if(mat.key==='shingle') return opt.costTaxSq||0;
-  if(mat.key==='ridge')   return opt.costTaxBd||0;
-  if(mat.key==='starter') return opt.costTaxBd||0;
-  if(mat.key==='under')   return opt.costTaxSq||0;
-  if(mat.key==='valley')  return opt.costTaxUnit||0;
-  if(mat.key==='drip')    return opt.costTaxEa||0;
-  if(mat.key==='boot')    return opt.costTaxEa||0;
-  if(mat.key==='vent')    return opt.costTaxLf||opt.costTaxEa||0;
-  if(mat.key==='warr')    return opt.costTaxSq||0;
-  return 0;
-}
-function unitStr(mat) {
-  if(['shingle','under','warr'].includes(mat.key)) return '/sq';
-  if(['ridge','starter'].includes(mat.key)) return '/bd';
-  if(['valley','drip'].includes(mat.key)) return '/LF';
-  if(mat.key==='boot') return '/ea';
-  return '';
-}
-
-// ── STATE ──
+// ── VERSION HISTORY — only active version: 4/20/2026 ──
 let VERSIONS = [
-  { id:'v1', label:'Oct 22, 2025 – Present', eff:'2025-10-22', exp:null, by:'admin' }
+  { id:'v1', label:'Apr 20, 2026 – Present', eff:'2026-04-20', exp:null, by:'admin' }
 ];
 let vidx=2;
 let USERS = {
@@ -772,6 +731,39 @@ function setMode(m){
   document.getElementById('mode-full').className='mode-btn full '+(m==='full'?'on':'off');
   document.getElementById('mode-dap').className='mode-btn dap '+(m==='dap'?'on':'off');
   calc();
+}
+
+// ══════════ COST HELPERS ══════════
+// Returns our cost+tax per billing unit for a given option
+function oc(mat, opt) {
+  if(mat.key==='shingle') return opt.costTaxSq||0;    // per sq
+  if(mat.key==='ridge')   return opt.costTaxBd||0;    // per bundle
+  if(mat.key==='starter') return opt.costTaxBd||0;    // per bundle
+  if(mat.key==='under')   return opt.costTaxRoll||0;  // per 10-sq roll
+  if(mat.key==='valley')  return opt.costTaxUnit||0;  // per unit/roll
+  if(mat.key==='drip')    return opt.costTaxEa||0;    // per piece
+  if(mat.key==='boot')    return opt.costTaxEa||0;    // per boot
+  if(mat.key==='vent')    return opt.costTaxLf||opt.costTaxEa||0;
+  if(mat.key==='warr')    return 0; // handled separately (flat fee)
+  return 0;
+}
+function unitStr(mat) {
+  if(mat.key==='shingle') return '/sq';
+  if(mat.key==='ridge')   return '/bd';
+  if(mat.key==='starter') return '/bd';
+  if(mat.key==='under')   return '/roll';
+  if(mat.key==='valley')  return '/unit';
+  if(mat.key==='drip')    return '/pc';
+  if(mat.key==='boot')    return '/ea';
+  return '';
+}
+
+// Warranty cost for a job given adjSq
+function warrantyJobCost(opt, adjSq) {
+  if(!opt || opt.std) return 0;
+  if(opt.perSq) return (opt.costPerSq || 0) * adjSq; // Golden: $8.64/sq all sizes
+  if(adjSq <= 50) return opt.costFlat50 || 0;         // Silver ≤50sq: $183.60
+  return opt.costFlat51 || 0;                          // Silver >50sq: $367.20
 }
 
 // ══════════ MATERIAL UI ══════════
@@ -893,11 +885,18 @@ function updateMatDisplay(){
     if(['vent','boot'].includes(m.key)) return;
     const selIdx=matSel[m.key]||0;
     const opt=m.opts[selIdx];
-    const cost=oc(m,opt);
     const hc=document.getElementById(`mhc-${m.key}`);
     const rc=document.getElementById(`mrc-${m.key}`);
     if(hc) hc.textContent=opt.name;
-    if(rc) rc.textContent='$'+cost.toFixed(2)+unitStr(m);
+    if(!rc) return;
+    if(m.key==='warr'){
+      if(opt.std) rc.textContent='Included';
+      else if(opt.perSq) rc.textContent=`$${opt.costPerSq}/sq (all sizes)`;
+      else rc.textContent=`≤50sq: $${opt.costFlat50} / >50sq: $${opt.costFlat51}`;
+    } else {
+      const cost=oc(m,opt);
+      rc.textContent='$'+cost.toFixed(2)+unitStr(m);
+    }
   });
 }
 
@@ -917,9 +916,10 @@ function getGeo(){
 // Returns qty in the same unit as costTax (sq, bundle, unit, piece, roll, ea)
 function matQty(m, selIdx, geo){
   if(m.key === 'shingle'){
-    // SQ × 1.15 → ×3 bundles → round up → ÷3 back to SQ (cost is per SQ)
-    const bundles = Math.ceil(geo.sq * 1.15 * 3);
-    return bundles / 3;
+    // SQ × 1.15 → × bdPerSq (3 or 4) → round up bundles → ÷ bdPerSq back to SQ
+    const bdps = (MATS.find(x=>x.key==='shingle').opts[selIdx]||{}).bdPerSq || 3;
+    const bundles = Math.ceil(geo.sq * 1.15 * bdps);
+    return bundles / bdps; // SQ equivalent; cost is per SQ
   }
   if(m.key === 'ridge'){
     // (Ridge + Hip LF) ÷ LF/bundle → round up = bundles
@@ -947,8 +947,9 @@ function matQty(m, selIdx, geo){
   }
   if(m.key === 'boot') return bootCount;
   if(m.key === 'warr'){
-    const bundles = Math.ceil(geo.sq * 1.15 * 3);
-    return bundles / 3;
+    // Warranty is flat fee per job; qty=adjSq passed to warrantyJobCost()
+    const bdps = (MATS.find(x=>x.key==='shingle').opts[0]||{}).bdPerSq || 3;
+    return Math.ceil(geo.sq * 1.15 * bdps) / bdps; // adjSq
   }
   return 0;
 }
@@ -957,7 +958,8 @@ function matQtyStd(m, geo){ return matQty(m, 0, geo); }
 // Human-readable qty string for the breakdown table
 function qtyLabel(m, selIdx, geo){
   if(m.key === 'shingle'){
-    const bd = Math.ceil(geo.sq * 1.15 * 3);
+    const bdps = (m.opts[selIdx]||{}).bdPerSq || 3;
+    const bd = Math.ceil(geo.sq * 1.15 * bdps);
     return `${bd} bundles`;
   }
   if(m.key === 'ridge'){
@@ -982,8 +984,7 @@ function qtyLabel(m, selIdx, geo){
   }
   if(m.key === 'boot') return `${bootCount} ea`;
   if(m.key === 'warr'){
-    const bd = Math.ceil(geo.sq * 1.15 * 3);
-    return `${(bd/3).toFixed(1)} sq`;
+    return geo.sq <= 50 ? '≤50 sq (flat fee)' : `${geo.sq.toFixed(1)} sq (>50 flat)`;
   }
   return '—';
 }
@@ -999,7 +1000,9 @@ function calc(){
   const geo=getGeo();
   const v=activeVer;
 
-  const bundles = geo.sq > 0 ? Math.ceil(geo.sq * 1.15 * 3) : 0;
+  const shingleOpt = MATS.find(m=>m.key==='shingle').opts[matSel['shingle']||0];
+  const bdPerSq = shingleOpt.bdPerSq || 3;
+  const bundles = geo.sq > 0 ? Math.ceil(geo.sq * 1.15 * bdPerSq) : 0;
   document.getElementById('m-bdls').textContent = bundles;
   document.getElementById('m-ridgehip').textContent = geo.ridgehip.toFixed(0);
   document.getElementById('m-eaverake').textContent = (geo.eav + geo.rak).toFixed(0);
@@ -1010,37 +1013,53 @@ function calc(){
   const rows=[];
 
   MATS.filter(m=>m.key!=='vent').forEach(m=>{
-    const selIdx=matSel[m.key]||0;
-    const stdOpt=m.opts[0];
-    const selOpt=m.opts[selIdx];
-    const maxOpt=m.opts[m.opts.length-1];
+    const selIdx = matSel[m.key]||0;
+    const stdOpt = m.opts[0];
+    const selOpt = m.opts[selIdx];
+    const maxOpt = m.opts[m.opts.length-1];
 
-    const qSel=matQty(m,selIdx,geo);
-    const qStd=matQtyStd(m,geo);
-    const qMax=matQty(m,m.opts.length-1,geo);
+    // ── Warranty: flat-fee per job, not per-unit multiply ──
+    if(m.key === 'warr'){
+      const adjSq = matQty(m, selIdx, geo); // returns adjSq
+      const tStdCost = warrantyJobCost(stdOpt, adjSq); // always 0 (std = included)
+      const tSelCost = warrantyJobCost(selOpt, adjSq);
+      const tMaxCost = warrantyJobCost(maxOpt, adjSq);
+      const hoCharge = Math.max(0, tSelCost - tStdCost);
+      const comm = hoCharge;
+      maxComm += Math.max(0, tMaxCost - tStdCost);
+      totStdCost += tStdCost;
+      totSelCost += tSelCost;
+      totHOCharge += hoCharge;
+      totComm += comm;
+      rows.push({
+        name:m.name, selName:selOpt.name, selIdx,
+        selCost:tSelCost, insAllows:tStdCost, hoCharge, comm,
+        qty:qtyLabel(m, selIdx, geo), isStd:selIdx===0
+      });
+      return;
+    }
 
-    const stdCostUnit=oc(m,stdOpt);
-    const selCostUnit=oc(m,selOpt);
-    const maxCostUnit=oc(m,maxOpt);
+    const qSel = matQty(m, selIdx, geo);
+    const qStd = matQtyStd(m, geo);
+    const qMax = matQty(m, m.opts.length-1, geo);
 
-    const tStdCost=stdCostUnit*qStd;
-    const tSelCost=selCostUnit*qSel;
-    const tMaxCost=maxCostUnit*qMax;
+    const stdCostUnit = oc(m, stdOpt);
+    const selCostUnit = oc(m, selOpt);
+    const maxCostUnit = oc(m, maxOpt);
 
-    // HO is charged the difference above std
-    const hoCharge=Math.max(0,tSelCost-tStdCost);
-    // Insurance allows std cost
-    const insAllows=tStdCost;
+    const tStdCost = stdCostUnit * qStd;
+    const tSelCost = selCostUnit * qSel;
+    const tMaxCost = maxCostUnit * qMax;
 
-    // Commission = 100% of upgrade charge above our cost (the full margin)
-    const comm=hoCharge;
-    const maxHO=Math.max(0,tMaxCost-tStdCost);
-    maxComm+=maxHO;
+    const hoCharge = Math.max(0, tSelCost - tStdCost);
+    const comm = hoCharge;
+    const maxHO = Math.max(0, tMaxCost - tStdCost);
+    maxComm += maxHO;
 
-    totStdCost+=tStdCost;
-    totSelCost+=tSelCost;
-    totHOCharge+=hoCharge;
-    totComm+=comm;
+    totStdCost += tStdCost;
+    totSelCost += tSelCost;
+    totHOCharge += hoCharge;
+    totComm += comm;
 
     const qDisp = qtyLabel(m, selIdx, geo);
     rows.push({
@@ -1184,7 +1203,7 @@ function exportPDF(){
 // ══════════ HISTORY ══════════
 function renderHistory(){
   const today=new Date().toISOString().slice(0,10);
-  const hdz=MATS.find(c=>c.key==='shingle').opts[2];
+  const hdz=MATS.find(c=>c.key==='shingle').opts[2]; // GAF HDZ & HDZ Bold
   document.getElementById('hist-body').innerHTML=[...VERSIONS].reverse().map(v=>{
     const s=vst(v,today);
     return `<tr class="${s==='Active'?'arow':''}">
@@ -1204,11 +1223,11 @@ const ADMIN_CATS=[
   {key:'shingle',label:'Shingles (Our Cost+Tax per sq)',      pk:'costTaxSq'},
   {key:'ridge',  label:'Ridge Cap (Our Cost+Tax per bundle)', pk:'costTaxBd'},
   {key:'starter',label:'Starter Strip (per bundle)',          pk:'costTaxBd'},
-  {key:'under',  label:'Underlayment (per 10-sq roll)',       pk:'costTaxSq'},
-  {key:'valley', label:'Valley Options (per unit)',           pk:'costTaxUnit'},
-  {key:'drip',   label:'Drip Edge (per piece, 10\')',         pk:'costTaxEa'},
+  {key:'under',  label:'Underlayment (per 10-sq roll)',       pk:'costTaxRoll'},
+  {key:'valley', label:'Valley / Ice & Water (per unit)',     pk:'costTaxUnit'},
+  {key:'drip',   label:"Drip Edge (per piece, 10')",          pk:'costTaxEa'},
   {key:'boot',   label:'Pipe Boots (per ea)',                 pk:'costTaxEa'},
-  {key:'warr',   label:'Warranty (per sq)',                   pk:'costTaxSq'},
+  {key:'warr',   label:'Warranty (flat fee / per-sq)',         pk:'costFlat50'},
 ];
 const VENT_CATS=[
   {k:'ridge', label:'Ridge Vent (per LF, our cost+tax)', pk:'costTaxLf'},
@@ -1283,7 +1302,7 @@ function publishVer(){
 
 function renderAdminVers(){
   const today=new Date().toISOString().slice(0,10);
-  const hdz=MATS.find(c=>c.key==='shingle').opts[2];
+  const hdz=MATS.find(c=>c.key==='shingle').opts[2]; // GAF HDZ & HDZ Bold
   document.getElementById('adm-ver-body').innerHTML=[...VERSIONS].reverse().map(v=>{
     const s=vst(v,today);
     return `<tr class="${s==='Active'?'arow':''}">
