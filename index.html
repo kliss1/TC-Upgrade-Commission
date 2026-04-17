@@ -239,7 +239,6 @@ input,select,textarea,button{font-family:'Karla',sans-serif;font-size:15px}
       <button class="btn-login" onclick="login()">Sign In →</button>
       <div class="aerr" id="aerr"></div>
     </div>
-    <div class="demo-hint">Sales: <code>rep1 / pass</code> &nbsp;·&nbsp; Admin: <code>admin / admin</code></div>
   </div>
 </div>
 
@@ -334,7 +333,7 @@ input,select,textarea,button{font-family:'Karla',sans-serif;font-size:15px}
           <div class="f"><label>Eaves (ft)</label><input type="number" id="g-eav" value="0" min="0" oninput="calc()" placeholder="0"/></div>
         </div>
         <div style="font-size:10px;color:var(--txt3);margin-top:2px;padding:8px 10px;background:var(--surf2);border-radius:var(--rsm);border:1px solid var(--bdr)">
-          Waste factors are fixed per component: Shingles ×1.15, Underlayment ×1.10, Valley ×1.13 (per your formula sheet)
+          Waste factors per component: Shingles ×1.15 · Underlayment ×1.10 · Valley ×1.13 · Drip Edge ×1.10
         </div>
         <!-- Computed geometry summary -->
         <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:4px">
@@ -942,8 +941,8 @@ function matQty(m, selIdx, geo){
     return Math.ceil((geo.val * 1.13) / lfpu);
   }
   if(m.key === 'drip'){
-    // (Eave + Rake LF) ÷ 10 → round up = pieces (each piece = 10LF, cost is per piece)
-    return Math.ceil((geo.eav + geo.rak) / 10);
+    // (Eave + Rake LF) × 1.10 waste → ÷ 10 → round up = pieces (each piece = 10LF)
+    return Math.ceil((geo.eav + geo.rak) * 1.10 / 10);
   }
   if(m.key === 'boot') return bootCount;
   if(m.key === 'warr'){
@@ -980,7 +979,7 @@ function qtyLabel(m, selIdx, geo){
     return `${units} units`;
   }
   if(m.key === 'drip'){
-    return `${Math.ceil((geo.eav + geo.rak) / 10)} pcs`;
+    return `${Math.ceil((geo.eav + geo.rak) * 1.10 / 10)} pcs`;
   }
   if(m.key === 'boot') return `${bootCount} ea`;
   if(m.key === 'warr'){
@@ -1014,7 +1013,17 @@ function calc(){
 
   MATS.filter(m=>m.key!=='vent').forEach(m=>{
     const selIdx = matSel[m.key]||0;
-    const stdOpt = m.opts[0];
+
+    // Shingles: standard depends on existing shingle type
+    // Arch existing → ins covers up to Natural Shadow (idx 1, $118.26/sq)
+    // 3-Tab existing → ins only covers Royal Sovereign (idx 0, $113.40/sq)
+    let stdIdx = 0;
+    if(m.key === 'shingle'){
+      const existingType = document.getElementById('existing-shingle').value;
+      stdIdx = (existingType === 'arch') ? 1 : 0;
+    }
+
+    const stdOpt = m.opts[stdIdx];
     const selOpt = m.opts[selIdx];
     const maxOpt = m.opts[m.opts.length-1];
 
@@ -1040,7 +1049,7 @@ function calc(){
     }
 
     const qSel = matQty(m, selIdx, geo);
-    const qStd = matQtyStd(m, geo);
+    const qStd = matQty(m, stdIdx, geo);
     const qMax = matQty(m, m.opts.length-1, geo);
 
     const stdCostUnit = oc(m, stdOpt);
@@ -1065,7 +1074,7 @@ function calc(){
     rows.push({
       name:m.name, selName:selOpt.name, selIdx,
       selCost:tSelCost, insAllows:tStdCost, hoCharge, comm,
-      qty:qDisp, isStd:selIdx===0||!!selOpt.std
+      qty:qDisp, isStd:selIdx===stdIdx
     });
   });
 
