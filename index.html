@@ -333,22 +333,25 @@ input,select,textarea,button{font-family:'Karla',sans-serif;font-size:15px}
           <div class="f"><label>Rakes (ft)</label><input type="number" id="g-rak" value="0" min="0" oninput="calc()" placeholder="0"/></div>
           <div class="f"><label>Eaves (ft)</label><input type="number" id="g-eav" value="0" min="0" oninput="calc()" placeholder="0"/></div>
         </div>
-        <div class="f"><label>Waste % <span style="color:var(--txt3);font-weight:400">(default 12%)</span></label>
-          <input type="number" id="g-wst" value="12" min="5" max="35" oninput="calc()"/>
+        <div style="font-size:10px;color:var(--txt3);margin-top:2px;padding:8px 10px;background:var(--surf2);border-radius:var(--rsm);border:1px solid var(--bdr)">
+          Waste factors are fixed per component: Shingles ×1.15, Underlayment ×1.10, Valley ×1.13 (per your formula sheet)
         </div>
         <!-- Computed geometry summary -->
         <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:4px">
           <div style="background:var(--surf2);border-radius:var(--rsm);padding:9px 10px;border:1px solid var(--bdr)">
-            <div style="font-size:9px;font-weight:700;color:var(--txt3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px">Adj. Squares</div>
-            <div style="font-size:18px;font-weight:700;font-family:'Syne',sans-serif;color:var(--blue)" id="m-adjsq">0</div>
-          </div>
-          <div style="background:var(--surf2);border-radius:var(--rsm);padding:9px 10px;border:1px solid var(--bdr)">
             <div style="font-size:9px;font-weight:700;color:var(--txt3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px">Shingle Bundles</div>
-            <div style="font-size:18px;font-weight:700;font-family:'Syne',sans-serif" id="m-bdls">0</div>
+            <div style="font-size:18px;font-weight:700;font-family:'Syne',sans-serif;color:var(--blue)" id="m-bdls">0</div>
+            <div style="font-size:9px;color:var(--txt3)">SQ×1.15×3, round up</div>
           </div>
           <div style="background:var(--surf2);border-radius:var(--rsm);padding:9px 10px;border:1px solid var(--bdr)">
             <div style="font-size:9px;font-weight:700;color:var(--txt3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px">Ridge + Hip LF</div>
             <div style="font-size:18px;font-weight:700;font-family:'Syne',sans-serif" id="m-ridgehip">0</div>
+            <div style="font-size:9px;color:var(--txt3)">for ridge cap calc</div>
+          </div>
+          <div style="background:var(--surf2);border-radius:var(--rsm);padding:9px 10px;border:1px solid var(--bdr)">
+            <div style="font-size:9px;font-weight:700;color:var(--txt3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px">Eave + Rake LF</div>
+            <div style="font-size:18px;font-weight:700;font-family:'Syne',sans-serif" id="m-eaverake">0</div>
+            <div style="font-size:9px;color:var(--txt3)">for starter / drip</div>
           </div>
         </div>
       </div>
@@ -395,7 +398,7 @@ input,select,textarea,button{font-family:'Karla',sans-serif;font-size:15px}
           <div class="comm-row-val" id="c-gp">$0.00</div>
         </div>
         <div class="comm-row">
-          <div class="comm-row-label">Upgrade Commission (<span id="c-commrate">30</span>% of upgrade margin)<small>earned on upgrade charges above std cost</small></div>
+          <div class="comm-row-label">Upgrade Commission (100% of upgrade above our cost)<small>everything charged above our material cost on upgrades</small></div>
           <div class="comm-row-val c-gold" id="c-upgcomm">$0.00</div>
         </div>
         <div class="comm-row total">
@@ -468,7 +471,7 @@ input,select,textarea,button{font-family:'Karla',sans-serif;font-size:15px}
       <div class="card">
         <div class="tbl-wrap">
           <table class="tbl">
-            <thead><tr><th>Ver</th><th>Label</th><th>Effective</th><th>Expires</th><th>Status</th><th>GAF HDZ/sq</th><th>Comm%</th></tr></thead>
+            <thead><tr><th>Ver</th><th>Label</th><th>Effective</th><th>Expires</th><th>Status</th><th>GAF HDZ/sq</th></tr></thead>
             <tbody id="hist-body"></tbody>
           </table>
         </div>
@@ -488,11 +491,6 @@ input,select,textarea,button{font-family:'Karla',sans-serif;font-size:15px}
           <div class="f"><label>Version Label</label><input type="text" id="n-lbl" class="fi" style="background:var(--surf2)" placeholder="e.g. Summer 2026"/></div>
         </div>
         <div id="admin-fields"></div>
-        <div class="dvl">Commission &amp; Markup</div>
-        <div class="g2">
-          <div class="f"><label>Rep Commission % (of upgrade margin)</label><div class="pfx"><div class="pfx-lbl">%</div><input type="number" id="n-comm" value="30" min="0" max="60"/></div></div>
-          <div class="f"><label>Company Markup %</label><div class="pfx"><div class="pfx-lbl">%</div><input type="number" id="n-mkup" value="45" min="0" max="100"/></div></div>
-        </div>
         <button class="btn btn-gold btn-full" style="margin-top:10px" onclick="publishVer()">Publish New Pricing Version</button>
       </div>
 
@@ -500,7 +498,7 @@ input,select,textarea,button{font-family:'Karla',sans-serif;font-size:15px}
         <div class="card-ttl">All Versions</div>
         <div class="tbl-wrap">
           <table class="tbl">
-            <thead><tr><th>Ver</th><th>Label</th><th>Effective</th><th>Expires</th><th>Status</th><th>GAF HDZ/sq</th><th>Comm%</th></tr></thead>
+            <thead><tr><th>Ver</th><th>Label</th><th>Effective</th><th>Expires</th><th>Status</th><th>GAF HDZ/sq</th></tr></thead>
             <tbody id="adm-ver-body"></tbody>
           </table>
         </div>
@@ -538,7 +536,7 @@ input,select,textarea,button{font-family:'Karla',sans-serif;font-size:15px}
 //  costTax = "Our Cost + Tax" = our actual material cost
 //  The insurance "allows" the std (first) option cost × qty
 //  HO is charged the UPGRADE DIFFERENCE (sel cost - std cost) × qty
-//  Rep earns commRate% of that upgrade margin above company markup
+//  Commission = 100% of (selected cost - std cost) × qty. Rep keeps the full upgrade margin.
 // ══════════════════════════════════════════════════════
 
 // Material definitions
@@ -596,21 +594,23 @@ const MATS = [
     ]
   },
   {
-    key:'valley', name:'Valley', unitType:'valley', unitLabel:'per LF',
+    key:'valley', name:'Valley', unitType:'valley', unitLabel:'per unit',
+    // lfPerUnit = how many LF each package covers
+    lfPerUnit:[50, 10, 66.67, 66.67, 66.67, 66.67],
     opts:[
-      {name:'Valley Metal (50LF)',     costTaxLf:54.00/50,   std:true},
-      {name:'W Metal Valley (10LF)',   costTaxLf:37.80/10,   std:true},
-      {name:'Resisto',                 costTaxLf:75.60/66.67},
-      {name:'GAF Weatherwatch',        costTaxLf:91.80/66.67},
-      {name:'CT Winterguard',          costTaxLf:96.12/66.67},
-      {name:'GAF Stormguard',          costTaxLf:111.24/66.67},
+      {name:'Valley Metal (50LF/unit)',    costTaxUnit:54.00,  std:true},
+      {name:'W Metal Valley (10LF/unit)',  costTaxUnit:37.80,  std:true},
+      {name:'Resisto (66.67LF/unit)',      costTaxUnit:75.60},
+      {name:'GAF Weatherwatch (66.67LF)', costTaxUnit:91.80},
+      {name:'CT Winterguard (66.67LF)',    costTaxUnit:96.12},
+      {name:'GAF Stormguard (66.67LF)',    costTaxUnit:111.24},
     ]
   },
   {
-    key:'drip', name:'Gutter Apron / Drip Edge', unitType:'drip', unitLabel:'per LF (10\' pieces)',
+    key:'drip', name:'Gutter Apron / Drip Edge', unitType:'drip', unitLabel:'per piece (10\')',
     opts:[
-      {name:'Drip Edge 4×2×10\'',     costTaxLf:9.67/10,  std:true},
-      {name:'Gutter Apron 4"×2"×10\'',costTaxLf:7.94/10,  std:true},
+      {name:'Drip Edge 4×2×10\'',          costTaxEa:9.67,  std:true},
+      {name:'Gutter Apron 4"×2"×10\'',     costTaxEa:7.94,  std:true},
     ]
   },
   {
@@ -648,8 +648,8 @@ function oc(mat, opt) {
   if(mat.key==='ridge')   return opt.costTaxBd||0;
   if(mat.key==='starter') return opt.costTaxBd||0;
   if(mat.key==='under')   return opt.costTaxSq||0;
-  if(mat.key==='valley')  return opt.costTaxLf||0;
-  if(mat.key==='drip')    return opt.costTaxLf||0;
+  if(mat.key==='valley')  return opt.costTaxUnit||0;
+  if(mat.key==='drip')    return opt.costTaxEa||0;
   if(mat.key==='boot')    return opt.costTaxEa||0;
   if(mat.key==='vent')    return opt.costTaxLf||opt.costTaxEa||0;
   if(mat.key==='warr')    return opt.costTaxSq||0;
@@ -665,7 +665,7 @@ function unitStr(mat) {
 
 // ── STATE ──
 let VERSIONS = [
-  { id:'v1', label:'Oct 22, 2025 – Present', eff:'2025-10-22', exp:null, comm:30, mkup:45, by:'admin' }
+  { id:'v1', label:'Oct 22, 2025 – Present', eff:'2025-10-22', exp:null, by:'admin' }
 ];
 let vidx=2;
 let USERS = {
@@ -807,27 +807,39 @@ function buildMatUI(){
 }
 
 function buildVentUI(){
-  const vk=['ridge','box','power','solar','turbine'];
-  const vlbl=['Ridge Vent (LF)','Box Vents (ea)','Power Vents (ea)','Solar Vent (ea)','Turbine (ea)'];
+  const rows=[
+    {k:'ridge',  lbl:'Ridge Vent',   sub:'enter LF (÷4 = sticks needed)'},
+    {k:'box',    lbl:'Box Vents',    sub:'count, ins. standard'},
+    {k:'power',  lbl:'Power Vents',  sub:'count, upgrade'},
+    {k:'solar',  lbl:'Solar Vent',   sub:'count, upgrade'},
+    {k:'turbine',lbl:'Turbine',      sub:'count, upgrade'},
+  ];
   return `<div class="mat-row" id="mr-vent">
     <div class="mat-hd">
       <span class="mat-hd-name">Ventilation</span>
       <span class="mat-hd-cost" id="mhc-vent"></span>
     </div>
     <div class="mat-body">
-      <div style="display:grid;grid-template-columns:2fr 1fr 1fr;gap:6px;margin-bottom:6px">
-        <div style="font-size:9px;font-weight:700;color:var(--txt3);text-transform:uppercase;letter-spacing:.06em;padding:4px 0">Type</div>
-        <div style="font-size:9px;font-weight:700;color:var(--txt3);text-transform:uppercase;letter-spacing:.06em;padding:4px 0;text-align:center">Existing</div>
-        <div style="font-size:9px;font-weight:700;color:var(--txt3);text-transform:uppercase;letter-spacing:.06em;padding:4px 0;text-align:center">Desired</div>
+      <div style="display:grid;grid-template-columns:2fr 1fr 1fr;gap:6px;margin-bottom:6px;align-items:end">
+        <div style="font-size:9px;font-weight:700;color:var(--txt3);text-transform:uppercase;letter-spacing:.06em">Type</div>
+        <div style="font-size:9px;font-weight:700;color:var(--txt3);text-transform:uppercase;letter-spacing:.06em;text-align:center">Existing</div>
+        <div style="font-size:9px;font-weight:700;color:var(--txt3);text-transform:uppercase;letter-spacing:.06em;text-align:center">Desired</div>
       </div>
-      ${vk.map((k,i)=>`
-        <div style="display:grid;grid-template-columns:2fr 1fr 1fr;gap:6px;margin-bottom:6px;align-items:center">
-          <div style="font-size:12px;font-weight:500;color:var(--txt2)">${vlbl[i]}</div>
-          <input type="number" value="${ventCounts[k].exist}" min="0" style="background:var(--surf);border:1px solid var(--bdr2);border-radius:6px;padding:7px 8px;color:var(--txt);outline:none;font-size:13px;text-align:center;width:100%;font-family:'Syne',sans-serif;-webkit-appearance:none" oninput="setVent('${k}','exist',this.value)"/>
-          <input type="number" value="${ventCounts[k].desired}" min="0" style="background:var(--surf);border:1px solid var(--bdr2);border-radius:6px;padding:7px 8px;color:var(--txt);outline:none;font-size:13px;text-align:center;width:100%;font-family:'Syne',sans-serif;-webkit-appearance:none" oninput="setVent('${k}','desired',this.value)"/>
+      ${rows.map(r=>`
+        <div style="display:grid;grid-template-columns:2fr 1fr 1fr;gap:6px;margin-bottom:8px;align-items:center">
+          <div>
+            <div style="font-size:12px;font-weight:600;color:var(--txt2)">${r.lbl}</div>
+            <div style="font-size:9px;color:var(--txt3)">${r.sub}</div>
+          </div>
+          <input type="number" value="${ventCounts[r.k].exist}" min="0"
+            style="background:var(--surf);border:1px solid var(--bdr2);border-radius:6px;padding:8px;color:var(--txt);outline:none;font-size:14px;text-align:center;width:100%;font-family:'Syne',sans-serif;-webkit-appearance:none"
+            oninput="setVent('${r.k}','exist',this.value)"/>
+          <input type="number" value="${ventCounts[r.k].desired}" min="0"
+            style="background:var(--surf);border:1px solid var(--bdr2);border-radius:6px;padding:8px;color:var(--txt);outline:none;font-size:14px;text-align:center;width:100%;font-family:'Syne',sans-serif;-webkit-appearance:none"
+            oninput="setVent('${r.k}','desired',this.value)"/>
         </div>`).join('')}
       <div class="mat-result">
-        <span class="mat-result-label">Upgrade charge</span>
+        <span class="mat-result-label">Ventilation upgrade charge</span>
         <span class="mat-result-val" id="mrc-vent"></span>
       </div>
     </div>
@@ -891,37 +903,90 @@ function updateMatDisplay(){
 
 // ══════════ GEOMETRY ══════════
 function getGeo(){
-  const sq=parseFloat(document.getElementById('g-sq').value)||0;
-  const rdg=parseFloat(document.getElementById('g-rdg').value)||0;
-  const hip=parseFloat(document.getElementById('g-hip').value)||0;
-  const val=parseFloat(document.getElementById('g-val').value)||0;
-  const rak=parseFloat(document.getElementById('g-rak').value)||0;
-  const eav=parseFloat(document.getElementById('g-eav').value)||0;
-  const wst=parseFloat(document.getElementById('g-wst').value)||12;
-  const adjSq=sq*(1+wst/100);
-  const ridgehip=rdg+hip;
-  return {sq,rdg,hip,val,rak,eav,wst,adjSq,ridgehip};
+  const sq   = parseFloat(document.getElementById('g-sq').value)||0;
+  const rdg  = parseFloat(document.getElementById('g-rdg').value)||0;
+  const hip  = parseFloat(document.getElementById('g-hip').value)||0;
+  const val  = parseFloat(document.getElementById('g-val').value)||0;
+  const rak  = parseFloat(document.getElementById('g-rak').value)||0;
+  const eav  = parseFloat(document.getElementById('g-eav').value)||0;
+  const ridgehip = rdg + hip;
+  return {sq, rdg, hip, val, rak, eav, ridgehip};
 }
 
-// Per-material quantity based on geometry
+// Exact quantity formulas per component (from math sheet)
+// Returns qty in the same unit as costTax (sq, bundle, unit, piece, roll, ea)
 function matQty(m, selIdx, geo){
-  if(m.key==='shingle') return geo.adjSq;
-  if(m.key==='ridge'){
-    const lpb=(m.lfPerBd&&m.lfPerBd[selIdx])||30;
-    return Math.ceil(geo.ridgehip/lpb); // bundles
+  if(m.key === 'shingle'){
+    // SQ × 1.15 → ×3 bundles → round up → ÷3 back to SQ (cost is per SQ)
+    const bundles = Math.ceil(geo.sq * 1.15 * 3);
+    return bundles / 3;
   }
-  if(m.key==='starter'){
-    const lpb=(m.lfPerBd&&m.lfPerBd[selIdx])||100;
-    return Math.ceil(geo.eav/lpb); // bundles
+  if(m.key === 'ridge'){
+    // (Ridge + Hip LF) ÷ LF/bundle → round up = bundles
+    const lfpb = (m.lfPerBd && m.lfPerBd[selIdx]) || 30;
+    return Math.ceil(geo.ridgehip / lfpb);
   }
-  if(m.key==='under')  return geo.adjSq;
-  if(m.key==='valley') return geo.val; // LF
-  if(m.key==='drip')   return geo.eav+geo.rak; // LF perimeter
-  if(m.key==='boot')   return bootCount;
-  if(m.key==='warr')   return geo.adjSq;
+  if(m.key === 'starter'){
+    // (Eave + Rake LF) → round up to nearest 100 → ÷100 = bundles
+    const totalLF = geo.eav + geo.rak;
+    return Math.ceil(totalLF / 100);
+  }
+  if(m.key === 'under'){
+    // SQ × 1.10 → round up to nearest 10 sq → ÷10 = rolls (cost is per roll = 10sq)
+    const withWaste = geo.sq * 1.10;
+    return Math.ceil(withWaste / 10); // rolls
+  }
+  if(m.key === 'valley'){
+    // Valley LF × 1.13 → ÷ LF/unit for chosen product → round up = units
+    const lfpu = (m.lfPerUnit && m.lfPerUnit[selIdx]) || 50;
+    return Math.ceil((geo.val * 1.13) / lfpu);
+  }
+  if(m.key === 'drip'){
+    // (Eave + Rake LF) ÷ 10 → round up = pieces (each piece = 10LF, cost is per piece)
+    return Math.ceil((geo.eav + geo.rak) / 10);
+  }
+  if(m.key === 'boot') return bootCount;
+  if(m.key === 'warr'){
+    const bundles = Math.ceil(geo.sq * 1.15 * 3);
+    return bundles / 3;
+  }
   return 0;
 }
-function matQtyStd(m, geo){ return matQty(m,0,geo); }
+function matQtyStd(m, geo){ return matQty(m, 0, geo); }
+
+// Human-readable qty string for the breakdown table
+function qtyLabel(m, selIdx, geo){
+  if(m.key === 'shingle'){
+    const bd = Math.ceil(geo.sq * 1.15 * 3);
+    return `${bd} bundles`;
+  }
+  if(m.key === 'ridge'){
+    const lfpb = (m.lfPerBd && m.lfPerBd[selIdx]) || 30;
+    const bd = Math.ceil(geo.ridgehip / lfpb);
+    return `${bd} bd`;
+  }
+  if(m.key === 'starter'){
+    const totalLF = geo.eav + geo.rak;
+    return `${Math.ceil(totalLF / 100)} bd`;
+  }
+  if(m.key === 'under'){
+    return `${Math.ceil(geo.sq * 1.10 / 10)} rolls`;
+  }
+  if(m.key === 'valley'){
+    const lfpu = (m.lfPerUnit && m.lfPerUnit[selIdx]) || 50;
+    const units = Math.ceil((geo.val * 1.13) / lfpu);
+    return `${units} units`;
+  }
+  if(m.key === 'drip'){
+    return `${Math.ceil((geo.eav + geo.rak) / 10)} pcs`;
+  }
+  if(m.key === 'boot') return `${bootCount} ea`;
+  if(m.key === 'warr'){
+    const bd = Math.ceil(geo.sq * 1.15 * 3);
+    return `${(bd/3).toFixed(1)} sq`;
+  }
+  return '—';
+}
 
 // ══════════ MAIN CALC ══════════
 function onHOOverride(){
@@ -933,13 +998,12 @@ function onHOOverride(){
 function calc(){
   const geo=getGeo();
   const v=activeVer;
-  const commRate=v.comm/100;
-  const markup=v.mkup/100;
 
-  document.getElementById('m-adjsq').textContent=geo.adjSq.toFixed(1);
-  document.getElementById('m-bdls').textContent=geo.adjSq>0?Math.ceil(geo.adjSq*3):0;
-  document.getElementById('m-ridgehip').textContent=geo.ridgehip.toFixed(0)+' ft';
-  document.getElementById('c-commrate').textContent=v.comm;
+  const bundles = geo.sq > 0 ? Math.ceil(geo.sq * 1.15 * 3) : 0;
+  document.getElementById('m-bdls').textContent = bundles;
+  document.getElementById('m-ridgehip').textContent = geo.ridgehip.toFixed(0);
+  document.getElementById('m-eaverake').textContent = (geo.eav + geo.rak).toFixed(0);
+
 
   // ── per-material calculations ──
   let totStdCost=0, totSelCost=0, totHOCharge=0, totComm=0, maxComm=0;
@@ -968,18 +1032,17 @@ function calc(){
     // Insurance allows std cost
     const insAllows=tStdCost;
 
-    // Upgrade commission = commRate% of (hoCharge / (1+markup))
-    const margin=hoCharge>0?hoCharge/(1+markup):0;
-    const comm=margin*commRate;
+    // Commission = 100% of upgrade charge above our cost (the full margin)
+    const comm=hoCharge;
     const maxHO=Math.max(0,tMaxCost-tStdCost);
-    maxComm+=maxHO>0?(maxHO/(1+markup))*commRate:0;
+    maxComm+=maxHO;
 
     totStdCost+=tStdCost;
     totSelCost+=tSelCost;
     totHOCharge+=hoCharge;
     totComm+=comm;
 
-    const qDisp=qSel===0?'—':(qSel%1===0?qSel.toFixed(0):qSel.toFixed(1))+unitStr(m);
+    const qDisp = qtyLabel(m, selIdx, geo);
     rows.push({
       name:m.name, selName:selOpt.name, selIdx,
       selCost:tSelCost, insAllows:tStdCost, hoCharge, comm,
@@ -998,16 +1061,29 @@ function calc(){
   };
   ['ridge','box','power','solar','turbine'].forEach(k=>{
     const vd=ventDefs[k]; const opt=vd.opt;
-    const desired=ventCounts[k].desired;
-    const costEa=opt.costTaxLf||opt.costTaxEa||0;
-    const isStd=(k==='ridge'||k==='box');
-    const stdCostItem=isStd?costEa*desired:0;
-    const selCostItem=costEa*desired;
-    const hoItem=isStd?0:selCostItem; // non-std vents = upgrade, HO pays full
-    const margin=hoItem/(1+markup);
-    const comm=margin*commRate;
-    const maxHO=costEa*desired;
-    if(!isStd) maxComm+=(maxHO/(1+markup))*commRate;
+    const existing = ventCounts[k].exist || 0;
+    const desired  = ventCounts[k].desired || 0;
+    const isStd = (k==='ridge' || k==='box');
+
+    let selCostItem = 0, stdCostItem = 0;
+
+    if(k === 'ridge'){
+      // Inputs are LF. (desired LF - existing LF) / 4 = sticks needed, round up.
+      // costTaxLf = our cost per LF; cost per stick = costTaxLf * 4
+      const netLF = Math.max(0, desired - existing);
+      const sticks = Math.ceil(netLF / 4);
+      const costPerStick = (opt.costTaxLf || 0) * 4;
+      selCostItem = sticks * costPerStick;
+      stdCostItem = selCostItem; // ridge vent is std (ins covers)
+    } else {
+      // All others: desired count × cost each
+      selCostItem = desired * (opt.costTaxEa || 0);
+      stdCostItem = isStd ? selCostItem : 0; // box vent is std
+    }
+
+    const hoItem = isStd ? 0 : selCostItem;
+    const comm = hoItem;
+    if(!isStd) maxComm += selCostItem;
     ventStdCost+=stdCostItem;
     ventSelCost+=selCostItem;
     ventHO+=hoItem;
@@ -1086,7 +1162,6 @@ function resetCalc(){
   document.getElementById('fc-date').value=new Date().toISOString().slice(0,10);
   document.getElementById('ho-auto-note').textContent='Auto-calculated from selections above';
   ['g-sq','g-rdg','g-hip','g-val','g-rak','g-eav'].forEach(id=>document.getElementById(id).value='0');
-  document.getElementById('g-wst').value='12';
   setMode('full');
   activeVer=getVer();updateBanner();buildMatUI();calc();
   toast('↺ Reset');
@@ -1119,7 +1194,6 @@ function renderHistory(){
       <td>${v.exp?fd(v.exp):'—'}</td>
       <td><span class="badge ${s==='Active'?'b-green':s==='Upcoming'?'b-blue':'b-gray'}">${s}</span></td>
       <td>$${hdz.costTaxSq.toFixed(2)}</td>
-      <td>${v.comm}%</td>
     </tr>`;
   }).join('');
 }
@@ -1127,14 +1201,14 @@ function vst(v,t){if(v.eff>t)return 'Upcoming';if(!v.exp||v.exp>=t)return 'Activ
 
 // ══════════ ADMIN PRICING ══════════
 const ADMIN_CATS=[
-  {key:'shingle',label:'Shingles (Our Cost+Tax per sq)',     pk:'costTaxSq'},
-  {key:'ridge',  label:'Ridge Cap (Our Cost+Tax per bundle)',pk:'costTaxBd'},
-  {key:'starter',label:'Starter Strip (per bundle)',         pk:'costTaxBd'},
-  {key:'under',  label:'Underlayment (per sq)',              pk:'costTaxSq'},
-  {key:'valley', label:'Valley Options (per LF)',            pk:'costTaxLf'},
-  {key:'drip',   label:'Drip Edge (per LF)',                 pk:'costTaxLf'},
-  {key:'boot',   label:'Pipe Boots (per ea)',                pk:'costTaxEa'},
-  {key:'warr',   label:'Warranty (per sq)',                  pk:'costTaxSq'},
+  {key:'shingle',label:'Shingles (Our Cost+Tax per sq)',      pk:'costTaxSq'},
+  {key:'ridge',  label:'Ridge Cap (Our Cost+Tax per bundle)', pk:'costTaxBd'},
+  {key:'starter',label:'Starter Strip (per bundle)',          pk:'costTaxBd'},
+  {key:'under',  label:'Underlayment (per 10-sq roll)',       pk:'costTaxSq'},
+  {key:'valley', label:'Valley Options (per unit)',           pk:'costTaxUnit'},
+  {key:'drip',   label:'Drip Edge (per piece, 10\')',         pk:'costTaxEa'},
+  {key:'boot',   label:'Pipe Boots (per ea)',                 pk:'costTaxEa'},
+  {key:'warr',   label:'Warranty (per sq)',                   pk:'costTaxSq'},
 ];
 const VENT_CATS=[
   {k:'ridge', label:'Ridge Vent (per LF, our cost+tax)', pk:'costTaxLf'},
@@ -1201,9 +1275,7 @@ function publishVer(){
     else ventM.opts[i].costTaxEa=val;
   });
 
-  VERSIONS.push({id:'v'+vidx++,label:lbl,eff,exp:null,
-    comm:parseFloat(document.getElementById('n-comm').value)||30,
-    mkup:parseFloat(document.getElementById('n-mkup').value)||45,by:me});
+  VERSIONS.push({id:'v'+vidx++,label:lbl,eff,exp:null,by:me});
   renderAdminVers();renderHistory();
   activeVer=getVer();updateBanner();buildMatUI();calc();
   toast('✅ Published: '+lbl);setPage('pg-hist');
@@ -1221,7 +1293,6 @@ function renderAdminVers(){
       <td>${v.exp?fd(v.exp):'<span style="color:var(--green)">Present</span>'}</td>
       <td><span class="badge ${s==='Active'?'b-green':s==='Upcoming'?'b-blue':'b-gray'}">${s}</span></td>
       <td>$${hdz.costTaxSq.toFixed(2)}</td>
-      <td>${v.comm}%</td>
     </tr>`;
   }).join('');
 }
