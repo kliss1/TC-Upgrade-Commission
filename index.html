@@ -506,22 +506,18 @@ input,select,textarea,button{font-family:'Karla',sans-serif;font-size:15px}
 
     <!-- ══════════ USERS ══════════ -->
     <div class="page" id="pg-users">
-      <div class="pg-title">Sales Reps</div>
-      <div class="pg-sub">Manage rep login accounts</div>
+      <div class="pg-title">Team Roster</div>
+      <div class="pg-sub">All active logins — edit the app file to add or remove users</div>
       <div class="card">
-        <div class="card-ttl">Add Rep</div>
-        <div class="g2">
-          <div class="f"><label>Full Name</label><input type="text" id="nr-n" class="fi" style="background:var(--surf2)" placeholder="Jane Smith"/></div>
-          <div class="f"><label>Username</label><input type="text" id="nr-u" class="fi" style="background:var(--surf2)" placeholder="jane.smith"/></div>
-        </div>
-        <div class="f"><label>Password</label><input type="password" id="nr-p" class="fi" style="background:var(--surf2)" placeholder="temporary password"/></div>
-        <button class="btn btn-gold btn-full" style="margin-top:8px" onclick="addRep()">Add Rep Account</button>
-      </div>
-      <div class="card">
-        <div class="card-ttl">Active Reps</div>
+        <div class="card-ttl">Sales Reps</div>
         <div id="reps-list"></div>
       </div>
+      <div class="card">
+        <div class="card-ttl">Admins</div>
+        <div id="admins-list"></div>
+      </div>
     </div>
+
 
   </div><!-- /pages -->
   <div class="bnav" id="bnav"></div>
@@ -626,10 +622,25 @@ let VERSIONS = [
   { id:'v1', label:'Apr 20, 2026 – Present', eff:'2026-04-20', exp:null, by:'admin' }
 ];
 let vidx=2;
-let USERS = {
-  admin:{pass:'admin',role:'admin',name:'Administrator'},
-  rep1: {pass:'pass', role:'sales',name:'Alex Johnson'},
-  rep2: {pass:'pass', role:'sales',name:'Mike Torres'},
+const USERS = {
+  Buck:    {pass:'Hailyeah', role:'sales', name:'Buck Broadhead'},
+  Isaac:   {pass:'Hailyeah', role:'sales', name:'Isaac Perez'},
+  Omar:    {pass:'Hailyeah', role:'sales', name:'Omar Al Shanti'},
+  Kyle:    {pass:'Hailyeah', role:'sales', name:'Kyle Pippins'},
+  Noah:    {pass:'Hailyeah', role:'sales', name:'Noah Carr'},
+  Matt:    {pass:'Hailyeah', role:'sales', name:'Matt Timcho'},
+  Leo:     {pass:'Hailyeah', role:'sales', name:'Leobardo Gonzalez'},
+  Nick:    {pass:'Hailyeah', role:'sales', name:'Nick Scobee'},
+  Joseph:  {pass:'Hailyeah', role:'sales', name:'Joseph Valderrama'},
+  Ryan:    {pass:'Hailyeah', role:'sales', name:'Ryan Comer'},
+  Charles: {pass:'Hailyeah', role:'sales', name:'Charles Tomlinson'},
+  Johana:  {pass:'Hailyeah', role:'sales', name:'Johana Cortina'},
+  MJ:      {pass:'Hailyeah', role:'sales', name:'Michael Johnson'},
+  Deering: {pass:'Hailyeah', role:'sales', name:'Ryan Deering'},
+  Testpm:  {pass:'Testpm',   role:'sales', name:'Test Pm'},
+  Madison: {pass:'Hailyeah', role:'sales', name:'Madison Kennerly'},
+  Peyton:  {pass:'Hailyeah', role:'admin', name:'Peyton Dixon'},
+  Kat:     {pass:'Hailyeah', role:'admin', name:'Kat Liss'},
 };
 let me=null, myRole=null, authTab='sales';
 let activeVer=null;
@@ -664,7 +675,7 @@ function login(){
   document.getElementById('role-chip').textContent=rec.role==='admin'?'Admin':'Sales Rep';
   document.getElementById('role-chip').className='chip '+(rec.role==='admin'?'chip-green':'chip-gold');
   document.getElementById('user-lbl').textContent=rec.name;
-  buildNav();initCalc();renderHistory();
+  buildNav();initCalc();loadState();renderHistory();
   if(myRole==='admin'){buildAdminFields();renderAdminVers();renderReps();}
   setPage('pg-calc');
 }
@@ -1178,9 +1189,87 @@ function calc(){
   document.getElementById('ft-ins').textContent='$'+Math.round(totStdCost).toLocaleString();
   document.getElementById('ft-ho').textContent='$'+Math.round(finalHOCharge).toLocaleString();
   document.getElementById('ft-com').textContent='$'+Math.round(upgComm).toLocaleString();
+
+  // Auto-save this user's work to their own localStorage key
+  saveState();
 }
 
 function fmt(n){return '$'+Math.abs(n).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});}
+
+
+// Each user's work is stored under their own key — sessions are fully isolated.
+function storageKey(){ return `upgcomm_${me}`; }
+
+function saveState(){
+  if(!me) return;
+  const fields=['fc-name','fc-wo','fc-addr','fc-claim','fc-notes','fc-date','ded-amt','dap-amt','g-sq','g-rdg','g-hip','g-val','g-rak','g-eav'];
+  const fieldVals={};
+  fields.forEach(id=>{ const el=document.getElementById(id); if(el) fieldVals[id]=el.value; });
+  const state={
+    fieldVals,
+    matSel:Object.assign({},matSel),
+    ventCounts:JSON.parse(JSON.stringify(ventCounts)),
+    bootCount,
+    claimMode,
+    hoOverride,
+    existingShingle:document.getElementById('existing-shingle')?.value||'arch',
+    savedAt:new Date().toISOString()
+  };
+  try{ localStorage.setItem(storageKey(), JSON.stringify(state)); }catch(e){}
+}
+
+function loadState(){
+  if(!me) return;
+  let state;
+  try{ const raw=localStorage.getItem(storageKey()); if(!raw) return; state=JSON.parse(raw); }catch(e){ return; }
+
+  // Restore field values
+  if(state.fieldVals){
+    Object.entries(state.fieldVals).forEach(([id,val])=>{
+      const el=document.getElementById(id); if(el) el.value=val;
+    });
+  }
+  // Restore material selections
+  if(state.matSel) Object.assign(matSel, state.matSel);
+  if(state.ventCounts) ventCounts=state.ventCounts;
+  if(typeof state.bootCount==='number') bootCount=state.bootCount;
+  if(state.claimMode){ claimMode=state.claimMode; setMode(claimMode); }
+  if(typeof state.hoOverride==='boolean') hoOverride=state.hoOverride;
+  if(state.existingShingle){
+    const el=document.getElementById('existing-shingle'); if(el) el.value=state.existingShingle;
+  }
+
+  // Rebuild UI with restored selections then calc
+  buildMatUI();
+  // Restore vent counts in the rebuilt UI
+  if(state.ventCounts){
+    Object.entries(ventCounts).forEach(([k,v])=>{
+      const inputs=document.querySelectorAll(`[oninput*="setVent('${k}'"]`);
+      if(inputs[0]) inputs[0].value=v.exist;
+      if(inputs[1]) inputs[1].value=v.desired;
+    });
+  }
+  // Restore boot count
+  const bootEl=document.querySelector('[oninput*="setBootCount"]');
+  if(bootEl) bootEl.value=bootCount;
+
+  // Restore HO override note
+  if(state.hoOverride){
+    const n=document.getElementById('ho-auto-note');
+    if(n) n.textContent='⚠️ Manually overridden — clear field to return to auto-calc';
+  }
+
+  calc();
+  if(state.savedAt){
+    const d=new Date(state.savedAt);
+    toast(`↩ Restored your work from ${d.toLocaleDateString('en-US',{month:'short',day:'numeric'})}`);
+  }
+}
+
+function clearState(){
+  if(!me) return;
+  try{ localStorage.removeItem(storageKey()); }catch(e){}
+}
 
 function resetCalc(){
   MATS.forEach(m=>{matSel[m.key]=0;});
@@ -1192,6 +1281,7 @@ function resetCalc(){
   ['g-sq','g-rdg','g-hip','g-val','g-rak','g-eav'].forEach(id=>document.getElementById(id).value='0');
   setMode('full');
   activeVer=getVer();updateBanner();buildMatUI();calc();
+  clearState();
   toast('↺ Reset');
 }
 
@@ -1326,29 +1416,17 @@ function renderAdminVers(){
 }
 
 // ══════════ USERS ══════════
-function addRep(){
-  const n=document.getElementById('nr-n').value.trim();
-  const u=document.getElementById('nr-u').value.trim().toLowerCase();
-  const p=document.getElementById('nr-p').value;
-  if(!n||!u||!p){toast('All fields required');return;}
-  if(USERS[u]){toast('Username taken');return;}
-  USERS[u]={pass:p,role:'sales',name:n};
-  ['nr-n','nr-u','nr-p'].forEach(id=>document.getElementById(id).value='');
-  renderReps();toast('✅ Added: '+n);
-}
-function removeRep(u){
-  if(u===me){toast("Can't remove yourself");return;}
-  delete USERS[u];renderReps();toast('Removed');
-}
 function renderReps(){
-  const reps=Object.entries(USERS).filter(([,r])=>r.role==='sales');
-  document.getElementById('reps-list').innerHTML=reps.length===0
-    ?'<div style="font-size:12px;color:var(--txt3)">No reps yet.</div>'
-    :reps.map(([u,r])=>`
-      <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--bdr)">
-        <div><div style="font-weight:500;color:var(--txt)">${r.name}</div><div style="font-size:11px;color:var(--txt3)">@${u}</div></div>
-        <button class="btn btn-sm btn-danger" onclick="removeRep('${u}')">Remove</button>
-      </div>`).join('');
+  const sales=Object.entries(USERS).filter(([,r])=>r.role==='sales');
+  const admins=Object.entries(USERS).filter(([,r])=>r.role==='admin');
+  const row=([u,r])=>`
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--bdr)">
+      <div><div style="font-weight:500;color:var(--txt)">${r.name}</div><div style="font-size:11px;color:var(--txt3)">@${u}</div></div>
+    </div>`;
+  const rList=document.getElementById('reps-list');
+  const aList=document.getElementById('admins-list');
+  if(rList) rList.innerHTML=sales.map(row).join('');
+  if(aList) aList.innerHTML=admins.map(row).join('');
 }
 
 // ══════════ UTILS ══════════
