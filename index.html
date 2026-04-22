@@ -377,7 +377,7 @@ input,select,textarea,button{font-family:'Karla',sans-serif;font-size:15px}
       <div class="grand-banner">
         <div class="grand-lbl">Grand Total</div>
         <div class="grand-val" id="grand-total">$0.00</div>
-        <div class="grand-sub">Insurance settlement + upgrade charges to homeowner</div>
+        <div class="grand-sub">Upgrade charges to homeowner</div>
       </div>
 
       <div class="comm-detail">
@@ -386,7 +386,7 @@ input,select,textarea,button{font-family:'Karla',sans-serif;font-size:15px}
           <div class="comm-row-val c-red" id="c-matcost">$0.00</div>
         </div>
         <div class="comm-row">
-          <div class="comm-row-label">Total Price Charged<small>ins. settlement + HO upgrade charges</small></div>
+          <div class="comm-row-label">Total Price Charged<small>HO upgrade charges</small></div>
           <div class="comm-row-val" id="c-charged">$0.00</div>
         </div>
         <div class="comm-row">
@@ -394,7 +394,7 @@ input,select,textarea,button{font-family:'Karla',sans-serif;font-size:15px}
           <div class="comm-row-val c-amber" id="c-margin">$0.00</div>
         </div>
         <div class="comm-row">
-          <div class="comm-row-label">Gross Profit<small>company keeps after your commission</small></div>
+          <div class="comm-row-label">Gross Profit</div>
           <div class="comm-row-val" id="c-gp">$0.00</div>
         </div>
         <div class="comm-row">
@@ -650,6 +650,7 @@ let hoOverride=false;   // user manually overrode HO charge
 
 // Per-material selection state
 let matSel={}; // key -> option index
+let customPrices={}; // key -> rep's custom charge price (null = not set)
 // Ventilation existing/desired counts per sub-type
 let ventCounts={ridge:{exist:0,desired:0},box:{exist:0,desired:0},power:{exist:0,desired:0},solar:{exist:0,desired:0},turbine:{exist:0,desired:0}};
 // Per-count materials (boots)
@@ -714,7 +715,7 @@ function getVer(d){
 }
 function initCalc(){
   document.getElementById('fc-date').value=new Date().toISOString().slice(0,10);
-  MATS.forEach(m=>{matSel[m.key]=0;});
+  MATS.forEach(m=>{matSel[m.key]=0; customPrices[m.key]=null;});
   ventCounts={ridge:{exist:0,desired:0},box:{exist:0,desired:0},power:{exist:0,desired:0},solar:{exist:0,desired:0},turbine:{exist:0,desired:0}};
   bootCount=0;
   claimMode='full';dedPaid=false;hoOverride=false;
@@ -803,6 +804,24 @@ function buildMatUI(){
           <span class="mat-result-label">Unit cost (our cost+tax)</span>
           <span class="mat-result-val" id="mrc-${m.key}"></span>
         </div>
+        <div style="margin-top:8px;border-top:1px solid var(--bdr);padding-top:8px">
+          <div style="font-size:9px;font-weight:700;color:var(--txt3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">My Charge Price <span style="font-weight:400;text-transform:none;letter-spacing:0">(optional — enter to see commission)</span></div>
+          <div style="display:flex;align-items:center;gap:6px">
+            <div style="display:flex;border:1px solid var(--bdr2);border-radius:var(--rsm);overflow:hidden;background:var(--surf);flex:1;transition:border-color .15s" id="cpwrap-${m.key}">
+              <span style="padding:8px 9px;background:var(--surf3);color:var(--txt3);font-size:12px;border-right:1px solid var(--bdr)">$</span>
+              <input type="number" min="0" step="0.01" placeholder="0.00"
+                id="cp-${m.key}"
+                value="${customPrices[m.key]!==null?customPrices[m.key]:''}"
+                style="border:none;background:transparent;padding:8px 10px;color:var(--txt);outline:none;width:100%;font-family:'Karla',sans-serif;font-size:14px;-webkit-appearance:none"
+                oninput="setCustomPrice('${m.key}',this.value)"
+                onfocus="document.getElementById('cpwrap-${m.key}').style.borderColor='var(--gold)'"
+                onblur="document.getElementById('cpwrap-${m.key}').style.borderColor='var(--bdr2)'"
+              />
+            </div>
+            <button onclick="clearCustomPrice('${m.key}')" style="background:none;border:1px solid var(--bdr2);border-radius:var(--rsm);padding:8px 10px;color:var(--txt3);cursor:pointer;font-size:11px;white-space:nowrap">✕ Clear</button>
+          </div>
+          <div style="font-size:10px;color:var(--gold);margin-top:4px;min-height:14px" id="cp-comm-${m.key}"></div>
+        </div>
       </div>
     </div>`;
   }).join('');
@@ -890,6 +909,18 @@ function setVent(k,type,val){
   calc();
 }
 function setBootCount(val){ bootCount=Math.max(0,parseInt(val)||0); calc(); }
+
+function setCustomPrice(key, val){
+  const v=parseFloat(val);
+  customPrices[key]=(val===''||isNaN(v))?null:v;
+  calc();
+}
+function clearCustomPrice(key){
+  customPrices[key]=null;
+  const inp=document.getElementById(`cp-${key}`);
+  if(inp) inp.value='';
+  calc();
+}
 
 function updateMatDisplay(){
   MATS.forEach(m=>{
@@ -1072,20 +1103,44 @@ function calc(){
     const tSelCost = selCostUnit * qSel;
     const tMaxCost = maxCostUnit * qMax;
 
-    const hoCharge = Math.max(0, tSelCost - tStdCost);
-    const comm = hoCharge;
+    // If rep entered a custom charge price, use that as the total charged to HO
+    // Otherwise fall back to the auto-calculated upgrade difference
+    const customTotal = customPrices[m.key] !== null ? customPrices[m.key] : null;
+    const hoCharge = customTotal !== null
+      ? Math.max(0, customTotal - tStdCost)   // custom total minus what ins covers
+      : Math.max(0, tSelCost - tStdCost);
+    const comm = Math.max(0, hoCharge - (tSelCost - tStdCost)); // comm = anything above our cost difference
+    // Simpler: commission = custom total charged - our actual selected cost
+    const actualComm = customTotal !== null
+      ? Math.max(0, customTotal - tSelCost)
+      : Math.max(0, tSelCost - tStdCost);
+
     const maxHO = Math.max(0, tMaxCost - tStdCost);
     maxComm += maxHO;
 
     totStdCost += tStdCost;
     totSelCost += tSelCost;
-    totHOCharge += hoCharge;
-    totComm += comm;
+    totHOCharge += customTotal !== null ? Math.max(0, customTotal - tStdCost) : hoCharge;
+    totComm += actualComm;
+
+    // Show per-material commission inline in UI
+    const cpCommEl = document.getElementById(`cp-comm-${m.key}`);
+    if(cpCommEl){
+      if(customTotal !== null){
+        cpCommEl.textContent = actualComm > 0
+          ? `Commission on this item: $${actualComm.toFixed(2)}`
+          : actualComm === 0 ? 'No commission (at or below our cost)' : '';
+      } else {
+        cpCommEl.textContent = '';
+      }
+    }
 
     const qDisp = qtyLabel(m, selIdx, geo);
     rows.push({
       name:m.name, selName:selOpt.name, selIdx,
-      selCost:tSelCost, insAllows:tStdCost, hoCharge, comm,
+      selCost:tSelCost, insAllows:tStdCost,
+      hoCharge: customTotal !== null ? Math.max(0, customTotal - tStdCost) : hoCharge,
+      comm: actualComm,
       qty:qDisp, isStd:selIdx===stdIdx
     });
   });
@@ -1151,11 +1206,8 @@ function calc(){
     document.getElementById('ho-charge').value=totHOCharge.toFixed(2);
   }
 
-  // Grand total = ins settlement (std cost) + HO upgrade charges
-  // Insurance "settles" the claim = std material cost + some overhead
-  // For simplicity: ins covers std costs, HO pays upgrades
-  const insSettlement=totStdCost;
-  const grandTotal=insSettlement+finalHOCharge;
+  // Grand total = HO upgrade charges only (ins settlement handled separately by insurance)
+  const grandTotal = finalHOCharge;
 
   // Commission
   const upgComm=totComm;
@@ -1164,8 +1216,8 @@ function calc(){
   // Display
   document.getElementById('grand-total').textContent=fmt(grandTotal);
   document.getElementById('c-matcost').textContent=fmt(totSelCost);
-  document.getElementById('c-charged').textContent=fmt(grandTotal);
-  const margin2=grandTotal-totSelCost;
+  document.getElementById('c-charged').textContent=fmt(finalHOCharge);
+  const margin2=finalHOCharge-(totSelCost-totStdCost);
   document.getElementById('c-margin').textContent=fmt(margin2);
   document.getElementById('c-gp').textContent=fmt(margin2-upgComm);
   document.getElementById('c-upgcomm').textContent=fmt(upgComm);
@@ -1209,6 +1261,7 @@ function saveState(){
   const state={
     fieldVals,
     matSel:Object.assign({},matSel),
+    customPrices:Object.assign({},customPrices),
     ventCounts:JSON.parse(JSON.stringify(ventCounts)),
     bootCount,
     claimMode,
@@ -1232,6 +1285,7 @@ function loadState(){
   }
   // Restore material selections
   if(state.matSel) Object.assign(matSel, state.matSel);
+  if(state.customPrices) Object.assign(customPrices, state.customPrices);
   if(state.ventCounts) ventCounts=state.ventCounts;
   if(typeof state.bootCount==='number') bootCount=state.bootCount;
   if(state.claimMode){ claimMode=state.claimMode; setMode(claimMode); }
@@ -1273,7 +1327,7 @@ function clearState(){
 }
 
 function resetCalc(){
-  MATS.forEach(m=>{matSel[m.key]=0;});
+  MATS.forEach(m=>{matSel[m.key]=0; customPrices[m.key]=null;});
   ventCounts={ridge:{exist:0,desired:0},box:{exist:0,desired:0},power:{exist:0,desired:0},solar:{exist:0,desired:0},turbine:{exist:0,desired:0}};
   bootCount=0;claimMode='full';hoOverride=false;
   ['fc-name','fc-wo','fc-addr','fc-claim','fc-notes'].forEach(id=>{ const el=document.getElementById(id); if(el)el.value='';});
