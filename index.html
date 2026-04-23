@@ -280,7 +280,7 @@ input,select,textarea,button{font-family:'Karla',sans-serif;font-size:15px}
         <div class="comm-row"><div class="comm-row-label">Charged Minus Cost (gross margin)<small>before commission split</small></div><div class="comm-row-val c-amber" id="c-margin">$0.00</div></div>
         <div class="comm-row"><div class="comm-row-label">Gross Profit</div><div class="comm-row-val" id="c-gp">$0.00</div></div>
         <div class="comm-row"><div class="comm-row-label">Upgrade Commission (100% of upgrade above our cost)<small>everything charged above our material cost on upgrades</small></div><div class="comm-row-val c-gold" id="c-upgcomm">$0.00</div></div>
-        <div class="comm-row total"><div class="comm-row-label" style="font-weight:700;color:var(--txt);font-size:13px">TOTAL COMMISSION<small>commission on upgrade margin</small></div><div class="comm-row-val c-gold" style="font-size:18px" id="c-total-comm">$0.00</div></div>
+        <div class="comm-row total"><div class="comm-row-label" style="font-weight:700;color:var(--txt);font-size:13px">TOTAL COMMISSION<small id="comm-rate-lbl">Full Deductible — 100% of margin</small></div><div class="comm-row-val c-gold" style="font-size:18px" id="c-total-comm">$0.00</div></div>
       </div>
 
       <div class="cbar-wrap">
@@ -707,7 +707,11 @@ function calc(){
   if(hoOverride){const ov=parseFloat(document.getElementById('ho-charge').value)||0;finalHOCharge=ov;}
   else{document.getElementById('ho-charge').value=totHOCharge.toFixed(2);}
 
-  const grandTotal=finalHOCharge;const upgComm=totComm;
+  const grandTotal=finalHOCharge;
+  const commRate = claimMode==='dap' ? 0.33 : 1.00;
+  const upgComm=totComm * commRate;
+  const rateLbl=document.getElementById('comm-rate-lbl');
+  if(rateLbl) rateLbl.textContent=claimMode==='dap'?'DAP — 33% of margin':'Full Deductible — 100% of margin';
   const upgradeCost = totSelCost - totStdCost; // our cost on upgrades only
   document.getElementById('grand-total').textContent=fmt(grandTotal);
   document.getElementById('c-matcost').textContent=fmt(upgradeCost);
