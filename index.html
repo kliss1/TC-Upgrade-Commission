@@ -139,6 +139,19 @@ input,select,textarea,button{font-family:'Karla',sans-serif;font-size:15px}
   .badge{print-color-adjust:exact;-webkit-print-color-adjust:exact}
   .comm-detail{border:1px solid #ccc}.comm-row{border-bottom:1px solid #ddd}
 }
+/* ── MARGIN SLIDER ── */
+.slider-wrap{margin-top:8px;border-top:1px solid var(--bdr);padding-top:10px}
+.slider-hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.slider-lbl{font-size:9px;font-weight:700;color:var(--txt3);text-transform:uppercase;letter-spacing:.06em}
+.slider-pct{font-size:13px;font-weight:800;font-family:'Syne',sans-serif;color:var(--gold)}
+.slider-info{display:flex;justify-content:space-between;margin-bottom:5px}
+.slider-info span{font-size:10px;color:var(--txt3)}
+input[type=range].margin-slider{width:100%;-webkit-appearance:none;appearance:none;height:6px;border-radius:3px;background:var(--surf3);outline:none;cursor:pointer}
+input[type=range].margin-slider::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:22px;height:22px;border-radius:50%;background:var(--gold);cursor:pointer;border:2px solid var(--bg);box-shadow:0 1px 6px rgba(0,0,0,.4)}
+input[type=range].margin-slider::-moz-range-thumb{width:22px;height:22px;border-radius:50%;background:var(--gold);cursor:pointer;border:2px solid var(--bg)}
+.slider-result{margin-top:6px;display:flex;justify-content:space-between;align-items:center;padding:7px 10px;background:var(--surf3);border-radius:var(--rsm);border:1px solid var(--bdr2)}
+.slider-charge{font-size:13px;font-weight:700;font-family:'Syne',sans-serif;color:var(--txt)}
+.slider-comm{font-size:12px;font-weight:700;font-family:'Syne',sans-serif;color:var(--gold)}
 #ph,#psig,#pnotes{display:none}
 </style>
 </head>
@@ -160,7 +173,7 @@ input,select,textarea,button{font-family:'Karla',sans-serif;font-size:15px}
       <button class="btn-login" onclick="login()">Sign In →</button>
       <div class="aerr" id="aerr"></div>
     </div>
-    <div style="text-align:center;margin-top:14px;font-size:11px;color:var(--txt3)">Last updated: April 23, 2026 · 6:39 PM ET</div>
+    <div style="text-align:center;margin-top:14px;font-size:11px;color:var(--txt3)">Last updated: April 23, 2026 · 6:47 PM ET</div>
   </div>
 </div>
 
@@ -432,7 +445,8 @@ const USERS={
 };
 
 let me=null,myRole=null,authTab='sales',activeVer=null,claimMode='full',hoOverride=false;
-let matSel={},customPrices={};
+let matSel={};
+let sliderPct={}; // key -> 0-100 (null = slider at 0, not engaged)
 let ventCounts={ridge:{exist:0,desired:0},box:{exist:0,desired:0},power:{exist:0,desired:0},solar:{exist:0,desired:0},turbine:{exist:0,desired:0}};
 let bootCount=0;
 
@@ -467,7 +481,7 @@ function setPage(id){document.querySelectorAll('.page').forEach(p=>p.classList.r
 function getVer(d){const date=d||new Date().toISOString().slice(0,10);return [...VERSIONS].sort((a,b)=>b.eff.localeCompare(a.eff)).find(v=>v.eff<=date&&(!v.exp||v.exp>=date))||VERSIONS[VERSIONS.length-1];}
 function initCalc(){
   document.getElementById('fc-date').value=new Date().toISOString().slice(0,10);
-  MATS.forEach(m=>{matSel[m.key]=0;customPrices[m.key]=null;});
+  MATS.forEach(m=>{matSel[m.key]=0;sliderPct[m.key]=0;});
   ventCounts={ridge:{exist:0,desired:0},box:{exist:0,desired:0},power:{exist:0,desired:0},solar:{exist:0,desired:0},turbine:{exist:0,desired:0}};
   bootCount=0;claimMode='full';hoOverride=false;
   activeVer=getVer();updateBanner();buildMatUI();calc();
@@ -487,23 +501,24 @@ function oc(mat,opt){if(mat.key==='shingle')return opt.costTaxSq||0;if(mat.key==
 function unitStr(mat){if(mat.key==='shingle')return'/sq';if(mat.key==='ridge')return'/bd';if(mat.key==='starter')return'/bd';if(mat.key==='under')return'/roll';if(mat.key==='valley')return'/unit';if(mat.key==='drip')return'/pc';if(mat.key==='boot')return'/ea';return'';}
 function warrantyJobCost(opt,adjSq){if(!opt||opt.std)return 0;if(opt.perSq)return(opt.costPerSq||0)*adjSq;if(adjSq<=50)return opt.costFlat50||0;return opt.costFlat51||0;}
 
-// CUSTOM PRICE SECTION — reusable for any material key
-function cpSection(key){
-  const val=customPrices[key]!==null?customPrices[key]:'';
-  return `<div style="margin-top:8px;border-top:1px solid var(--bdr);padding-top:8px">
-    <div style="font-size:9px;font-weight:700;color:var(--txt3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">My Charge Price <span style="font-weight:400;text-transform:none;letter-spacing:0">(optional — enter to see commission)</span></div>
-    <div style="display:flex;align-items:center;gap:6px">
-      <div style="display:flex;border:1px solid var(--bdr2);border-radius:var(--rsm);overflow:hidden;background:var(--surf);flex:1;transition:border-color .15s" id="cpwrap-${key}">
-        <span style="padding:8px 9px;background:var(--surf3);color:var(--txt3);font-size:12px;border-right:1px solid var(--bdr)">$</span>
-        <input type="number" min="0" step="0.01" placeholder="0.00" id="cp-${key}" value="${val}"
-          style="border:none;background:transparent;padding:8px 10px;color:var(--txt);outline:none;width:100%;font-family:'Karla',sans-serif;font-size:14px;-webkit-appearance:none"
-          oninput="setCustomPrice('${key}',this.value)"
-          onfocus="document.getElementById('cpwrap-${key}').style.borderColor='var(--gold)'"
-          onblur="document.getElementById('cpwrap-${key}').style.borderColor='var(--bdr2)'"/>
-      </div>
-      <button onclick="clearCustomPrice('${key}')" style="background:none;border:1px solid var(--bdr2);border-radius:var(--rsm);padding:8px 10px;color:var(--txt3);cursor:pointer;font-size:11px;white-space:nowrap">✕ Clear</button>
+// MARGIN SLIDER SECTION
+// 0% = charge our cost (zero margin), 100% = charge 2× our cost (100% markup)
+// Charge = ourCost + (pct/100) * ourCost = ourCost * (1 + pct/100)
+// Commission = charge - ourCost = ourCost * (pct/100)
+function sliderSection(key){
+  const pct=sliderPct[key]||0;
+  return `<div class="slider-wrap">
+    <div class="slider-hd">
+      <span class="slider-lbl">Margin on Upgrade</span>
+      <span class="slider-pct" id="sp-${key}">${pct}%</span>
     </div>
-    <div style="font-size:10px;color:var(--gold);margin-top:4px;min-height:14px" id="cp-comm-${key}"></div>
+    <div class="slider-info"><span>0% — at cost</span><span>50% markup</span><span>100% — 2× cost</span></div>
+    <input type="range" class="margin-slider" min="0" max="100" step="1" value="${pct}"
+      id="sl-${key}" oninput="setSlider('${key}',this.value)"/>
+    <div class="slider-result">
+      <div><div style="font-size:9px;color:var(--txt3);text-transform:uppercase;letter-spacing:.05em;font-weight:700;margin-bottom:2px">Charge to HO</div><span class="slider-charge" id="sc-${key}">—</span></div>
+      <div style="text-align:right"><div style="font-size:9px;color:var(--txt3);text-transform:uppercase;letter-spacing:.05em;font-weight:700;margin-bottom:2px">Your Commission</div><span class="slider-comm" id="sk-${key}">—</span></div>
+    </div>
   </div>`;
 }
 
@@ -519,7 +534,7 @@ function buildMatUI(){
         ${m.note?`<div style="font-size:10px;color:var(--txt3);margin-bottom:8px">${m.note}</div>`:''}
         <div class="mat-sel">${m.opts.map((o,i)=>`<div class="mat-opt ${i===selIdx?(o.std?'std-sel':'sel'):''}" id="mo-${m.key}-${i}" onclick="pickMat('${m.key}',${i})">${o.name}</div>`).join('')}</div>
         <div class="mat-result"><span class="mat-result-label">Unit cost (our cost+tax)</span><span class="mat-result-val" id="mrc-${m.key}"></span></div>
-        ${cpSection(m.key)}
+        ${sliderSection(m.key)}
       </div>
     </div>`;
   }).join('');
@@ -549,7 +564,7 @@ function buildVentUI(){
           <input type="number" value="${ventCounts[r.k].desired}" min="0" style="background:var(--surf);border:1px solid var(--bdr2);border-radius:6px;padding:8px;color:var(--txt);outline:none;font-size:14px;text-align:center;width:100%;font-family:'Syne',sans-serif;-webkit-appearance:none" oninput="setVent('${r.k}','desired',this.value)"/>
         </div>`).join('')}
       <div class="mat-result"><span class="mat-result-label">Ventilation upgrade charge</span><span class="mat-result-val" id="mrc-vent"></span></div>
-      ${cpSection('vent')}
+      ${sliderSection('vent')}
     </div>
   </div>`;
 }
@@ -561,7 +576,7 @@ function buildBootUI(){
       <div class="mat-sel">${MATS.find(m=>m.key==='boot').opts.map((o,i)=>`<div class="mat-opt ${i===(matSel['boot']||0)?(o.std?'std-sel':'sel'):''}" id="mo-boot-${i}" onclick="pickMat('boot',${i})">${o.name}</div>`).join('')}</div>
       <div class="cnt-f" style="margin-top:8px"><label>Number of Pipe Boots</label><input type="number" value="${bootCount}" min="0" oninput="setBootCount(this.value)" style="background:var(--surf);border:1px solid var(--bdr2);border-radius:6px;padding:8px 10px;color:var(--txt);outline:none;font-size:16px;font-family:'Syne',sans-serif;width:100%;-webkit-appearance:none"/></div>
       <div class="mat-result"><span class="mat-result-label">Total boot cost</span><span class="mat-result-val" id="mrc-boot"></span></div>
-      ${cpSection('boot')}
+      ${sliderSection('boot')}
     </div>
   </div>`;
 }
@@ -569,8 +584,18 @@ function buildBootUI(){
 function pickMat(key,idx){matSel[key]=idx;const m=MATS.find(x=>x.key===key);m.opts.forEach((_,i)=>{const el=document.getElementById(`mo-${key}-${i}`);if(!el)return;el.className='mat-opt '+(i===idx?(m.opts[i].std?'std-sel':'sel'):'');});updateMatDisplay();calc();}
 function setVent(k,type,val){ventCounts[k][type]=Math.max(0,parseInt(val)||0);calc();}
 function setBootCount(val){bootCount=Math.max(0,parseInt(val)||0);calc();}
-function setCustomPrice(key,val){const v=parseFloat(val);customPrices[key]=(val===''||isNaN(v))?null:v;calc();}
-function clearCustomPrice(key){customPrices[key]=null;const inp=document.getElementById(`cp-${key}`);if(inp)inp.value='';calc();}
+function setSlider(key,val){sliderPct[key]=parseInt(val)||0;document.getElementById('sp-'+key).textContent=sliderPct[key]+'%';calc();}
+
+function showSliderResult(key,ourCost,pct){
+  const charge=ourCost*(1+pct/100);
+  const comm=ourCost*(pct/100);
+  const sc=document.getElementById('sc-'+key);
+  const sk=document.getElementById('sk-'+key);
+  if(sc) sc.textContent='$'+charge.toFixed(2);
+  if(sk) sk.textContent=comm>0?('$'+comm.toFixed(2)):'$0.00';
+  const sl=document.getElementById('sl-'+key);
+  if(sl) sl.style.background=`linear-gradient(to right,var(--gold) ${pct}%,var(--surf3) ${pct}%)`;
+}
 
 function updateMatDisplay(){
   MATS.forEach(m=>{
@@ -617,11 +642,6 @@ function qtyLabel(m,selIdx,geo){
   return'—';
 }
 
-function showCpComm(key,comm,hasCustom){
-  const el=document.getElementById(`cp-comm-${key}`);
-  if(!el)return;
-  el.textContent=hasCustom?(comm>0?`Commission: $${comm.toFixed(2)}`:'No commission (at or below our cost)'):'';
-}
 
 // MAIN CALC
 function onHOOverride(){hoOverride=true;document.getElementById('ho-auto-note').textContent='⚠️ Manually overridden — clear field to return to auto-calc';calc();}
@@ -658,22 +678,21 @@ function calc(){
     const stdCostUnit=oc(m,stdOpt);const selCostUnit=oc(m,selOpt);const maxCostUnit=oc(m,maxOpt);
     const tStdCost=stdCostUnit*qStd;const tSelCost=selCostUnit*qSel;const tMaxCost=maxCostUnit*qMax;
 
-    const customTotal=customPrices[m.key]!==null?customPrices[m.key]:null;
-    // HO is only charged if rep entered a custom price — otherwise $0 upgrade charge
-    const hoCharge=customTotal!==null?Math.max(0,customTotal-tStdCost):0;
-    // Commission = custom total charged minus our actual selected cost
-    const actualComm=customTotal!==null?Math.max(0,customTotal-tSelCost):0;
+    const pct=sliderPct[m.key]||0;
+    // 0% = charge our cost (zero margin/commission), 100% = charge 2× our cost
+    // charge = tSelCost * (1 + pct/100), commission = tSelCost * (pct/100)
+    const hoCharge=tSelCost*(1+pct/100);
+    const actualComm=tSelCost*(pct/100);
 
-    maxComm+=Math.max(0,tMaxCost-tStdCost);
+    maxComm+=tSelCost; // max possible = 100% markup on selected cost
     totStdCost+=tStdCost;totSelCost+=tSelCost;
-    totHOCharge+=hoCharge;
-    totComm+=actualComm;
-    showCpComm(m.key,actualComm,customTotal!==null);
+    totHOCharge+=hoCharge;totComm+=actualComm;
+    showSliderResult(m.key,tSelCost,pct);
     rows.push({name:m.name,selName:selOpt.name,selIdx,selCost:tSelCost,insAllows:tStdCost,hoCharge,comm:actualComm,qty:qtyLabel(m,selIdx,geo),isStd:selIdx===stdIdx});
   });
 
   // VENTILATION
-  let ventStdCost=0,ventSelCost=0,ventHO=0,ventComm=0;
+  let ventStdCost=0,ventSelCost=0;
   const ventDefs={ridge:{opt:MATS.find(m=>m.key==='vent').opts[0]},box:{opt:MATS.find(m=>m.key==='vent').opts[1]},power:{opt:MATS.find(m=>m.key==='vent').opts[2]},solar:{opt:MATS.find(m=>m.key==='vent').opts[3]},turbine:{opt:MATS.find(m=>m.key==='vent').opts[4]}};
   ['ridge','box','power','solar','turbine'].forEach(k=>{
     const opt=ventDefs[k].opt;
@@ -682,24 +701,17 @@ function calc(){
     let selCostItem=0,stdCostItem=0;
     if(k==='ridge'){const sticks=Math.ceil(Math.max(0,desired-existing)/4);const cps=(opt.costTaxLf||0)*4;selCostItem=sticks*cps;stdCostItem=selCostItem;}
     else{selCostItem=desired*(opt.costTaxEa||0);stdCostItem=isStd?selCostItem:0;}
-    const hoItem=isStd?0:0; // no HO charge unless custom price entered below
     if(!isStd)maxComm+=selCostItem;
-    ventStdCost+=stdCostItem;ventSelCost+=selCostItem;ventHO+=0;ventComm+=0;
-    totStdCost+=stdCostItem;totSelCost+=selCostItem;totHOCharge+=0;totComm+=0;
+    ventStdCost+=stdCostItem;ventSelCost+=selCostItem;
+    totStdCost+=stdCostItem;totSelCost+=selCostItem;
   });
 
-  // Ventilation custom price override
-  const ventCustom=customPrices['vent']!==null?customPrices['vent']:null;
-  let finalVentHO=ventHO,finalVentComm=ventComm;
-  if(ventCustom!==null){
-    finalVentHO=Math.max(0,ventCustom-ventStdCost);
-    finalVentComm=Math.max(0,ventCustom-ventSelCost);
-    totHOCharge=totHOCharge-ventHO+finalVentHO;
-    totComm=totComm-ventComm+finalVentComm;
-    showCpComm('vent',finalVentComm,true);
-  } else {
-    showCpComm('vent',0,false);
-  }
+  // Ventilation slider
+  const ventPct=sliderPct['vent']||0;
+  const finalVentHO=ventSelCost*(1+ventPct/100);
+  const finalVentComm=ventSelCost*(ventPct/100);
+  totHOCharge+=finalVentHO;totComm+=finalVentComm;
+  showSliderResult('vent',ventSelCost,ventPct);
 
   const ventTotal=Object.values(ventCounts).reduce((a,v)=>a+v.desired,0);
   rows.push({name:'Ventilation',selName:'Mixed (see counts)',selIdx:0,selCost:ventSelCost,insAllows:ventStdCost,hoCharge:finalVentHO,comm:finalVentComm,qty:ventTotal+' units',isStd:ventHO===0});
@@ -751,7 +763,7 @@ function saveState(){
   const fields=['fc-name','fc-wo','fc-addr','fc-claim','fc-notes','fc-date','g-sq','g-rdg','g-hip','g-val','g-rak','g-eav'];
   const fieldVals={};
   fields.forEach(id=>{const el=document.getElementById(id);if(el)fieldVals[id]=el.value;});
-  const state={fieldVals,matSel:Object.assign({},matSel),customPrices:Object.assign({},customPrices),ventCounts:JSON.parse(JSON.stringify(ventCounts)),bootCount,claimMode,hoOverride,existingShingle:document.getElementById('existing-shingle')?.value||'arch',savedAt:new Date().toISOString()};
+  const state={fieldVals,matSel:Object.assign({},matSel),sliderPct:Object.assign({},sliderPct),ventCounts:JSON.parse(JSON.stringify(ventCounts)),bootCount,claimMode,hoOverride,existingShingle:document.getElementById('existing-shingle')?.value||'arch',savedAt:new Date().toISOString()};
   try{localStorage.setItem(storageKey(),JSON.stringify(state));}catch(e){}
 }
 function loadState(){
@@ -760,13 +772,22 @@ function loadState(){
   try{const raw=localStorage.getItem(storageKey());if(!raw)return;state=JSON.parse(raw);}catch(e){return;}
   if(state.fieldVals)Object.entries(state.fieldVals).forEach(([id,val])=>{const el=document.getElementById(id);if(el)el.value=val;});
   if(state.matSel)Object.assign(matSel,state.matSel);
-  if(state.customPrices)Object.assign(customPrices,state.customPrices);
+  if(state.sliderPct)Object.assign(sliderPct,state.sliderPct);
   if(state.ventCounts)ventCounts=state.ventCounts;
   if(typeof state.bootCount==='number')bootCount=state.bootCount;
   if(state.claimMode){claimMode=state.claimMode;setMode(claimMode);}
   if(typeof state.hoOverride==='boolean')hoOverride=state.hoOverride;
   if(state.existingShingle){const el=document.getElementById('existing-shingle');if(el)el.value=state.existingShingle;}
   buildMatUI();
+  // Restore slider positions
+  if(state.sliderPct){
+    Object.entries(sliderPct).forEach(([key,pct])=>{
+      const sl=document.getElementById('sl-'+key);
+      const sp=document.getElementById('sp-'+key);
+      if(sl){sl.value=pct;sl.style.background=`linear-gradient(to right,var(--gold) ${pct}%,var(--surf3) ${pct}%)`;}
+      if(sp) sp.textContent=pct+'%';
+    });
+  }
   if(state.ventCounts){Object.entries(ventCounts).forEach(([k,v])=>{const inputs=document.querySelectorAll(`[oninput*="setVent('${k}'"]`);if(inputs[0])inputs[0].value=v.exist;if(inputs[1])inputs[1].value=v.desired;});}
   const bootEl=document.querySelector('[oninput*="setBootCount"]');if(bootEl)bootEl.value=bootCount;
   if(state.hoOverride){const n=document.getElementById('ho-auto-note');if(n)n.textContent='⚠️ Manually overridden — clear field to return to auto-calc';}
@@ -776,7 +797,7 @@ function loadState(){
 function clearState(){if(!me)return;try{localStorage.removeItem(storageKey());}catch(e){}}
 
 function resetCalc(){
-  MATS.forEach(m=>{matSel[m.key]=0;customPrices[m.key]=null;});
+  MATS.forEach(m=>{matSel[m.key]=0;sliderPct[m.key]=0;});
   ventCounts={ridge:{exist:0,desired:0},box:{exist:0,desired:0},power:{exist:0,desired:0},solar:{exist:0,desired:0},turbine:{exist:0,desired:0}};
   bootCount=0;claimMode='full';hoOverride=false;
   ['fc-name','fc-wo','fc-addr','fc-claim','fc-notes'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
