@@ -275,7 +275,7 @@ input,select,textarea,button{font-family:'Karla',sans-serif;font-size:15px}
       </div>
 
       <div class="comm-detail">
-        <div class="comm-row"><div class="comm-row-label">Total Material Cost (our cost+tax)<small>what we pay for all selected materials</small></div><div class="comm-row-val c-red" id="c-matcost">$0.00</div></div>
+        <div class="comm-row"><div class="comm-row-label">Total Upgrade Cost (our cost+tax on upgrades)<small>what we pay for the upgrade portion only</small></div><div class="comm-row-val c-red" id="c-matcost">$0.00</div></div>
         <div class="comm-row"><div class="comm-row-label">Total Price Charged<small>HO upgrade charges</small></div><div class="comm-row-val" id="c-charged">$0.00</div></div>
         <div class="comm-row"><div class="comm-row-label">Charged Minus Cost (gross margin)<small>before commission split</small></div><div class="comm-row-val c-amber" id="c-margin">$0.00</div></div>
         <div class="comm-row"><div class="comm-row-label">Gross Profit</div><div class="comm-row-val" id="c-gp">$0.00</div></div>
@@ -658,15 +658,17 @@ function calc(){
     const tStdCost=stdCostUnit*qStd;const tSelCost=selCostUnit*qSel;const tMaxCost=maxCostUnit*qMax;
 
     const customTotal=customPrices[m.key]!==null?customPrices[m.key]:null;
-    const hoCharge=customTotal!==null?Math.max(0,customTotal-tStdCost):Math.max(0,tSelCost-tStdCost);
-    const actualComm=customTotal!==null?Math.max(0,customTotal-tSelCost):Math.max(0,tSelCost-tStdCost);
+    // HO is only charged if rep entered a custom price — otherwise $0 upgrade charge
+    const hoCharge=customTotal!==null?Math.max(0,customTotal-tStdCost):0;
+    // Commission = custom total charged minus our actual selected cost
+    const actualComm=customTotal!==null?Math.max(0,customTotal-tSelCost):0;
 
     maxComm+=Math.max(0,tMaxCost-tStdCost);
     totStdCost+=tStdCost;totSelCost+=tSelCost;
-    totHOCharge+=customTotal!==null?Math.max(0,customTotal-tStdCost):hoCharge;
+    totHOCharge+=hoCharge;
     totComm+=actualComm;
     showCpComm(m.key,actualComm,customTotal!==null);
-    rows.push({name:m.name,selName:selOpt.name,selIdx,selCost:tSelCost,insAllows:tStdCost,hoCharge:customTotal!==null?Math.max(0,customTotal-tStdCost):hoCharge,comm:actualComm,qty:qtyLabel(m,selIdx,geo),isStd:selIdx===stdIdx});
+    rows.push({name:m.name,selName:selOpt.name,selIdx,selCost:tSelCost,insAllows:tStdCost,hoCharge,comm:actualComm,qty:qtyLabel(m,selIdx,geo),isStd:selIdx===stdIdx});
   });
 
   // VENTILATION
@@ -679,10 +681,10 @@ function calc(){
     let selCostItem=0,stdCostItem=0;
     if(k==='ridge'){const sticks=Math.ceil(Math.max(0,desired-existing)/4);const cps=(opt.costTaxLf||0)*4;selCostItem=sticks*cps;stdCostItem=selCostItem;}
     else{selCostItem=desired*(opt.costTaxEa||0);stdCostItem=isStd?selCostItem:0;}
-    const hoItem=isStd?0:selCostItem;
+    const hoItem=isStd?0:0; // no HO charge unless custom price entered below
     if(!isStd)maxComm+=selCostItem;
-    ventStdCost+=stdCostItem;ventSelCost+=selCostItem;ventHO+=hoItem;ventComm+=hoItem;
-    totStdCost+=stdCostItem;totSelCost+=selCostItem;totHOCharge+=hoItem;totComm+=hoItem;
+    ventStdCost+=stdCostItem;ventSelCost+=selCostItem;ventHO+=0;ventComm+=0;
+    totStdCost+=stdCostItem;totSelCost+=selCostItem;totHOCharge+=0;totComm+=0;
   });
 
   // Ventilation custom price override
@@ -706,10 +708,11 @@ function calc(){
   else{document.getElementById('ho-charge').value=totHOCharge.toFixed(2);}
 
   const grandTotal=finalHOCharge;const upgComm=totComm;
+  const upgradeCost = totSelCost - totStdCost; // our cost on upgrades only
   document.getElementById('grand-total').textContent=fmt(grandTotal);
-  document.getElementById('c-matcost').textContent=fmt(totSelCost);
+  document.getElementById('c-matcost').textContent=fmt(upgradeCost);
   document.getElementById('c-charged').textContent=fmt(finalHOCharge);
-  const margin2=finalHOCharge-(totSelCost-totStdCost);
+  const margin2=finalHOCharge-upgradeCost;
   document.getElementById('c-margin').textContent=fmt(margin2);
   document.getElementById('c-gp').textContent=fmt(margin2-upgComm);
   document.getElementById('c-upgcomm').textContent=fmt(upgComm);
@@ -722,12 +725,12 @@ function calc(){
     <td style="color:var(--txt);font-weight:500;font-size:11px">${r.name}</td>
     <td style="font-size:10px;max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${r.selName}</td>
     <td style="font-size:10px;color:var(--txt3)">${r.qty}</td>
-    <td>$${r.selCost.toFixed(0)}</td>
+    <td>$${Math.max(0,r.selCost-r.insAllows).toFixed(0)}</td>
     <td>$${r.insAllows.toFixed(0)}</td>
     <td style="color:${r.hoCharge>0?'var(--amber)':'var(--txt3)'}">$${r.hoCharge.toFixed(0)}</td>
     <td style="color:var(--gold);font-weight:600">$${r.comm.toFixed(0)}</td>
   </tr>`).join('');
-  document.getElementById('ft-cost').textContent='$'+Math.round(totSelCost).toLocaleString();
+  document.getElementById('ft-cost').textContent='$'+Math.round(upgradeCost).toLocaleString();
   document.getElementById('ft-ins').textContent='$'+Math.round(totStdCost).toLocaleString();
   document.getElementById('ft-ho').textContent='$'+Math.round(finalHOCharge).toLocaleString();
   document.getElementById('ft-com').textContent='$'+Math.round(upgComm).toLocaleString();
