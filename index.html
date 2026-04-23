@@ -6,29 +6,13 @@
 <title>Upgrades Comm</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Karla:wght@300;400;500;600&display=swap');
-:root{
-  --bg:#0f0e0c;--surf:#1a1917;--surf2:#222120;--surf3:#2c2b29;
-  --bdr:rgba(255,255,255,0.07);--bdr2:rgba(255,255,255,0.13);
-  --txt:#f0ede8;--txt2:#a09890;--txt3:#6a6560;
-  --gold:#c9a24a;--gold-bg:rgba(201,162,74,0.12);--gold-bdr:rgba(201,162,74,0.3);
-  --green:#4dab5a;--green-bg:rgba(77,171,90,0.11);--green-bdr:rgba(77,171,90,0.3);
-  --red:#e05252;--red-bg:rgba(224,82,82,0.1);--red-bdr:rgba(224,82,82,0.3);
-  --blue:#5a8de0;--blue-bg:rgba(90,141,224,0.1);
-  --amber:#d48c3a;--amber-bg:rgba(212,140,58,0.12);
-  --r:12px;--rsm:8px;--rlg:16px;
-}
+:root{--bg:#0f0e0c;--surf:#1a1917;--surf2:#222120;--surf3:#2c2b29;--bdr:rgba(255,255,255,0.07);--bdr2:rgba(255,255,255,0.13);--txt:#f0ede8;--txt2:#a09890;--txt3:#6a6560;--gold:#c9a24a;--gold-bg:rgba(201,162,74,0.12);--gold-bdr:rgba(201,162,74,0.3);--green:#4dab5a;--green-bg:rgba(77,171,90,0.11);--green-bdr:rgba(77,171,90,0.3);--red:#e05252;--red-bg:rgba(224,82,82,0.1);--red-bdr:rgba(224,82,82,0.3);--blue:#5a8de0;--blue-bg:rgba(90,141,224,0.1);--amber:#d48c3a;--amber-bg:rgba(212,140,58,0.12);--r:12px;--rsm:8px;--rlg:16px;}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 body{font-family:'Karla',sans-serif;background:var(--bg);color:var(--txt);font-size:15px;line-height:1.5;min-height:100vh;overflow-x:hidden}
 h1,h2,h3{font-family:'Syne',sans-serif}
 input,select,textarea,button{font-family:'Karla',sans-serif;font-size:15px}
-::-webkit-scrollbar{width:3px;height:3px}
-::-webkit-scrollbar-thumb{background:var(--surf3);border-radius:2px}
-
-/* ── SCREENS ── */
-.scr{display:none;min-height:100vh;flex-direction:column}
-.scr.on{display:flex}
-
-/* ══ AUTH ══ */
+::-webkit-scrollbar{width:3px;height:3px}::-webkit-scrollbar-thumb{background:var(--surf3);border-radius:2px}
+.scr{display:none;min-height:100vh;flex-direction:column}.scr.on{display:flex}
 #s-auth{align-items:center;justify-content:center;padding:24px}
 .auth-glow{position:fixed;top:-80px;left:50%;transform:translateX(-50%);width:500px;height:380px;background:radial-gradient(circle,rgba(201,162,74,0.13) 0%,transparent 68%);pointer-events:none}
 .auth-box{position:relative;z-index:1;width:100%;max-width:380px}
@@ -42,15 +26,10 @@ input,select,textarea,button{font-family:'Karla',sans-serif;font-size:15px}
 .seg-b.on{background:var(--surf2);color:var(--txt);box-shadow:0 1px 4px rgba(0,0,0,.4)}
 .fl{font-size:10px;font-weight:700;color:var(--txt3);letter-spacing:.07em;text-transform:uppercase;display:block;margin-bottom:4px;margin-top:10px}
 .fi{width:100%;background:var(--bg);border:1px solid var(--bdr2);border-radius:var(--rsm);padding:11px 13px;color:var(--txt);outline:none;transition:border-color .15s;-webkit-appearance:none}
-.fi:focus{border-color:var(--gold)}
-.fi::placeholder{color:var(--txt3)}
+.fi:focus{border-color:var(--gold)}.fi::placeholder{color:var(--txt3)}
 .btn-login{width:100%;margin-top:16px;padding:13px;background:var(--gold);color:#0f0e0c;border:none;border-radius:var(--rsm);font-family:'Syne',sans-serif;font-size:15px;font-weight:700;cursor:pointer;transition:all .15s}
 .btn-login:active{background:#a88230;transform:scale(.98)}
 .aerr{color:var(--red);font-size:12px;text-align:center;margin-top:7px;min-height:14px}
-.demo-hint{margin-top:14px;background:var(--bg);border-radius:var(--rsm);padding:10px 12px;font-size:11px;color:var(--txt3);text-align:center;line-height:2}
-.demo-hint code{background:var(--surf2);padding:1px 5px;border-radius:4px;color:var(--txt2);font-family:monospace}
-
-/* ══ SHELL ══ */
 #s-app{background:var(--bg)}
 .topbar{background:var(--surf);border-bottom:1px solid var(--bdr);padding:0 15px;height:50px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:200;flex-shrink:0}
 .tb-l{display:flex;align-items:center;gap:7px}
@@ -62,15 +41,10 @@ input,select,textarea,button{font-family:'Karla',sans-serif;font-size:15px}
 .ib:active{background:var(--surf2)}
 .bnav{background:var(--surf);border-top:1px solid var(--bdr);display:flex;height:60px;flex-shrink:0;position:sticky;bottom:0;z-index:100}
 .bn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;border:none;background:none;color:var(--txt3);cursor:pointer;transition:color .15s;padding:6px 2px}
-.bn.on{color:var(--gold)}
-.bn-ico{font-size:18px;line-height:1}
-.bn-lbl{font-size:9px;font-weight:700;letter-spacing:.05em;text-transform:uppercase}
+.bn.on{color:var(--gold)}.bn-ico{font-size:18px;line-height:1}.bn-lbl{font-size:9px;font-weight:700;letter-spacing:.05em;text-transform:uppercase}
 .pages{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
-.page{display:none;padding:13px;padding-bottom:18px;animation:fup .18s ease}
-.page.on{display:block}
+.page{display:none;padding:13px;padding-bottom:18px;animation:fup .18s ease}.page.on{display:block}
 @keyframes fup{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
-
-/* ── CARDS & LAYOUT ── */
 .pg-title{font-size:20px;font-weight:800;letter-spacing:-.5px;margin-bottom:2px}
 .pg-sub{font-size:12px;color:var(--txt3);margin-bottom:12px}
 .card{background:var(--surf);border:1px solid var(--bdr);border-radius:var(--r);padding:13px;margin-bottom:10px}
@@ -82,21 +56,14 @@ input,select,textarea,button{font-family:'Karla',sans-serif;font-size:15px}
 .f label{font-size:10px;font-weight:700;color:var(--txt3);letter-spacing:.07em;text-transform:uppercase;display:block;margin-bottom:3px}
 .f input,.f select,.f textarea{width:100%;background:var(--surf2);border:1px solid var(--bdr2);border-radius:var(--rsm);padding:10px 11px;color:var(--txt);outline:none;transition:border-color .15s;-webkit-appearance:none;appearance:none}
 .f select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='7'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%236a6560' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 11px center;padding-right:28px}
-.f input:focus,.f select:focus,.f textarea:focus{border-color:var(--gold)}
-.f input::placeholder,.f textarea::placeholder{color:var(--txt3)}
+.f input:focus,.f select:focus,.f textarea:focus{border-color:var(--gold)}.f input::placeholder,.f textarea::placeholder{color:var(--txt3)}
 .pfx{display:flex;border:1px solid var(--bdr2);border-radius:var(--rsm);overflow:hidden;background:var(--surf2);transition:border-color .15s}
 .pfx:focus-within{border-color:var(--gold)}
 .pfx-lbl{padding:10px 9px;background:var(--surf3);color:var(--txt3);font-size:12px;border-right:1px solid var(--bdr);flex-shrink:0}
 .pfx input{border:none;background:transparent;padding:10px 11px;color:var(--txt);outline:none;width:100%;-webkit-appearance:none}
-
-/* ── DAP / FULL DED INDICATOR ── */
 .mode-bar{display:flex;border-radius:var(--rsm);overflow:hidden;border:1px solid var(--bdr2);margin-bottom:9px}
 .mode-btn{flex:1;padding:9px;text-align:center;font-size:12px;font-weight:700;cursor:pointer;border:none;transition:all .15s;letter-spacing:.02em}
-.mode-btn.full{background:var(--gold-bg);color:var(--gold)}
-.mode-btn.dap{background:var(--blue-bg);color:var(--blue)}
-.mode-btn.off{background:var(--surf2);color:var(--txt3)}
-
-/* ── MATERIAL ROW ── */
+.mode-btn.full{background:var(--gold-bg);color:var(--gold)}.mode-btn.dap{background:var(--blue-bg);color:var(--blue)}.mode-btn.off{background:var(--surf2);color:var(--txt3)}
 .mat-row{background:var(--surf2);border-radius:var(--r);border:1px solid var(--bdr);overflow:hidden;margin-bottom:8px}
 .mat-hd{padding:9px 12px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--bdr)}
 .mat-hd-name{font-size:11px;font-weight:700;color:var(--txt2);letter-spacing:.05em;text-transform:uppercase}
@@ -107,33 +74,14 @@ input,select,textarea,button{font-family:'Karla',sans-serif;font-size:15px}
 .mat-opt:active{transform:scale(.97)}
 .mat-opt.sel{border-color:var(--gold);background:var(--gold-bg);color:var(--gold)}
 .mat-opt.std-sel{border-color:var(--green);background:var(--green-bg);color:var(--green)}
-.mat-counts{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:6px}
-.mat-counts.t3{grid-template-columns:1fr 1fr 1fr}
 .cnt-f label{font-size:9px;font-weight:700;color:var(--txt3);text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:3px}
 .cnt-f input{width:100%;background:var(--surf);border:1px solid var(--bdr2);border-radius:6px;padding:8px 10px;color:var(--txt);outline:none;font-size:14px;font-family:'Syne',sans-serif;transition:border-color .15s;-webkit-appearance:none}
-.cnt-f input:focus{border-color:var(--gold)}
 .mat-result{display:flex;justify-content:space-between;align-items:center;padding:7px 0 0;border-top:1px solid var(--bdr);margin-top:7px}
-.mat-result-label{font-size:10px;color:var(--txt3)}
-.mat-result-val{font-size:13px;font-weight:700;font-family:'Syne',sans-serif}
-
-/* ── SUMMARY TILES ── */
-.sum-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
-.sum-tile{background:var(--surf2);border-radius:var(--rsm);padding:12px;border:1px solid var(--bdr)}
-.sum-tile.highlight{border-color:var(--gold-bdr);background:var(--gold-bg)}
-.sum-tile.green{border-color:var(--green-bdr);background:var(--green-bg)}
-.sum-tile.red{border-color:var(--red-bdr);background:var(--red-bg)}
-.sum-lbl{font-size:9px;font-weight:700;color:var(--txt3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px}
-.sum-val{font-size:20px;font-weight:800;font-family:'Syne',sans-serif;letter-spacing:-.5px}
-.sum-note{font-size:9px;color:var(--txt3);margin-top:2px}
-.c-gold{color:var(--gold)}.c-green{color:var(--green)}.c-red{color:var(--red)}.c-blue{color:var(--blue)}.c-amber{color:var(--amber)}
-
-/* Grand total banner */
+.mat-result-label{font-size:10px;color:var(--txt3)}.mat-result-val{font-size:13px;font-weight:700;font-family:'Syne',sans-serif}
 .grand-banner{background:linear-gradient(135deg,var(--surf2),var(--surf3));border:1px solid var(--gold-bdr);border-radius:var(--r);padding:16px;text-align:center;margin-bottom:10px}
 .grand-lbl{font-size:10px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px}
 .grand-val{font-size:36px;font-weight:800;font-family:'Syne',sans-serif;letter-spacing:-1px;color:var(--gold)}
 .grand-sub{font-size:11px;color:var(--txt3);margin-top:4px}
-
-/* Commission breakdown */
 .comm-detail{background:var(--surf2);border-radius:var(--r);border:1px solid var(--bdr);overflow:hidden;margin-bottom:10px}
 .comm-row{display:flex;justify-content:space-between;align-items:center;padding:10px 13px;border-bottom:1px solid var(--bdr)}
 .comm-row:last-child{border-bottom:none}
@@ -141,48 +89,30 @@ input,select,textarea,button{font-family:'Karla',sans-serif;font-size:15px}
 .comm-row-label{font-size:12px;color:var(--txt2)}
 .comm-row-label small{display:block;font-size:10px;color:var(--txt3);margin-top:1px}
 .comm-row-val{font-size:14px;font-weight:700;font-family:'Syne',sans-serif;color:var(--gold)}
-
-/* Comm bar */
 .cbar-wrap{margin:5px 0 10px}
 .cbar-row{display:flex;justify-content:space-between;font-size:9px;color:var(--txt3);margin-bottom:3px}
 .cbar-track{height:7px;background:var(--surf3);border-radius:4px;overflow:hidden}
 .cbar-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,#2a6632,var(--green));transition:width .4s ease}
-
-/* Table */
 .tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
 .tbl{width:100%;border-collapse:collapse;font-size:11px;min-width:480px}
 .tbl th{text-align:left;padding:7px 8px;background:var(--surf3);color:var(--txt3);font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.06em}
-.tbl th:first-child{border-radius:var(--rsm) 0 0 var(--rsm)}
-.tbl th:last-child{border-radius:0 var(--rsm) var(--rsm) 0}
+.tbl th:first-child{border-radius:var(--rsm) 0 0 var(--rsm)}.tbl th:last-child{border-radius:0 var(--rsm) var(--rsm) 0}
 .tbl td{padding:8px 8px;border-bottom:1px solid var(--bdr);color:var(--txt2);vertical-align:middle}
-.tbl tr:last-child td{border-bottom:none}
-.tbl tr.arow td{background:rgba(77,171,90,.05)}
-.tbl tr.arow td:first-child{border-left:2px solid var(--green)}
+.tbl tr:last-child td{border-bottom:none}.tbl tr.arow td{background:rgba(77,171,90,.05)}.tbl tr.arow td:first-child{border-left:2px solid var(--green)}
 .tbl tfoot td{font-weight:600;color:var(--txt);border-top:1px solid var(--bdr2);padding-top:9px}
 .badge{display:inline-flex;align-items:center;gap:3px;font-size:9px;font-weight:700;padding:2px 6px;border-radius:20px;letter-spacing:.04em;text-transform:uppercase}
 .badge::before{content:'';width:4px;height:4px;border-radius:50%;background:currentColor}
-.b-green{background:var(--green-bg);color:var(--green)}
-.b-gray{background:rgba(255,255,255,.05);color:var(--txt3)}
-.b-blue{background:var(--blue-bg);color:var(--blue)}
-
-/* Buttons */
+.b-green{background:var(--green-bg);color:var(--green)}.b-gray{background:rgba(255,255,255,.05);color:var(--txt3)}.b-blue{background:var(--blue-bg);color:var(--blue)}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:5px;padding:10px 14px;border-radius:var(--rsm);font-family:'Karla',sans-serif;font-size:13px;font-weight:600;cursor:pointer;border:1px solid var(--bdr2);background:var(--surf2);color:var(--txt);transition:all .15s;-webkit-appearance:none;white-space:nowrap}
-.btn:active{transform:scale(.97)}
-.btn-full{width:100%}
+.btn:active{transform:scale(.97)}.btn-full{width:100%}
 .btn-gold{background:var(--gold);color:#0f0e0c;border-color:var(--gold);font-family:'Syne',sans-serif;font-weight:700}
-.btn-gold:active{background:#a88230}
 .btn-export{background:var(--green-bg);color:var(--green);border-color:var(--green-bdr);font-family:'Syne',sans-serif;font-weight:700;width:100%;padding:13px;font-size:14px}
-.btn-danger{background:var(--red-bg);color:var(--red);border-color:var(--red-bdr)}
-.btn-sm{padding:6px 10px;font-size:11px}
 .dvl{display:flex;align-items:center;gap:8px;font-size:10px;color:var(--txt3);font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin:12px 0 8px}
 .dvl::before,.dvl::after{content:'';flex:1;height:1px;background:var(--bdr)}
 .alert{padding:10px 12px;border-radius:var(--rsm);font-size:12px;margin-bottom:10px;border-left:3px solid}
-.al-warn{background:var(--amber-bg);color:var(--amber);border-color:var(--amber)}
-.al-info{background:var(--blue-bg);color:var(--blue);border-color:var(--blue)}
+.al-warn{background:var(--amber-bg);color:var(--amber);border-color:var(--amber)}.al-info{background:var(--blue-bg);color:var(--blue);border-color:var(--blue)}
 .toast{position:fixed;bottom:72px;left:50%;transform:translateX(-50%) translateY(8px);background:var(--surf);border:1px solid var(--bdr2);color:var(--txt);padding:9px 14px;border-radius:var(--r);font-size:12px;font-weight:500;z-index:9999;opacity:0;transition:all .2s;pointer-events:none;white-space:nowrap;box-shadow:0 8px 24px rgba(0,0,0,.5)}
 .toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
-
-/* ── PRINT ── */
 @media print{
   @page{size:letter portrait;margin:12mm 11mm}
   :root{--bg:#fff;--surf:#fff;--surf2:#f4f4f1;--surf3:#eaeaea;--bdr:rgba(0,0,0,.12);--bdr2:rgba(0,0,0,.18);--txt:#111;--txt2:#444;--txt3:#777;--gold:#7a5c1e;--green:#285e28;--red:#b01c1c;--blue:#1a468a;--amber:#7a4e00}
@@ -199,34 +129,25 @@ input,select,textarea,button{font-family:'Karla',sans-serif;font-size:15px}
   .mat-opt.sel{background:#fffbe6;border-color:#7a5c1e;color:#7a5c1e;print-color-adjust:exact;-webkit-print-color-adjust:exact}
   .mat-opt.std-sel{background:#e8f5e8;border-color:#285e28;color:#285e28;print-color-adjust:exact;-webkit-print-color-adjust:exact}
   .mode-btn.full{print-color-adjust:exact;-webkit-print-color-adjust:exact;background:#fffbe6!important;color:#7a5c1e!important}
-  .mode-btn.dap{print-color-adjust:exact;-webkit-print-color-adjust:exact;background:#e8eef8!important;color:#1a468a!important}
   .grand-banner{border:2px solid #7a5c1e;print-color-adjust:exact;-webkit-print-color-adjust:exact}
   .grand-val{color:#7a5c1e!important;font-size:28px}
-  .sum-tile{border:1px solid #ccc}
   .cbar-track{background:#eee;print-color-adjust:exact;-webkit-print-color-adjust:exact}
   .cbar-fill{print-color-adjust:exact;-webkit-print-color-adjust:exact;background:#285e28!important}
   .card-ttl::before{background:#7a5c1e!important;print-color-adjust:exact;-webkit-print-color-adjust:exact}
   .tbl td,.tbl th{font-size:9px;padding:4px 6px}
   #ph,#psig,#pnotes{display:block!important}
   .badge{print-color-adjust:exact;-webkit-print-color-adjust:exact}
-  .toggle-sw{print-color-adjust:exact;-webkit-print-color-adjust:exact}
-  .comm-detail{border:1px solid #ccc}
-  .comm-row{border-bottom:1px solid #ddd}
+  .comm-detail{border:1px solid #ccc}.comm-row{border-bottom:1px solid #ddd}
 }
 #ph,#psig,#pnotes{display:none}
 </style>
 </head>
 <body>
 
-<!-- AUTH -->
 <div class="scr on" id="s-auth">
   <div class="auth-glow"></div>
   <div class="auth-box">
-    <div class="auth-logo">
-      <div class="ico">🏠</div>
-      <h1>Upgrades Comm</h1>
-      <p>Insurance Roofing Commission Calculator</p>
-    </div>
+    <div class="auth-logo"><div class="ico">🏠</div><h1>Upgrades Comm</h1><p>Insurance Roofing Commission Calculator</p></div>
     <div class="auth-card">
       <div class="seg">
         <button class="seg-b on" id="t-sales" onclick="setTab('sales')">Sales Rep</button>
@@ -243,26 +164,15 @@ input,select,textarea,button{font-family:'Karla',sans-serif;font-size:15px}
   </div>
 </div>
 
-<!-- APP -->
 <div class="scr" id="s-app">
   <div class="topbar">
-    <div class="tb-l">
-      <span style="font-size:17px">🏠</span>
-      <h1>Upgrades Comm</h1>
-      <span class="chip chip-gold" id="role-chip">Rep</span>
-    </div>
-    <div style="display:flex;align-items:center;gap:7px">
-      <span style="font-size:10px;color:var(--txt3)" id="user-lbl"></span>
-      <button class="ib" onclick="logout()">⎋ Out</button>
-    </div>
+    <div class="tb-l"><span style="font-size:17px">🏠</span><h1>Upgrades Comm</h1><span class="chip chip-gold" id="role-chip">Rep</span></div>
+    <div style="display:flex;align-items:center;gap:7px"><span style="font-size:10px;color:var(--txt3)" id="user-lbl"></span><button class="ib" onclick="logout()">⎋ Out</button></div>
   </div>
 
   <div class="pages" id="pages">
-
-    <!-- ══════════ CALCULATOR PAGE ══════════ -->
     <div class="page on" id="pg-calc">
 
-      <!-- Print header -->
       <div id="ph">
         <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">
           <div>
@@ -278,36 +188,25 @@ input,select,textarea,button{font-family:'Karla',sans-serif;font-size:15px}
         <div style="height:2px;background:#7a5c1e;margin-bottom:12px;border-radius:2px"></div>
       </div>
 
-      <!-- Version banner -->
       <div class="alert al-info no-print" id="ver-banner">Loading pricing...</div>
 
-      <!-- ── JOB TYPE ── -->
       <div class="card">
-        <div class="card-ttl">Claim Type & Deductible</div>
-
-        <!-- Full Ded / DAP toggle -->
+        <div class="card-ttl">Claim Type</div>
         <div class="mode-bar" id="mode-bar">
           <button class="mode-btn full on" id="mode-full" onclick="setMode('full')">FULL DEDUCTIBLE</button>
           <button class="mode-btn dap off" id="mode-dap" onclick="setMode('dap')">DAP ONLY</button>
         </div>
-
-        <!-- Shingle type -->
         <div class="g2">
-          <div class="f">
-            <label>Existing Shingle Type</label>
+          <div class="f"><label>Existing Shingle Type</label>
             <select id="existing-shingle" onchange="calc()">
               <option value="arch">Architectural / Faux Laminate</option>
               <option value="3tab">3-Tab</option>
             </select>
           </div>
-          <div class="f">
-            <label>Date Signed</label>
-            <input type="date" id="fc-date" onchange="onDateChange()"/>
-          </div>
+          <div class="f"><label>Date Signed</label><input type="date" id="fc-date" onchange="onDateChange()"/></div>
         </div>
       </div>
 
-      <!-- ── JOB INFO ── -->
       <div class="card">
         <div class="card-ttl">Job Info</div>
         <div class="g2">
@@ -320,7 +219,6 @@ input,select,textarea,button{font-family:'Karla',sans-serif;font-size:15px}
         </div>
       </div>
 
-      <!-- ── GEOMETRIES ── (matching sheet: Total Areas, Ridges, Hips, Valleys, Rakes, Eaves) -->
       <div class="card">
         <div class="card-ttl">Roof Geometries</div>
         <div class="g3">
@@ -334,9 +232,8 @@ input,select,textarea,button{font-family:'Karla',sans-serif;font-size:15px}
           <div class="f"><label>Eaves (ft)</label><input type="number" id="g-eav" value="0" min="0" oninput="calc()" placeholder="0"/></div>
         </div>
         <div style="font-size:10px;color:var(--txt3);margin-top:2px;padding:8px 10px;background:var(--surf2);border-radius:var(--rsm);border:1px solid var(--bdr)">
-          Waste factors per component: Shingles ×1.15 · Underlayment ×1.10 · Valley ×1.13 · Drip Edge ×1.10
+          Waste factors: Shingles ×1.15 · Underlayment ×1.10 · Valley ×1.13 · Drip Edge ×1.10
         </div>
-        <!-- Computed geometry summary -->
         <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:4px">
           <div style="background:var(--surf2);border-radius:var(--rsm);padding:9px 10px;border:1px solid var(--bdr)">
             <div style="font-size:9px;font-weight:700;color:var(--txt3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px">Shingle Bundles</div>
@@ -356,14 +253,12 @@ input,select,textarea,button{font-family:'Karla',sans-serif;font-size:15px}
         </div>
       </div>
 
-      <!-- ── MATERIALS ── -->
       <div class="card">
         <div class="card-ttl">Material Upgrades</div>
-        <div style="font-size:11px;color:var(--txt3);margin-bottom:10px">Green = insurance standard (no upgrade charge). Gold = upgrade — customer pays the difference.</div>
+        <div style="font-size:11px;color:var(--txt3);margin-bottom:10px">Green = insurance standard. Gold = upgrade — customer pays the difference.</div>
         <div id="mat-ui"></div>
       </div>
 
-      <!-- ── TOTAL UPGRADES CHARGED (manual override field matching existing sheet) ── -->
       <div class="card">
         <div class="card-ttl">Upgrade Charges to Homeowner</div>
         <div class="f">
@@ -373,7 +268,6 @@ input,select,textarea,button{font-family:'Karla',sans-serif;font-size:15px}
         <div style="font-size:11px;color:var(--txt3);margin-top:2px" id="ho-auto-note">Auto-calculated from selections above</div>
       </div>
 
-      <!-- ── GRAND TOTAL & COMMISSION ── -->
       <div class="grand-banner">
         <div class="grand-lbl">Grand Total</div>
         <div class="grand-val" id="grand-total">$0.00</div>
@@ -381,70 +275,33 @@ input,select,textarea,button{font-family:'Karla',sans-serif;font-size:15px}
       </div>
 
       <div class="comm-detail">
-        <div class="comm-row">
-          <div class="comm-row-label">Total Material Cost (our cost+tax)<small>what we pay for all selected materials</small></div>
-          <div class="comm-row-val c-red" id="c-matcost">$0.00</div>
-        </div>
-        <div class="comm-row">
-          <div class="comm-row-label">Total Price Charged<small>HO upgrade charges</small></div>
-          <div class="comm-row-val" id="c-charged">$0.00</div>
-        </div>
-        <div class="comm-row">
-          <div class="comm-row-label">Charged Minus Cost (gross margin)<small>before commission split</small></div>
-          <div class="comm-row-val c-amber" id="c-margin">$0.00</div>
-        </div>
-        <div class="comm-row">
-          <div class="comm-row-label">Gross Profit</div>
-          <div class="comm-row-val" id="c-gp">$0.00</div>
-        </div>
-        <div class="comm-row">
-          <div class="comm-row-label">Upgrade Commission (100% of upgrade above our cost)<small>everything charged above our material cost on upgrades</small></div>
-          <div class="comm-row-val c-gold" id="c-upgcomm">$0.00</div>
-        </div>
-        <div class="comm-row total">
-          <div class="comm-row-label" style="font-weight:700;color:var(--txt);font-size:13px">TOTAL COMMISSION<small>commission on upgrade margin</small></div>
-          <div class="comm-row-val c-gold" style="font-size:18px" id="c-total-comm">$0.00</div>
-        </div>
+        <div class="comm-row"><div class="comm-row-label">Total Material Cost (our cost+tax)<small>what we pay for all selected materials</small></div><div class="comm-row-val c-red" id="c-matcost">$0.00</div></div>
+        <div class="comm-row"><div class="comm-row-label">Total Price Charged<small>HO upgrade charges</small></div><div class="comm-row-val" id="c-charged">$0.00</div></div>
+        <div class="comm-row"><div class="comm-row-label">Charged Minus Cost (gross margin)<small>before commission split</small></div><div class="comm-row-val c-amber" id="c-margin">$0.00</div></div>
+        <div class="comm-row"><div class="comm-row-label">Gross Profit</div><div class="comm-row-val" id="c-gp">$0.00</div></div>
+        <div class="comm-row"><div class="comm-row-label">Upgrade Commission (100% of upgrade above our cost)<small>everything charged above our material cost on upgrades</small></div><div class="comm-row-val c-gold" id="c-upgcomm">$0.00</div></div>
+        <div class="comm-row total"><div class="comm-row-label" style="font-weight:700;color:var(--txt);font-size:13px">TOTAL COMMISSION<small>commission on upgrade margin</small></div><div class="comm-row-val c-gold" style="font-size:18px" id="c-total-comm">$0.00</div></div>
       </div>
 
-      <!-- Commission bar (% of max possible) -->
       <div class="cbar-wrap">
         <div class="cbar-row"><span style="font-size:10px;color:var(--txt3)">Commission vs. max possible on this job</span><span id="bar-pct">0%</span></div>
         <div class="cbar-track"><div class="cbar-fill" id="cbar" style="width:0%"></div></div>
       </div>
 
-      <!-- Line-item table -->
       <div class="card">
         <div class="card-ttl">Line-Item Breakdown</div>
         <div class="tbl-wrap">
           <table class="tbl">
-            <thead><tr>
-              <th>Component</th><th>Selected</th><th>Qty</th>
-              <th>Our Cost</th><th>Ins. Allows</th><th>HO Charged</th><th>Comm</th>
-            </tr></thead>
+            <thead><tr><th>Component</th><th>Selected</th><th>Qty</th><th>Our Cost</th><th>Ins. Allows</th><th>HO Charged</th><th>Comm</th></tr></thead>
             <tbody id="lbody"></tbody>
-            <tfoot><tr>
-              <td colspan="3">Totals</td>
-              <td id="ft-cost">$0</td>
-              <td id="ft-ins">$0</td>
-              <td id="ft-ho" style="color:var(--amber)">$0</td>
-              <td id="ft-com" style="color:var(--gold)">$0</td>
-            </tr></tfoot>
+            <tfoot><tr><td colspan="3">Totals</td><td id="ft-cost">$0</td><td id="ft-ins">$0</td><td id="ft-ho" style="color:var(--amber)">$0</td><td id="ft-com" style="color:var(--gold)">$0</td></tr></tfoot>
           </table>
         </div>
       </div>
 
-      <!-- Notes -->
-      <div class="card no-print">
-        <div class="card-ttl">Notes</div>
-        <div class="f"><textarea id="fc-notes" rows="3" placeholder="Color selections, special instructions, satellite measurements..."></textarea></div>
-      </div>
-      <div id="pnotes" class="card">
-        <div class="card-ttl">Notes</div>
-        <div id="pnotes-body" style="font-size:10px;color:#444;white-space:pre-wrap"></div>
-      </div>
+      <div class="card no-print"><div class="card-ttl">Notes</div><div class="f"><textarea id="fc-notes" rows="3" placeholder="Color selections, special instructions, satellite measurements..."></textarea></div></div>
+      <div id="pnotes" class="card"><div class="card-ttl">Notes</div><div id="pnotes-body" style="font-size:10px;color:#444;white-space:pre-wrap"></div></div>
 
-      <!-- Print sig block -->
       <div id="psig" style="margin-top:18px">
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:36px">
           <div><div style="border-top:1px solid #333;padding-top:4px;font-size:9px;color:#666">Customer Signature / Date</div></div>
@@ -453,7 +310,6 @@ input,select,textarea,button{font-family:'Karla',sans-serif;font-size:15px}
         <div style="margin-top:10px;padding:7px;background:#f4f4f1;border-radius:4px;font-size:8px;color:#888;text-align:center">Commission calculated per pricing version active on signed date. Subject to payroll review.</div>
       </div>
 
-      <!-- Actions -->
       <div class="no-print" style="margin-top:6px">
         <button class="btn btn-export" onclick="exportPDF()">⬇ Export PDF Cheat Sheet</button>
         <div style="display:flex;gap:7px;margin-top:7px">
@@ -461,31 +317,20 @@ input,select,textarea,button{font-family:'Karla',sans-serif;font-size:15px}
           <button class="btn" style="flex:1;font-size:12px" onclick="setPage('pg-hist')">📋 History</button>
         </div>
       </div>
-
-    </div><!-- /calc -->
-
-    <!-- ══════════ HISTORY PAGE ══════════ -->
-    <div class="page" id="pg-hist">
-      <div class="pg-title">Pricing History</div>
-      <div class="pg-sub">Signed date on work order determines which version payroll uses</div>
-      <div class="card">
-        <div class="tbl-wrap">
-          <table class="tbl">
-            <thead><tr><th>Ver</th><th>Label</th><th>Effective</th><th>Expires</th><th>Status</th><th>GAF HDZ/sq</th></tr></thead>
-            <tbody id="hist-body"></tbody>
-          </table>
-        </div>
-      </div>
     </div>
 
-    <!-- ══════════ ADMIN PRICING ══════════ -->
+    <div class="page" id="pg-hist">
+      <div class="pg-title">Pricing History</div>
+      <div class="pg-sub">Signed date determines which version payroll uses</div>
+      <div class="card"><div class="tbl-wrap"><table class="tbl"><thead><tr><th>Ver</th><th>Label</th><th>Effective</th><th>Expires</th><th>Status</th><th>GAF HDZ/sq</th></tr></thead><tbody id="hist-body"></tbody></table></div></div>
+    </div>
+
     <div class="page" id="pg-admin">
       <div class="pg-title">Pricing Manager</div>
-      <div class="pg-sub">Update "Our Cost+Tax" for each product. Publishing auto-closes the current version.</div>
-
+      <div class="pg-sub">Update "Our Cost+Tax" for each product.</div>
       <div class="card">
         <div class="card-ttl">Publish New Version</div>
-        <div class="alert al-warn">Entering new pricing closes the active version the day before the effective date you set.</div>
+        <div class="alert al-warn">Publishing closes the active version the day before the effective date.</div>
         <div class="g2">
           <div class="f"><label>Effective Date</label><input type="date" id="n-eff" class="fi" style="background:var(--surf2)"/></div>
           <div class="f"><label>Version Label</label><input type="text" id="n-lbl" class="fi" style="background:var(--surf2)" placeholder="e.g. Summer 2026"/></div>
@@ -493,181 +338,109 @@ input,select,textarea,button{font-family:'Karla',sans-serif;font-size:15px}
         <div id="admin-fields"></div>
         <button class="btn btn-gold btn-full" style="margin-top:10px" onclick="publishVer()">Publish New Pricing Version</button>
       </div>
-
-      <div class="card">
-        <div class="card-ttl">All Versions</div>
-        <div class="tbl-wrap">
-          <table class="tbl">
-            <thead><tr><th>Ver</th><th>Label</th><th>Effective</th><th>Expires</th><th>Status</th><th>GAF HDZ/sq</th></tr></thead>
-            <tbody id="adm-ver-body"></tbody>
-          </table>
-        </div>
-      </div>
+      <div class="card"><div class="card-ttl">All Versions</div><div class="tbl-wrap"><table class="tbl"><thead><tr><th>Ver</th><th>Label</th><th>Effective</th><th>Expires</th><th>Status</th><th>GAF HDZ/sq</th></tr></thead><tbody id="adm-ver-body"></tbody></table></div></div>
     </div>
 
-    <!-- ══════════ USERS ══════════ -->
     <div class="page" id="pg-users">
       <div class="pg-title">Team Roster</div>
-      <div class="pg-sub">All active logins — edit the app file to add or remove users</div>
-      <div class="card">
-        <div class="card-ttl">Sales Reps</div>
-        <div id="reps-list"></div>
-      </div>
-      <div class="card">
-        <div class="card-ttl">Admins</div>
-        <div id="admins-list"></div>
-      </div>
+      <div class="pg-sub">All active logins</div>
+      <div class="card"><div class="card-ttl">Sales Reps</div><div id="reps-list"></div></div>
+      <div class="card"><div class="card-ttl">Admins</div><div id="admins-list"></div></div>
     </div>
 
-
-  </div><!-- /pages -->
+  </div>
   <div class="bnav" id="bnav"></div>
 </div>
-
 <div class="toast" id="toast"></div>
 
 <script>
-// ══════════════════════════════════════════════════════
-//  PRICING — Active 4/20/2026 (4-20_tc_pricing.pdf)
-//  All costs are "Our Cost + Tax". Commission = 100% of upgrade margin.
-// ══════════════════════════════════════════════════════
-
-const MATS = [
-  {
-    key:'shingle', name:'Shingles', unitType:'sq', unitLabel:'per square',
-    note:'Camelot II = 4 bundles/sq. All others = 3 bundles/sq.',
-    opts:[
-      {name:'GAF Royal Sovereign',     costTaxSq:113.40, std:true, bdPerSq:3},
-      {name:'GAF Natural Shadow',      costTaxSq:118.26,           bdPerSq:3},
-      {name:'GAF HDZ & HDZ Bold',      costTaxSq:118.26,           bdPerSq:3},
-      {name:'GAF UHDZ',                costTaxSq:140.39,           bdPerSq:3},
-      {name:'GAF Armorshield II',      costTaxSq:159.83,           bdPerSq:3},
-      {name:'GAF Camelot II (4bd/sq)', costTaxSq:265.68,           bdPerSq:4},
-      {name:'GAF Slateline',           costTaxSq:260.27,           bdPerSq:3},
-    ]
-  },
-  {
-    key:'ridge', name:'Ridge Cap', unitType:'ridgehip', unitLabel:'per bundle',
-    lfPerBd:[30, 25, 20, 33],
-    opts:[
-      {name:'GAF Royal Sov. Ridge (30LF)',    costTaxBd:42.12,  std:true},
-      {name:'GAF SAR Armorshield II (25LF)', costTaxBd:102.60},
-      {name:'GAF Timbertex (20LF)',           costTaxBd:88.02},
-      {name:'GAF Z Ridge (33LF)',             costTaxBd:97.15},
-    ]
-  },
-  {
-    key:'starter', name:'Starter Strip', unitType:'eave', unitLabel:'per bundle (100LF)',
-    lfPerBd:[100, 100],
-    opts:[
-      {name:'GAF Pro Start (100LF)',       costTaxBd:58.32,   std:true},
-      {name:'GAF Weatherblocker (100LF)', costTaxBd:116.856},
-    ]
-  },
-  {
-    key:'under', name:'Underlayment', unitType:'under', unitLabel:'per 10-sq roll',
-    opts:[
-      {name:'Secure Grip Synthetic', costTaxRoll:81.00,   std:true},
-      {name:'GAF Feltbuster',        costTaxRoll:102.546},
-      {name:'GAF Tiger Paw',         costTaxRoll:279.72},
-    ]
-  },
-  {
-    key:'valley', name:'Valley / Ice & Water', unitType:'valley', unitLabel:'per unit',
-    lfPerUnit:[62, 10, 62],
-    opts:[
-      {name:'Ice & Water Shield (62LF)', costTaxUnit:86.35,  std:true},
-      {name:'W Metal Valley (10LF)',     costTaxUnit:261.14},
-      {name:'GAF Stormguard (62LF)',     costTaxUnit:111.24},
-    ]
-  },
-  {
-    key:'drip', name:'Drip Edge', unitType:'drip', unitLabel:"per piece (10')",
-    opts:[
-      {name:"Drip Edge 1.5×1.5×10'", costTaxEa:9.67, std:true},
-    ]
-  },
-  {
-    key:'boot', name:'Pipe Boots', unitType:'count', unitLabel:'per boot',
-    opts:[
-      {name:'3-in-1 Neoprene',   costTaxEa:66.42, std:true},
-      {name:'Silicone Lifetime', costTaxEa:33.53},
-      {name:'Lead Pipe Boot',    costTaxEa:20.27},
-    ]
-  },
-  {
-    key:'vent', name:'Ventilation', unitType:'vent', unitLabel:'mixed units',
-    opts:[
-      {name:'Ridge Vent',        costTaxLf:20.27/4, std:true, unit:'LF', note:'4LF/stick · $20.27/stick'},
-      {name:'Box Vents (metal)', costTaxEa:21.60,   std:true, unit:'ea'},
-      {name:'Power Vents',       costTaxEa:202.068,            unit:'ea'},
-      {name:'Solar Vent',        costTaxEa:491.40,             unit:'ea'},
-      {name:'Turbine',           costTaxEa:96.12,              unit:'ea'},
-    ]
-  },
-  {
-    key:'warr', name:'Warranty', unitType:'warr', unitLabel:'per job (sq-based)',
-    // Warranty pricing from PDF:
-    // Silver: ≤50sq flat $183.60 w/tax | >50sq flat $367.20 w/tax
-    // Golden: $8.64/sq w/tax for all job sizes
-    opts:[
-      {name:'No Warranty / GAF Lim. Lifetime (incl.)', std:true,    costFlat50:0,      costFlat51:0,      perSq:false},
-      {name:'GAF Silver Pledge',                        std:false,   costFlat50:183.60, costFlat51:367.20, perSq:false},
-      {name:'GAF Golden Pledge',                        std:false,   costPerSq:8.64,                       perSq:true},
-    ]
-  },
+const MATS=[
+  {key:'shingle',name:'Shingles',unitType:'sq',unitLabel:'per square',note:'Camelot II = 4 bundles/sq. All others = 3 bundles/sq.',opts:[
+    {name:'GAF Royal Sovereign',costTaxSq:113.40,std:true,bdPerSq:3},
+    {name:'GAF Natural Shadow',costTaxSq:118.26,bdPerSq:3},
+    {name:'GAF HDZ & HDZ Bold',costTaxSq:118.26,bdPerSq:3},
+    {name:'GAF UHDZ',costTaxSq:140.39,bdPerSq:3},
+    {name:'GAF Armorshield II',costTaxSq:159.83,bdPerSq:3},
+    {name:'GAF Camelot II (4bd/sq)',costTaxSq:265.68,bdPerSq:4},
+    {name:'GAF Slateline',costTaxSq:260.27,bdPerSq:3},
+  ]},
+  {key:'ridge',name:'Ridge Cap',unitType:'ridgehip',unitLabel:'per bundle',lfPerBd:[30,25,20,33],opts:[
+    {name:'GAF Royal Sov. Ridge (30LF)',costTaxBd:42.12,std:true},
+    {name:'GAF SAR Armorshield II (25LF)',costTaxBd:102.60},
+    {name:'GAF Timbertex (20LF)',costTaxBd:88.02},
+    {name:'GAF Z Ridge (33LF)',costTaxBd:97.15},
+  ]},
+  {key:'starter',name:'Starter Strip',unitType:'eave',unitLabel:'per bundle (100LF)',lfPerBd:[100,100],opts:[
+    {name:'GAF Pro Start (100LF)',costTaxBd:58.32,std:true},
+    {name:'GAF Weatherblocker (100LF)',costTaxBd:116.856},
+  ]},
+  {key:'under',name:'Underlayment',unitType:'under',unitLabel:'per 10-sq roll',opts:[
+    {name:'Secure Grip Synthetic',costTaxRoll:81.00,std:true},
+    {name:'GAF Feltbuster',costTaxRoll:102.546},
+    {name:'GAF Tiger Paw',costTaxRoll:279.72},
+  ]},
+  {key:'valley',name:'Valley / Ice & Water',unitType:'valley',unitLabel:'per unit',lfPerUnit:[62,10,62],opts:[
+    {name:'Ice & Water Shield (62LF)',costTaxUnit:86.35,std:true},
+    {name:'W Metal Valley (10LF)',costTaxUnit:261.14},
+    {name:'GAF Stormguard (62LF)',costTaxUnit:111.24},
+  ]},
+  {key:'drip',name:'Drip Edge',unitType:'drip',unitLabel:"per piece (10')",opts:[
+    {name:"Drip Edge 1.5×1.5×10'",costTaxEa:9.67,std:true},
+  ]},
+  {key:'boot',name:'Pipe Boots',unitType:'count',unitLabel:'per boot',opts:[
+    {name:'3-in-1 Neoprene',costTaxEa:66.42,std:true},
+    {name:'Silicone Lifetime',costTaxEa:33.53},
+    {name:'Lead Pipe Boot',costTaxEa:20.27},
+  ]},
+  {key:'vent',name:'Ventilation',unitType:'vent',unitLabel:'mixed units',opts:[
+    {name:'Ridge Vent',costTaxLf:20.27/4,std:true,unit:'LF',note:'4LF/stick · $20.27/stick'},
+    {name:'Box Vents (metal)',costTaxEa:21.60,std:true,unit:'ea'},
+    {name:'Power Vents',costTaxEa:202.068,unit:'ea'},
+    {name:'Solar Vent',costTaxEa:491.40,unit:'ea'},
+    {name:'Turbine',costTaxEa:96.12,unit:'ea'},
+  ]},
+  {key:'warr',name:'Warranty',unitType:'warr',unitLabel:'per job (sq-based)',opts:[
+    {name:'No Warranty / GAF Lim. Lifetime (incl.)',std:true,costFlat50:0,costFlat51:0,perSq:false},
+    {name:'GAF Silver Pledge',std:false,costFlat50:183.60,costFlat51:367.20,perSq:false},
+    {name:'GAF Golden Pledge',std:false,costPerSq:8.64,perSq:true},
+  ]},
 ];
 
-// ── VERSION HISTORY — only active version: 4/20/2026 ──
-let VERSIONS = [
-  { id:'v1', label:'Apr 20, 2026 – Present', eff:'2026-04-20', exp:null, by:'admin' }
-];
+let VERSIONS=[{id:'v1',label:'Apr 20, 2026 – Present',eff:'2026-04-20',exp:null,by:'admin'}];
 let vidx=2;
-const USERS = {
-  Buck:    {pass:'Hailyeah', role:'sales', name:'Buck Broadhead'},
-  Isaac:   {pass:'Hailyeah', role:'sales', name:'Isaac Perez'},
-  Omar:    {pass:'Hailyeah', role:'sales', name:'Omar Al Shanti'},
-  Kyle:    {pass:'Hailyeah', role:'sales', name:'Kyle Pippins'},
-  Noah:    {pass:'Hailyeah', role:'sales', name:'Noah Carr'},
-  Matt:    {pass:'Hailyeah', role:'sales', name:'Matt Timcho'},
-  Leo:     {pass:'Hailyeah', role:'sales', name:'Leobardo Gonzalez'},
-  Nick:    {pass:'Hailyeah', role:'sales', name:'Nick Scobee'},
-  Joseph:  {pass:'Hailyeah', role:'sales', name:'Joseph Valderrama'},
-  Ryan:    {pass:'Hailyeah', role:'sales', name:'Ryan Comer'},
-  Charles: {pass:'Hailyeah', role:'sales', name:'Charles Tomlinson'},
-  Johana:  {pass:'Hailyeah', role:'sales', name:'Johana Cortina'},
-  MJ:      {pass:'Hailyeah', role:'sales', name:'Michael Johnson'},
-  Deering: {pass:'Hailyeah', role:'sales', name:'Ryan Deering'},
-  Testpm:  {pass:'Testpm',   role:'sales', name:'Test Pm'},
-  Madison: {pass:'Hailyeah', role:'sales', name:'Madison Kennerly'},
-  Peyton:  {pass:'Hailyeah', role:'admin', name:'Peyton Dixon'},
-  Kat:     {pass:'Hailyeah', role:'admin', name:'Kat Liss'},
-};
-let me=null, myRole=null, authTab='sales';
-let activeVer=null;
-let claimMode='full';   // 'full' or 'dap'
-let hoOverride=false;   // user manually overrode HO charge
 
-// Per-material selection state
-let matSel={}; // key -> option index
-let customPrices={}; // key -> rep's custom charge price (null = not set)
-// Ventilation existing/desired counts per sub-type
+const USERS={
+  Buck:{pass:'Hailyeah',role:'sales',name:'Buck Broadhead'},
+  Isaac:{pass:'Hailyeah',role:'sales',name:'Isaac Perez'},
+  Omar:{pass:'Hailyeah',role:'sales',name:'Omar Al Shanti'},
+  Kyle:{pass:'Hailyeah',role:'sales',name:'Kyle Pippins'},
+  Noah:{pass:'Hailyeah',role:'sales',name:'Noah Carr'},
+  Matt:{pass:'Hailyeah',role:'sales',name:'Matt Timcho'},
+  Leo:{pass:'Hailyeah',role:'sales',name:'Leobardo Gonzalez'},
+  Nick:{pass:'Hailyeah',role:'sales',name:'Nick Scobee'},
+  Joseph:{pass:'Hailyeah',role:'sales',name:'Joseph Valderrama'},
+  Ryan:{pass:'Hailyeah',role:'sales',name:'Ryan Comer'},
+  Charles:{pass:'Hailyeah',role:'sales',name:'Charles Tomlinson'},
+  Johana:{pass:'Hailyeah',role:'sales',name:'Johana Cortina'},
+  MJ:{pass:'Hailyeah',role:'sales',name:'Michael Johnson'},
+  Deering:{pass:'Hailyeah',role:'sales',name:'Ryan Deering'},
+  Testpm:{pass:'Testpm',role:'sales',name:'Test Pm'},
+  Madison:{pass:'Hailyeah',role:'sales',name:'Madison Kennerly'},
+  Peyton:{pass:'Hailyeah',role:'admin',name:'Peyton Dixon'},
+  Kat:{pass:'Hailyeah',role:'admin',name:'Kat Liss'},
+};
+
+let me=null,myRole=null,authTab='sales',activeVer=null,claimMode='full',hoOverride=false;
+let matSel={},customPrices={};
 let ventCounts={ridge:{exist:0,desired:0},box:{exist:0,desired:0},power:{exist:0,desired:0},solar:{exist:0,desired:0},turbine:{exist:0,desired:0}};
-// Per-count materials (boots)
 let bootCount=0;
 
-// ══════════ AUTH ══════════
-function setTab(t){
-  authTab=t;
-  document.getElementById('t-sales').classList.toggle('on',t==='sales');
-  document.getElementById('t-admin').classList.toggle('on',t==='admin');
-  document.getElementById('aerr').textContent='';
-}
+// AUTH
+function setTab(t){authTab=t;document.getElementById('t-sales').classList.toggle('on',t==='sales');document.getElementById('t-admin').classList.toggle('on',t==='admin');document.getElementById('aerr').textContent='';}
 function login(){
   const u=document.getElementById('au').value.trim();
   const p=document.getElementById('ap').value;
-  const rec=USERS[u];
-  const err=document.getElementById('aerr');
+  const rec=USERS[u];const err=document.getElementById('aerr');
   if(!rec||rec.pass!==p){err.textContent='Invalid username or password.';return;}
   if(authTab==='admin'&&rec.role!=='admin'){err.textContent='Admin credentials required.';return;}
   if(authTab==='sales'&&rec.role==='admin'){err.textContent='Use Admin tab for admin login.';return;}
@@ -681,54 +454,24 @@ function login(){
   if(myRole==='admin'){buildAdminFields();renderAdminVers();renderReps();}
   setPage('pg-calc');
 }
-function logout(){
-  me=null;myRole=null;activeVer=null;
-  document.getElementById('s-app').classList.remove('on');
-  document.getElementById('s-auth').classList.add('on');
-  document.getElementById('au').value='';document.getElementById('ap').value='';
-  document.getElementById('aerr').textContent='';
-}
+function logout(){me=null;myRole=null;activeVer=null;document.getElementById('s-app').classList.remove('on');document.getElementById('s-auth').classList.add('on');document.getElementById('au').value='';document.getElementById('ap').value='';document.getElementById('aerr').textContent='';}
 
-// ══════════ NAV ══════════
+// NAV
 const NAV_S=[{id:'pg-calc',ico:'🧮',lbl:'Calc'},{id:'pg-hist',ico:'📋',lbl:'History'}];
 const NAV_A=[{id:'pg-calc',ico:'🧮',lbl:'Calc'},{id:'pg-hist',ico:'📋',lbl:'History'},{id:'pg-admin',ico:'💲',lbl:'Pricing'},{id:'pg-users',ico:'👥',lbl:'Reps'}];
-function buildNav(){
-  const items=myRole==='admin'?NAV_A:NAV_S;
-  document.getElementById('bnav').innerHTML=items.map(n=>`
-    <button class="bn" id="bn-${n.id}" onclick="setPage('${n.id}')">
-      <span class="bn-ico">${n.ico}</span><span class="bn-lbl">${n.lbl}</span>
-    </button>`).join('');
-}
-function setPage(id){
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));
-  document.querySelectorAll('.bn').forEach(b=>b.classList.remove('on'));
-  document.getElementById(id).classList.add('on');
-  const bn=document.getElementById('bn-'+id);
-  if(bn)bn.classList.add('on');
-  document.getElementById('pages').scrollTop=0;
-}
+function buildNav(){const items=myRole==='admin'?NAV_A:NAV_S;document.getElementById('bnav').innerHTML=items.map(n=>`<button class="bn" id="bn-${n.id}" onclick="setPage('${n.id}')"><span class="bn-ico">${n.ico}</span><span class="bn-lbl">${n.lbl}</span></button>`).join('');}
+function setPage(id){document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));document.querySelectorAll('.bn').forEach(b=>b.classList.remove('on'));document.getElementById(id).classList.add('on');const bn=document.getElementById('bn-'+id);if(bn)bn.classList.add('on');document.getElementById('pages').scrollTop=0;}
 
-// ══════════ INIT ══════════
-function getVer(d){
-  const date=d||new Date().toISOString().slice(0,10);
-  return [...VERSIONS].sort((a,b)=>b.eff.localeCompare(a.eff)).find(v=>v.eff<=date&&(!v.exp||v.exp>=date))||VERSIONS[VERSIONS.length-1];
-}
+// INIT
+function getVer(d){const date=d||new Date().toISOString().slice(0,10);return [...VERSIONS].sort((a,b)=>b.eff.localeCompare(a.eff)).find(v=>v.eff<=date&&(!v.exp||v.exp>=date))||VERSIONS[VERSIONS.length-1];}
 function initCalc(){
   document.getElementById('fc-date').value=new Date().toISOString().slice(0,10);
-  MATS.forEach(m=>{matSel[m.key]=0; customPrices[m.key]=null;});
+  MATS.forEach(m=>{matSel[m.key]=0;customPrices[m.key]=null;});
   ventCounts={ridge:{exist:0,desired:0},box:{exist:0,desired:0},power:{exist:0,desired:0},solar:{exist:0,desired:0},turbine:{exist:0,desired:0}};
-  bootCount=0;
-  claimMode='full';dedPaid=false;hoOverride=false;
-  activeVer=getVer();
-  updateBanner();
-  buildMatUI();
-  calc();
+  bootCount=0;claimMode='full';hoOverride=false;
+  activeVer=getVer();updateBanner();buildMatUI();calc();
 }
-function onDateChange(){
-  const nv=getVer(document.getElementById('fc-date').value);
-  if(nv.id!==activeVer.id){activeVer=nv;updateBanner();buildMatUI();}
-  calc();
-}
+function onDateChange(){const nv=getVer(document.getElementById('fc-date').value);if(nv.id!==activeVer.id){activeVer=nv;updateBanner();buildMatUI();}calc();}
 function updateBanner(){
   const v=activeVer;
   document.getElementById('ver-banner').innerHTML=`📅 <strong>${v.label}</strong> · Effective ${fd(v.eff)}${v.exp?' → expires '+fd(v.exp):' → current'}`;
@@ -736,92 +479,46 @@ function updateBanner(){
   document.getElementById('ph-date').textContent='Printed: '+new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
   document.getElementById('ph-ver').textContent=`Pricing: ${v.label} (${fd(v.eff)}${v.exp?' – '+fd(v.exp):' – present'})`;
 }
+function setMode(m){claimMode=m;document.getElementById('mode-full').className='mode-btn full '+(m==='full'?'on':'off');document.getElementById('mode-dap').className='mode-btn dap '+(m==='dap'?'on':'off');calc();}
 
-// ══════════ MODE CONTROLS ══════════
-function setMode(m){
-  claimMode=m;
-  document.getElementById('mode-full').className='mode-btn full '+(m==='full'?'on':'off');
-  document.getElementById('mode-dap').className='mode-btn dap '+(m==='dap'?'on':'off');
-  calc();
+// COST HELPERS
+function oc(mat,opt){if(mat.key==='shingle')return opt.costTaxSq||0;if(mat.key==='ridge')return opt.costTaxBd||0;if(mat.key==='starter')return opt.costTaxBd||0;if(mat.key==='under')return opt.costTaxRoll||0;if(mat.key==='valley')return opt.costTaxUnit||0;if(mat.key==='drip')return opt.costTaxEa||0;if(mat.key==='boot')return opt.costTaxEa||0;if(mat.key==='vent')return opt.costTaxLf||opt.costTaxEa||0;return 0;}
+function unitStr(mat){if(mat.key==='shingle')return'/sq';if(mat.key==='ridge')return'/bd';if(mat.key==='starter')return'/bd';if(mat.key==='under')return'/roll';if(mat.key==='valley')return'/unit';if(mat.key==='drip')return'/pc';if(mat.key==='boot')return'/ea';return'';}
+function warrantyJobCost(opt,adjSq){if(!opt||opt.std)return 0;if(opt.perSq)return(opt.costPerSq||0)*adjSq;if(adjSq<=50)return opt.costFlat50||0;return opt.costFlat51||0;}
+
+// CUSTOM PRICE SECTION — reusable for any material key
+function cpSection(key){
+  const val=customPrices[key]!==null?customPrices[key]:'';
+  return `<div style="margin-top:8px;border-top:1px solid var(--bdr);padding-top:8px">
+    <div style="font-size:9px;font-weight:700;color:var(--txt3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">My Charge Price <span style="font-weight:400;text-transform:none;letter-spacing:0">(optional — enter to see commission)</span></div>
+    <div style="display:flex;align-items:center;gap:6px">
+      <div style="display:flex;border:1px solid var(--bdr2);border-radius:var(--rsm);overflow:hidden;background:var(--surf);flex:1;transition:border-color .15s" id="cpwrap-${key}">
+        <span style="padding:8px 9px;background:var(--surf3);color:var(--txt3);font-size:12px;border-right:1px solid var(--bdr)">$</span>
+        <input type="number" min="0" step="0.01" placeholder="0.00" id="cp-${key}" value="${val}"
+          style="border:none;background:transparent;padding:8px 10px;color:var(--txt);outline:none;width:100%;font-family:'Karla',sans-serif;font-size:14px;-webkit-appearance:none"
+          oninput="setCustomPrice('${key}',this.value)"
+          onfocus="document.getElementById('cpwrap-${key}').style.borderColor='var(--gold)'"
+          onblur="document.getElementById('cpwrap-${key}').style.borderColor='var(--bdr2)'"/>
+      </div>
+      <button onclick="clearCustomPrice('${key}')" style="background:none;border:1px solid var(--bdr2);border-radius:var(--rsm);padding:8px 10px;color:var(--txt3);cursor:pointer;font-size:11px;white-space:nowrap">✕ Clear</button>
+    </div>
+    <div style="font-size:10px;color:var(--gold);margin-top:4px;min-height:14px" id="cp-comm-${key}"></div>
+  </div>`;
 }
 
-// ══════════ COST HELPERS ══════════
-// Returns our cost+tax per billing unit for a given option
-function oc(mat, opt) {
-  if(mat.key==='shingle') return opt.costTaxSq||0;    // per sq
-  if(mat.key==='ridge')   return opt.costTaxBd||0;    // per bundle
-  if(mat.key==='starter') return opt.costTaxBd||0;    // per bundle
-  if(mat.key==='under')   return opt.costTaxRoll||0;  // per 10-sq roll
-  if(mat.key==='valley')  return opt.costTaxUnit||0;  // per unit/roll
-  if(mat.key==='drip')    return opt.costTaxEa||0;    // per piece
-  if(mat.key==='boot')    return opt.costTaxEa||0;    // per boot
-  if(mat.key==='vent')    return opt.costTaxLf||opt.costTaxEa||0;
-  if(mat.key==='warr')    return 0; // handled separately (flat fee)
-  return 0;
-}
-function unitStr(mat) {
-  if(mat.key==='shingle') return '/sq';
-  if(mat.key==='ridge')   return '/bd';
-  if(mat.key==='starter') return '/bd';
-  if(mat.key==='under')   return '/roll';
-  if(mat.key==='valley')  return '/unit';
-  if(mat.key==='drip')    return '/pc';
-  if(mat.key==='boot')    return '/ea';
-  return '';
-}
-
-// Warranty cost for a job given adjSq
-function warrantyJobCost(opt, adjSq) {
-  if(!opt || opt.std) return 0;
-  if(opt.perSq) return (opt.costPerSq || 0) * adjSq; // Golden: $8.64/sq all sizes
-  if(adjSq <= 50) return opt.costFlat50 || 0;         // Silver ≤50sq: $183.60
-  return opt.costFlat51 || 0;                          // Silver >50sq: $367.20
-}
-
-// ══════════ MATERIAL UI ══════════
+// MATERIAL UI
 function buildMatUI(){
-  const ui=document.getElementById('mat-ui');
-  ui.innerHTML=MATS.map(m=>{
+  document.getElementById('mat-ui').innerHTML=MATS.map(m=>{
     if(m.key==='vent') return buildVentUI();
     if(m.key==='boot') return buildBootUI();
-
-    const stdCost=oc(m,m.opts[0]);
     const selIdx=matSel[m.key]||0;
     return `<div class="mat-row" id="mr-${m.key}">
-      <div class="mat-hd">
-        <span class="mat-hd-name">${m.name}</span>
-        <span class="mat-hd-cost" id="mhc-${m.key}"></span>
-      </div>
+      <div class="mat-hd"><span class="mat-hd-name">${m.name}</span><span class="mat-hd-cost" id="mhc-${m.key}"></span></div>
       <div class="mat-body">
         ${m.note?`<div style="font-size:10px;color:var(--txt3);margin-bottom:8px">${m.note}</div>`:''}
-        <div class="mat-sel">
-          ${m.opts.map((o,i)=>`
-            <div class="mat-opt ${i===selIdx?(o.std?'std-sel':'sel'):''}" id="mo-${m.key}-${i}" onclick="pickMat('${m.key}',${i})">
-              ${o.name}
-            </div>`).join('')}
-        </div>
-        <div class="mat-result">
-          <span class="mat-result-label">Unit cost (our cost+tax)</span>
-          <span class="mat-result-val" id="mrc-${m.key}"></span>
-        </div>
-        <div style="margin-top:8px;border-top:1px solid var(--bdr);padding-top:8px">
-          <div style="font-size:9px;font-weight:700;color:var(--txt3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">My Charge Price <span style="font-weight:400;text-transform:none;letter-spacing:0">(optional — enter to see commission)</span></div>
-          <div style="display:flex;align-items:center;gap:6px">
-            <div style="display:flex;border:1px solid var(--bdr2);border-radius:var(--rsm);overflow:hidden;background:var(--surf);flex:1;transition:border-color .15s" id="cpwrap-${m.key}">
-              <span style="padding:8px 9px;background:var(--surf3);color:var(--txt3);font-size:12px;border-right:1px solid var(--bdr)">$</span>
-              <input type="number" min="0" step="0.01" placeholder="0.00"
-                id="cp-${m.key}"
-                value="${customPrices[m.key]!==null?customPrices[m.key]:''}"
-                style="border:none;background:transparent;padding:8px 10px;color:var(--txt);outline:none;width:100%;font-family:'Karla',sans-serif;font-size:14px;-webkit-appearance:none"
-                oninput="setCustomPrice('${m.key}',this.value)"
-                onfocus="document.getElementById('cpwrap-${m.key}').style.borderColor='var(--gold)'"
-                onblur="document.getElementById('cpwrap-${m.key}').style.borderColor='var(--bdr2)'"
-              />
-            </div>
-            <button onclick="clearCustomPrice('${m.key}')" style="background:none;border:1px solid var(--bdr2);border-radius:var(--rsm);padding:8px 10px;color:var(--txt3);cursor:pointer;font-size:11px;white-space:nowrap">✕ Clear</button>
-          </div>
-          <div style="font-size:10px;color:var(--gold);margin-top:4px;min-height:14px" id="cp-comm-${m.key}"></div>
-        </div>
+        <div class="mat-sel">${m.opts.map((o,i)=>`<div class="mat-opt ${i===selIdx?(o.std?'std-sel':'sel'):''}" id="mo-${m.key}-${i}" onclick="pickMat('${m.key}',${i})">${o.name}</div>`).join('')}</div>
+        <div class="mat-result"><span class="mat-result-label">Unit cost (our cost+tax)</span><span class="mat-result-val" id="mrc-${m.key}"></span></div>
+        ${cpSection(m.key)}
       </div>
     </div>`;
   }).join('');
@@ -830,17 +527,14 @@ function buildMatUI(){
 
 function buildVentUI(){
   const rows=[
-    {k:'ridge',  lbl:'Ridge Vent',   sub:'enter LF (÷4 = sticks needed)'},
-    {k:'box',    lbl:'Box Vents',    sub:'count, ins. standard'},
-    {k:'power',  lbl:'Power Vents',  sub:'count, upgrade'},
-    {k:'solar',  lbl:'Solar Vent',   sub:'count, upgrade'},
-    {k:'turbine',lbl:'Turbine',      sub:'count, upgrade'},
+    {k:'ridge',lbl:'Ridge Vent',sub:'enter LF (÷4 = sticks needed)'},
+    {k:'box',lbl:'Box Vents',sub:'count, ins. standard'},
+    {k:'power',lbl:'Power Vents',sub:'count, upgrade'},
+    {k:'solar',lbl:'Solar Vent',sub:'count, upgrade'},
+    {k:'turbine',lbl:'Turbine',sub:'count, upgrade'},
   ];
   return `<div class="mat-row" id="mr-vent">
-    <div class="mat-hd">
-      <span class="mat-hd-name">Ventilation</span>
-      <span class="mat-hd-cost" id="mhc-vent"></span>
-    </div>
+    <div class="mat-hd"><span class="mat-hd-name">Ventilation</span><span class="mat-hd-cost" id="mhc-vent"></span></div>
     <div class="mat-body">
       <div style="display:grid;grid-template-columns:2fr 1fr 1fr;gap:6px;margin-bottom:6px;align-items:end">
         <div style="font-size:9px;font-weight:700;color:var(--txt3);text-transform:uppercase;letter-spacing:.06em">Type</div>
@@ -849,371 +543,169 @@ function buildVentUI(){
       </div>
       ${rows.map(r=>`
         <div style="display:grid;grid-template-columns:2fr 1fr 1fr;gap:6px;margin-bottom:8px;align-items:center">
-          <div>
-            <div style="font-size:12px;font-weight:600;color:var(--txt2)">${r.lbl}</div>
-            <div style="font-size:9px;color:var(--txt3)">${r.sub}</div>
-          </div>
-          <input type="number" value="${ventCounts[r.k].exist}" min="0"
-            style="background:var(--surf);border:1px solid var(--bdr2);border-radius:6px;padding:8px;color:var(--txt);outline:none;font-size:14px;text-align:center;width:100%;font-family:'Syne',sans-serif;-webkit-appearance:none"
-            oninput="setVent('${r.k}','exist',this.value)"/>
-          <input type="number" value="${ventCounts[r.k].desired}" min="0"
-            style="background:var(--surf);border:1px solid var(--bdr2);border-radius:6px;padding:8px;color:var(--txt);outline:none;font-size:14px;text-align:center;width:100%;font-family:'Syne',sans-serif;-webkit-appearance:none"
-            oninput="setVent('${r.k}','desired',this.value)"/>
+          <div><div style="font-size:12px;font-weight:600;color:var(--txt2)">${r.lbl}</div><div style="font-size:9px;color:var(--txt3)">${r.sub}</div></div>
+          <input type="number" value="${ventCounts[r.k].exist}" min="0" style="background:var(--surf);border:1px solid var(--bdr2);border-radius:6px;padding:8px;color:var(--txt);outline:none;font-size:14px;text-align:center;width:100%;font-family:'Syne',sans-serif;-webkit-appearance:none" oninput="setVent('${r.k}','exist',this.value)"/>
+          <input type="number" value="${ventCounts[r.k].desired}" min="0" style="background:var(--surf);border:1px solid var(--bdr2);border-radius:6px;padding:8px;color:var(--txt);outline:none;font-size:14px;text-align:center;width:100%;font-family:'Syne',sans-serif;-webkit-appearance:none" oninput="setVent('${r.k}','desired',this.value)"/>
         </div>`).join('')}
-      <div class="mat-result">
-        <span class="mat-result-label">Ventilation upgrade charge</span>
-        <span class="mat-result-val" id="mrc-vent"></span>
-      </div>
+      <div class="mat-result"><span class="mat-result-label">Ventilation upgrade charge</span><span class="mat-result-val" id="mrc-vent"></span></div>
+      ${cpSection('vent')}
     </div>
   </div>`;
 }
 
 function buildBootUI(){
   return `<div class="mat-row" id="mr-boot">
-    <div class="mat-hd">
-      <span class="mat-hd-name">Pipe Boots</span>
-      <span class="mat-hd-cost" id="mhc-boot"></span>
-    </div>
+    <div class="mat-hd"><span class="mat-hd-name">Pipe Boots</span><span class="mat-hd-cost" id="mhc-boot"></span></div>
     <div class="mat-body">
-      <div class="mat-sel">
-        ${MATS.find(m=>m.key==='boot').opts.map((o,i)=>`
-          <div class="mat-opt ${i===(matSel['boot']||0)?(o.std?'std-sel':'sel'):''}" id="mo-boot-${i}" onclick="pickMat('boot',${i})">${o.name}</div>
-        `).join('')}
-      </div>
-      <div class="cnt-f" style="margin-top:8px">
-        <label>Number of Pipe Boots</label>
-        <input type="number" value="${bootCount}" min="0" oninput="setBootCount(this.value)" style="background:var(--surf);border:1px solid var(--bdr2);border-radius:6px;padding:8px 10px;color:var(--txt);outline:none;font-size:16px;font-family:'Syne',sans-serif;width:100%;-webkit-appearance:none"/>
-      </div>
-      <div class="mat-result">
-        <span class="mat-result-label">Total boot cost</span>
-        <span class="mat-result-val" id="mrc-boot"></span>
-      </div>
+      <div class="mat-sel">${MATS.find(m=>m.key==='boot').opts.map((o,i)=>`<div class="mat-opt ${i===(matSel['boot']||0)?(o.std?'std-sel':'sel'):''}" id="mo-boot-${i}" onclick="pickMat('boot',${i})">${o.name}</div>`).join('')}</div>
+      <div class="cnt-f" style="margin-top:8px"><label>Number of Pipe Boots</label><input type="number" value="${bootCount}" min="0" oninput="setBootCount(this.value)" style="background:var(--surf);border:1px solid var(--bdr2);border-radius:6px;padding:8px 10px;color:var(--txt);outline:none;font-size:16px;font-family:'Syne',sans-serif;width:100%;-webkit-appearance:none"/></div>
+      <div class="mat-result"><span class="mat-result-label">Total boot cost</span><span class="mat-result-val" id="mrc-boot"></span></div>
+      ${cpSection('boot')}
     </div>
   </div>`;
 }
 
-function pickMat(key, idx){
-  matSel[key]=idx;
-  const m=MATS.find(x=>x.key===key);
-  m.opts.forEach((_,i)=>{
-    const el=document.getElementById(`mo-${key}-${i}`);
-    if(!el)return;
-    el.className='mat-opt '+(i===idx?(m.opts[i].std?'std-sel':'sel'):'');
-  });
-  updateMatDisplay();
-  calc();
-}
-
-function setVent(k,type,val){
-  ventCounts[k][type]=Math.max(0,parseInt(val)||0);
-  calc();
-}
-function setBootCount(val){ bootCount=Math.max(0,parseInt(val)||0); calc(); }
-
-function setCustomPrice(key, val){
-  const v=parseFloat(val);
-  customPrices[key]=(val===''||isNaN(v))?null:v;
-  calc();
-}
-function clearCustomPrice(key){
-  customPrices[key]=null;
-  const inp=document.getElementById(`cp-${key}`);
-  if(inp) inp.value='';
-  calc();
-}
+function pickMat(key,idx){matSel[key]=idx;const m=MATS.find(x=>x.key===key);m.opts.forEach((_,i)=>{const el=document.getElementById(`mo-${key}-${i}`);if(!el)return;el.className='mat-opt '+(i===idx?(m.opts[i].std?'std-sel':'sel'):'');});updateMatDisplay();calc();}
+function setVent(k,type,val){ventCounts[k][type]=Math.max(0,parseInt(val)||0);calc();}
+function setBootCount(val){bootCount=Math.max(0,parseInt(val)||0);calc();}
+function setCustomPrice(key,val){const v=parseFloat(val);customPrices[key]=(val===''||isNaN(v))?null:v;calc();}
+function clearCustomPrice(key){customPrices[key]=null;const inp=document.getElementById(`cp-${key}`);if(inp)inp.value='';calc();}
 
 function updateMatDisplay(){
   MATS.forEach(m=>{
-    if(['vent','boot'].includes(m.key)) return;
-    const selIdx=matSel[m.key]||0;
-    const opt=m.opts[selIdx];
-    const hc=document.getElementById(`mhc-${m.key}`);
-    const rc=document.getElementById(`mrc-${m.key}`);
-    if(hc) hc.textContent=opt.name;
-    if(!rc) return;
-    if(m.key==='warr'){
-      if(opt.std) rc.textContent='Included';
-      else if(opt.perSq) rc.textContent=`$${opt.costPerSq}/sq (all sizes)`;
-      else rc.textContent=`≤50sq: $${opt.costFlat50} / >50sq: $${opt.costFlat51}`;
-    } else {
-      const cost=oc(m,opt);
-      rc.textContent='$'+cost.toFixed(2)+unitStr(m);
-    }
+    if(m.key==='vent')return;
+    const selIdx=matSel[m.key]||0;const opt=m.opts[selIdx];
+    const hc=document.getElementById(`mhc-${m.key}`);const rc=document.getElementById(`mrc-${m.key}`);
+    if(hc)hc.textContent=opt.name;
+    if(!rc)return;
+    if(m.key==='warr'){if(opt.std)rc.textContent='Included';else if(opt.perSq)rc.textContent=`$${opt.costPerSq}/sq (all sizes)`;else rc.textContent=`≤50sq: $${opt.costFlat50} / >50sq: $${opt.costFlat51}`;}
+    else{const cost=oc(m,opt);rc.textContent='$'+cost.toFixed(2)+unitStr(m);}
   });
 }
 
-// ══════════ GEOMETRY ══════════
+// GEOMETRY
 function getGeo(){
-  const sq   = parseFloat(document.getElementById('g-sq').value)||0;
-  const rdg  = parseFloat(document.getElementById('g-rdg').value)||0;
-  const hip  = parseFloat(document.getElementById('g-hip').value)||0;
-  const val  = parseFloat(document.getElementById('g-val').value)||0;
-  const rak  = parseFloat(document.getElementById('g-rak').value)||0;
-  const eav  = parseFloat(document.getElementById('g-eav').value)||0;
-  const ridgehip = rdg + hip;
-  return {sq, rdg, hip, val, rak, eav, ridgehip};
+  const sq=parseFloat(document.getElementById('g-sq').value)||0;
+  const rdg=parseFloat(document.getElementById('g-rdg').value)||0;
+  const hip=parseFloat(document.getElementById('g-hip').value)||0;
+  const val=parseFloat(document.getElementById('g-val').value)||0;
+  const rak=parseFloat(document.getElementById('g-rak').value)||0;
+  const eav=parseFloat(document.getElementById('g-eav').value)||0;
+  return{sq,rdg,hip,val,rak,eav,ridgehip:rdg+hip};
 }
-
-// Exact quantity formulas per component (from math sheet)
-// Returns qty in the same unit as costTax (sq, bundle, unit, piece, roll, ea)
-function matQty(m, selIdx, geo){
-  if(m.key === 'shingle'){
-    // SQ × 1.15 → × bdPerSq (3 or 4) → round up bundles → ÷ bdPerSq back to SQ
-    const bdps = (MATS.find(x=>x.key==='shingle').opts[selIdx]||{}).bdPerSq || 3;
-    const bundles = Math.ceil(geo.sq * 1.15 * bdps);
-    return bundles / bdps; // SQ equivalent; cost is per SQ
-  }
-  if(m.key === 'ridge'){
-    // (Ridge + Hip LF) ÷ LF/bundle → round up = bundles
-    const lfpb = (m.lfPerBd && m.lfPerBd[selIdx]) || 30;
-    return Math.ceil(geo.ridgehip / lfpb);
-  }
-  if(m.key === 'starter'){
-    // (Eave + Rake LF) → round up to nearest 100 → ÷100 = bundles
-    const totalLF = geo.eav + geo.rak;
-    return Math.ceil(totalLF / 100);
-  }
-  if(m.key === 'under'){
-    // SQ × 1.10 → round up to nearest 10 sq → ÷10 = rolls (cost is per roll = 10sq)
-    const withWaste = geo.sq * 1.10;
-    return Math.ceil(withWaste / 10); // rolls
-  }
-  if(m.key === 'valley'){
-    // Valley LF × 1.13 → ÷ LF/unit for chosen product → round up = units
-    const lfpu = (m.lfPerUnit && m.lfPerUnit[selIdx]) || 50;
-    return Math.ceil((geo.val * 1.13) / lfpu);
-  }
-  if(m.key === 'drip'){
-    // (Eave + Rake LF) × 1.10 waste → ÷ 10 → round up = pieces (each piece = 10LF)
-    return Math.ceil((geo.eav + geo.rak) * 1.10 / 10);
-  }
-  if(m.key === 'boot') return bootCount;
-  if(m.key === 'warr'){
-    // Warranty is flat fee per job; qty=adjSq passed to warrantyJobCost()
-    const bdps = (MATS.find(x=>x.key==='shingle').opts[0]||{}).bdPerSq || 3;
-    return Math.ceil(geo.sq * 1.15 * bdps) / bdps; // adjSq
-  }
+function matQty(m,selIdx,geo){
+  if(m.key==='shingle'){const bdps=(MATS.find(x=>x.key==='shingle').opts[selIdx]||{}).bdPerSq||3;return Math.ceil(geo.sq*1.15*bdps)/bdps;}
+  if(m.key==='ridge')return Math.ceil(geo.ridgehip/((m.lfPerBd&&m.lfPerBd[selIdx])||30));
+  if(m.key==='starter')return Math.ceil((geo.eav+geo.rak)/100);
+  if(m.key==='under')return Math.ceil(geo.sq*1.10/10);
+  if(m.key==='valley')return Math.ceil((geo.val*1.13)/((m.lfPerUnit&&m.lfPerUnit[selIdx])||50));
+  if(m.key==='drip')return Math.ceil((geo.eav+geo.rak)*1.10/10);
+  if(m.key==='boot')return bootCount;
+  if(m.key==='warr'){const bdps=(MATS.find(x=>x.key==='shingle').opts[0]||{}).bdPerSq||3;return Math.ceil(geo.sq*1.15*bdps)/bdps;}
   return 0;
 }
-function matQtyStd(m, geo){ return matQty(m, 0, geo); }
-
-// Human-readable qty string for the breakdown table
-function qtyLabel(m, selIdx, geo){
-  if(m.key === 'shingle'){
-    const bdps = (m.opts[selIdx]||{}).bdPerSq || 3;
-    const bd = Math.ceil(geo.sq * 1.15 * bdps);
-    return `${bd} bundles`;
-  }
-  if(m.key === 'ridge'){
-    const lfpb = (m.lfPerBd && m.lfPerBd[selIdx]) || 30;
-    const bd = Math.ceil(geo.ridgehip / lfpb);
-    return `${bd} bd`;
-  }
-  if(m.key === 'starter'){
-    const totalLF = geo.eav + geo.rak;
-    return `${Math.ceil(totalLF / 100)} bd`;
-  }
-  if(m.key === 'under'){
-    return `${Math.ceil(geo.sq * 1.10 / 10)} rolls`;
-  }
-  if(m.key === 'valley'){
-    const lfpu = (m.lfPerUnit && m.lfPerUnit[selIdx]) || 50;
-    const units = Math.ceil((geo.val * 1.13) / lfpu);
-    return `${units} units`;
-  }
-  if(m.key === 'drip'){
-    return `${Math.ceil((geo.eav + geo.rak) * 1.10 / 10)} pcs`;
-  }
-  if(m.key === 'boot') return `${bootCount} ea`;
-  if(m.key === 'warr'){
-    return geo.sq <= 50 ? '≤50 sq (flat fee)' : `${geo.sq.toFixed(1)} sq (>50 flat)`;
-  }
-  return '—';
+function qtyLabel(m,selIdx,geo){
+  if(m.key==='shingle'){const bdps=(m.opts[selIdx]||{}).bdPerSq||3;return`${Math.ceil(geo.sq*1.15*bdps)} bundles`;}
+  if(m.key==='ridge'){const lfpb=(m.lfPerBd&&m.lfPerBd[selIdx])||30;return`${Math.ceil(geo.ridgehip/lfpb)} bd`;}
+  if(m.key==='starter')return`${Math.ceil((geo.eav+geo.rak)/100)} bd`;
+  if(m.key==='under')return`${Math.ceil(geo.sq*1.10/10)} rolls`;
+  if(m.key==='valley'){const lfpu=(m.lfPerUnit&&m.lfPerUnit[selIdx])||50;return`${Math.ceil((geo.val*1.13)/lfpu)} units`;}
+  if(m.key==='drip')return`${Math.ceil((geo.eav+geo.rak)*1.10/10)} pcs`;
+  if(m.key==='boot')return`${bootCount} ea`;
+  if(m.key==='warr')return geo.sq<=50?'≤50 sq (flat fee)':`${geo.sq.toFixed(1)} sq (>50 flat)`;
+  return'—';
 }
 
-// ══════════ MAIN CALC ══════════
-function onHOOverride(){
-  hoOverride=true;
-  document.getElementById('ho-auto-note').textContent='⚠️ Manually overridden — clear field to return to auto-calc';
-  calc();
+function showCpComm(key,comm,hasCustom){
+  const el=document.getElementById(`cp-comm-${key}`);
+  if(!el)return;
+  el.textContent=hasCustom?(comm>0?`Commission: $${comm.toFixed(2)}`:'No commission (at or below our cost)'):'';
 }
+
+// MAIN CALC
+function onHOOverride(){hoOverride=true;document.getElementById('ho-auto-note').textContent='⚠️ Manually overridden — clear field to return to auto-calc';calc();}
 
 function calc(){
   const geo=getGeo();
-  const v=activeVer;
+  const shingleOpt=MATS.find(m=>m.key==='shingle').opts[matSel['shingle']||0];
+  const bdPerSq=shingleOpt.bdPerSq||3;
+  const bundles=geo.sq>0?Math.ceil(geo.sq*1.15*bdPerSq):0;
+  document.getElementById('m-bdls').textContent=bundles;
+  document.getElementById('m-ridgehip').textContent=geo.ridgehip.toFixed(0);
+  document.getElementById('m-eaverake').textContent=(geo.eav+geo.rak).toFixed(0);
 
-  const shingleOpt = MATS.find(m=>m.key==='shingle').opts[matSel['shingle']||0];
-  const bdPerSq = shingleOpt.bdPerSq || 3;
-  const bundles = geo.sq > 0 ? Math.ceil(geo.sq * 1.15 * bdPerSq) : 0;
-  document.getElementById('m-bdls').textContent = bundles;
-  document.getElementById('m-ridgehip').textContent = geo.ridgehip.toFixed(0);
-  document.getElementById('m-eaverake').textContent = (geo.eav + geo.rak).toFixed(0);
-
-
-  // ── per-material calculations ──
-  let totStdCost=0, totSelCost=0, totHOCharge=0, totComm=0, maxComm=0;
+  let totStdCost=0,totSelCost=0,totHOCharge=0,totComm=0,maxComm=0;
   const rows=[];
 
   MATS.filter(m=>m.key!=='vent').forEach(m=>{
-    const selIdx = matSel[m.key]||0;
+    const selIdx=matSel[m.key]||0;
+    let stdIdx=0;
+    if(m.key==='shingle'){const et=document.getElementById('existing-shingle').value;stdIdx=(et==='arch')?1:0;}
+    const stdOpt=m.opts[stdIdx];const selOpt=m.opts[selIdx];const maxOpt=m.opts[m.opts.length-1];
 
-    // Shingles: standard depends on existing shingle type
-    // Arch existing → ins covers up to Natural Shadow (idx 1, $118.26/sq)
-    // 3-Tab existing → ins only covers Royal Sovereign (idx 0, $113.40/sq)
-    let stdIdx = 0;
-    if(m.key === 'shingle'){
-      const existingType = document.getElementById('existing-shingle').value;
-      stdIdx = (existingType === 'arch') ? 1 : 0;
-    }
-
-    const stdOpt = m.opts[stdIdx];
-    const selOpt = m.opts[selIdx];
-    const maxOpt = m.opts[m.opts.length-1];
-
-    // ── Warranty: flat-fee per job, not per-unit multiply ──
-    if(m.key === 'warr'){
-      const adjSq = matQty(m, selIdx, geo); // returns adjSq
-      const tStdCost = warrantyJobCost(stdOpt, adjSq); // always 0 (std = included)
-      const tSelCost = warrantyJobCost(selOpt, adjSq);
-      const tMaxCost = warrantyJobCost(maxOpt, adjSq);
-      const hoCharge = Math.max(0, tSelCost - tStdCost);
-      const comm = hoCharge;
-      maxComm += Math.max(0, tMaxCost - tStdCost);
-      totStdCost += tStdCost;
-      totSelCost += tSelCost;
-      totHOCharge += hoCharge;
-      totComm += comm;
-      rows.push({
-        name:m.name, selName:selOpt.name, selIdx,
-        selCost:tSelCost, insAllows:tStdCost, hoCharge, comm,
-        qty:qtyLabel(m, selIdx, geo), isStd:selIdx===0
-      });
+    if(m.key==='warr'){
+      const adjSq=matQty(m,selIdx,geo);
+      const tStdCost=warrantyJobCost(stdOpt,adjSq);const tSelCost=warrantyJobCost(selOpt,adjSq);const tMaxCost=warrantyJobCost(maxOpt,adjSq);
+      const hoCharge=Math.max(0,tSelCost-tStdCost);
+      maxComm+=Math.max(0,tMaxCost-tStdCost);
+      totStdCost+=tStdCost;totSelCost+=tSelCost;totHOCharge+=hoCharge;totComm+=hoCharge;
+      rows.push({name:m.name,selName:selOpt.name,selIdx,selCost:tSelCost,insAllows:tStdCost,hoCharge,comm:hoCharge,qty:qtyLabel(m,selIdx,geo),isStd:selIdx===0});
       return;
     }
 
-    const qSel = matQty(m, selIdx, geo);
-    const qStd = matQty(m, stdIdx, geo);
-    const qMax = matQty(m, m.opts.length-1, geo);
+    const qSel=matQty(m,selIdx,geo);const qStd=matQty(m,stdIdx,geo);const qMax=matQty(m,m.opts.length-1,geo);
+    const stdCostUnit=oc(m,stdOpt);const selCostUnit=oc(m,selOpt);const maxCostUnit=oc(m,maxOpt);
+    const tStdCost=stdCostUnit*qStd;const tSelCost=selCostUnit*qSel;const tMaxCost=maxCostUnit*qMax;
 
-    const stdCostUnit = oc(m, stdOpt);
-    const selCostUnit = oc(m, selOpt);
-    const maxCostUnit = oc(m, maxOpt);
+    const customTotal=customPrices[m.key]!==null?customPrices[m.key]:null;
+    const hoCharge=customTotal!==null?Math.max(0,customTotal-tStdCost):Math.max(0,tSelCost-tStdCost);
+    const actualComm=customTotal!==null?Math.max(0,customTotal-tSelCost):Math.max(0,tSelCost-tStdCost);
 
-    const tStdCost = stdCostUnit * qStd;
-    const tSelCost = selCostUnit * qSel;
-    const tMaxCost = maxCostUnit * qMax;
-
-    // If rep entered a custom charge price, use that as the total charged to HO
-    // Otherwise fall back to the auto-calculated upgrade difference
-    const customTotal = customPrices[m.key] !== null ? customPrices[m.key] : null;
-    const hoCharge = customTotal !== null
-      ? Math.max(0, customTotal - tStdCost)   // custom total minus what ins covers
-      : Math.max(0, tSelCost - tStdCost);
-    const comm = Math.max(0, hoCharge - (tSelCost - tStdCost)); // comm = anything above our cost difference
-    // Simpler: commission = custom total charged - our actual selected cost
-    const actualComm = customTotal !== null
-      ? Math.max(0, customTotal - tSelCost)
-      : Math.max(0, tSelCost - tStdCost);
-
-    const maxHO = Math.max(0, tMaxCost - tStdCost);
-    maxComm += maxHO;
-
-    totStdCost += tStdCost;
-    totSelCost += tSelCost;
-    totHOCharge += customTotal !== null ? Math.max(0, customTotal - tStdCost) : hoCharge;
-    totComm += actualComm;
-
-    // Show per-material commission inline in UI
-    const cpCommEl = document.getElementById(`cp-comm-${m.key}`);
-    if(cpCommEl){
-      if(customTotal !== null){
-        cpCommEl.textContent = actualComm > 0
-          ? `Commission on this item: $${actualComm.toFixed(2)}`
-          : actualComm === 0 ? 'No commission (at or below our cost)' : '';
-      } else {
-        cpCommEl.textContent = '';
-      }
-    }
-
-    const qDisp = qtyLabel(m, selIdx, geo);
-    rows.push({
-      name:m.name, selName:selOpt.name, selIdx,
-      selCost:tSelCost, insAllows:tStdCost,
-      hoCharge: customTotal !== null ? Math.max(0, customTotal - tStdCost) : hoCharge,
-      comm: actualComm,
-      qty:qDisp, isStd:selIdx===stdIdx
-    });
+    maxComm+=Math.max(0,tMaxCost-tStdCost);
+    totStdCost+=tStdCost;totSelCost+=tSelCost;
+    totHOCharge+=customTotal!==null?Math.max(0,customTotal-tStdCost):hoCharge;
+    totComm+=actualComm;
+    showCpComm(m.key,actualComm,customTotal!==null);
+    rows.push({name:m.name,selName:selOpt.name,selIdx,selCost:tSelCost,insAllows:tStdCost,hoCharge:customTotal!==null?Math.max(0,customTotal-tStdCost):hoCharge,comm:actualComm,qty:qtyLabel(m,selIdx,geo),isStd:selIdx===stdIdx});
   });
 
-  // ── VENTILATION ──
+  // VENTILATION
   let ventStdCost=0,ventSelCost=0,ventHO=0,ventComm=0;
-  const ventDefs={
-    ridge:{opt:MATS.find(m=>m.key==='vent').opts[0]},
-    box:  {opt:MATS.find(m=>m.key==='vent').opts[1]},
-    power:{opt:MATS.find(m=>m.key==='vent').opts[2]},
-    solar:{opt:MATS.find(m=>m.key==='vent').opts[3]},
-    turbine:{opt:MATS.find(m=>m.key==='vent').opts[4]},
-  };
+  const ventDefs={ridge:{opt:MATS.find(m=>m.key==='vent').opts[0]},box:{opt:MATS.find(m=>m.key==='vent').opts[1]},power:{opt:MATS.find(m=>m.key==='vent').opts[2]},solar:{opt:MATS.find(m=>m.key==='vent').opts[3]},turbine:{opt:MATS.find(m=>m.key==='vent').opts[4]}};
   ['ridge','box','power','solar','turbine'].forEach(k=>{
-    const vd=ventDefs[k]; const opt=vd.opt;
-    const existing = ventCounts[k].exist || 0;
-    const desired  = ventCounts[k].desired || 0;
-    const isStd = (k==='ridge' || k==='box');
-
-    let selCostItem = 0, stdCostItem = 0;
-
-    if(k === 'ridge'){
-      // Inputs are LF. (desired LF - existing LF) / 4 = sticks needed, round up.
-      // costTaxLf = our cost per LF; cost per stick = costTaxLf * 4
-      const netLF = Math.max(0, desired - existing);
-      const sticks = Math.ceil(netLF / 4);
-      const costPerStick = (opt.costTaxLf || 0) * 4;
-      selCostItem = sticks * costPerStick;
-      stdCostItem = selCostItem; // ridge vent is std (ins covers)
-    } else {
-      // All others: desired count × cost each
-      selCostItem = desired * (opt.costTaxEa || 0);
-      stdCostItem = isStd ? selCostItem : 0; // box vent is std
-    }
-
-    const hoItem = isStd ? 0 : selCostItem;
-    const comm = hoItem;
-    if(!isStd) maxComm += selCostItem;
-    ventStdCost+=stdCostItem;
-    ventSelCost+=selCostItem;
-    ventHO+=hoItem;
-    ventComm+=comm;
-
-    totStdCost+=stdCostItem;
-    totSelCost+=selCostItem;
-    totHOCharge+=hoItem;
-    totComm+=comm;
-  });
-  // summarize vent as one row
-  const ventDesiredTotal=Object.values(ventCounts).reduce((a,v)=>a+v.desired,0);
-  rows.push({
-    name:'Ventilation',selName:'Mixed (see counts)',selIdx:0,
-    selCost:ventSelCost,insAllows:ventStdCost,hoCharge:ventHO,comm:ventComm,
-    qty:ventDesiredTotal+' units',isStd:ventHO===0
+    const opt=ventDefs[k].opt;
+    const existing=ventCounts[k].exist||0;const desired=ventCounts[k].desired||0;
+    const isStd=(k==='ridge'||k==='box');
+    let selCostItem=0,stdCostItem=0;
+    if(k==='ridge'){const sticks=Math.ceil(Math.max(0,desired-existing)/4);const cps=(opt.costTaxLf||0)*4;selCostItem=sticks*cps;stdCostItem=selCostItem;}
+    else{selCostItem=desired*(opt.costTaxEa||0);stdCostItem=isStd?selCostItem:0;}
+    const hoItem=isStd?0:selCostItem;
+    if(!isStd)maxComm+=selCostItem;
+    ventStdCost+=stdCostItem;ventSelCost+=selCostItem;ventHO+=hoItem;ventComm+=hoItem;
+    totStdCost+=stdCostItem;totSelCost+=selCostItem;totHOCharge+=hoItem;totComm+=hoItem;
   });
 
-  // ── HO CHARGE (auto or override) ──
-  let finalHOCharge=totHOCharge;
-  if(hoOverride){
-    const ov=parseFloat(document.getElementById('ho-charge').value)||0;
-    finalHOCharge=ov;
+  // Ventilation custom price override
+  const ventCustom=customPrices['vent']!==null?customPrices['vent']:null;
+  let finalVentHO=ventHO,finalVentComm=ventComm;
+  if(ventCustom!==null){
+    finalVentHO=Math.max(0,ventCustom-ventStdCost);
+    finalVentComm=Math.max(0,ventCustom-ventSelCost);
+    totHOCharge=totHOCharge-ventHO+finalVentHO;
+    totComm=totComm-ventComm+finalVentComm;
+    showCpComm('vent',finalVentComm,true);
   } else {
-    document.getElementById('ho-charge').value=totHOCharge.toFixed(2);
+    showCpComm('vent',0,false);
   }
 
-  // Grand total = HO upgrade charges only (ins settlement handled separately by insurance)
-  const grandTotal = finalHOCharge;
+  const ventTotal=Object.values(ventCounts).reduce((a,v)=>a+v.desired,0);
+  rows.push({name:'Ventilation',selName:'Mixed (see counts)',selIdx:0,selCost:ventSelCost,insAllows:ventStdCost,hoCharge:finalVentHO,comm:finalVentComm,qty:ventTotal+' units',isStd:ventHO===0});
 
-  // Commission
-  const upgComm=totComm;
-  const totalComm=upgComm;
+  let finalHOCharge=totHOCharge;
+  if(hoOverride){const ov=parseFloat(document.getElementById('ho-charge').value)||0;finalHOCharge=ov;}
+  else{document.getElementById('ho-charge').value=totHOCharge.toFixed(2);}
 
-  // Display
+  const grandTotal=finalHOCharge;const upgComm=totComm;
   document.getElementById('grand-total').textContent=fmt(grandTotal);
   document.getElementById('c-matcost').textContent=fmt(totSelCost);
   document.getElementById('c-charged').textContent=fmt(finalHOCharge);
@@ -1221,13 +713,11 @@ function calc(){
   document.getElementById('c-margin').textContent=fmt(margin2);
   document.getElementById('c-gp').textContent=fmt(margin2-upgComm);
   document.getElementById('c-upgcomm').textContent=fmt(upgComm);
-  document.getElementById('c-total-comm').textContent=fmt(totalComm);
-
+  document.getElementById('c-total-comm').textContent=fmt(upgComm);
   const pct=maxComm>0?Math.min(100,upgComm/maxComm*100):0;
   document.getElementById('cbar').style.width=pct.toFixed(1)+'%';
   document.getElementById('bar-pct').textContent=pct.toFixed(0)+'%';
 
-  // Line-item table
   document.getElementById('lbody').innerHTML=rows.map(r=>`<tr>
     <td style="color:var(--txt);font-weight:500;font-size:11px">${r.name}</td>
     <td style="font-size:10px;max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${r.selName}</td>
@@ -1237,110 +727,59 @@ function calc(){
     <td style="color:${r.hoCharge>0?'var(--amber)':'var(--txt3)'}">$${r.hoCharge.toFixed(0)}</td>
     <td style="color:var(--gold);font-weight:600">$${r.comm.toFixed(0)}</td>
   </tr>`).join('');
-
   document.getElementById('ft-cost').textContent='$'+Math.round(totSelCost).toLocaleString();
   document.getElementById('ft-ins').textContent='$'+Math.round(totStdCost).toLocaleString();
   document.getElementById('ft-ho').textContent='$'+Math.round(finalHOCharge).toLocaleString();
   document.getElementById('ft-com').textContent='$'+Math.round(upgComm).toLocaleString();
-
-  // Auto-save this user's work to their own localStorage key
   saveState();
 }
 
-function fmt(n){return '$'+Math.abs(n).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});}
+function fmt(n){return'$'+Math.abs(n).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});}
 
-
-// Each user's work is stored under their own key — sessions are fully isolated.
-function storageKey(){ return `upgcomm_${me}`; }
-
+// LOCAL STORAGE
+function storageKey(){return`upgcomm_${me}`;}
 function saveState(){
-  if(!me) return;
-  const fields=['fc-name','fc-wo','fc-addr','fc-claim','fc-notes','fc-date','ded-amt','dap-amt','g-sq','g-rdg','g-hip','g-val','g-rak','g-eav'];
+  if(!me)return;
+  const fields=['fc-name','fc-wo','fc-addr','fc-claim','fc-notes','fc-date','g-sq','g-rdg','g-hip','g-val','g-rak','g-eav'];
   const fieldVals={};
-  fields.forEach(id=>{ const el=document.getElementById(id); if(el) fieldVals[id]=el.value; });
-  const state={
-    fieldVals,
-    matSel:Object.assign({},matSel),
-    customPrices:Object.assign({},customPrices),
-    ventCounts:JSON.parse(JSON.stringify(ventCounts)),
-    bootCount,
-    claimMode,
-    hoOverride,
-    existingShingle:document.getElementById('existing-shingle')?.value||'arch',
-    savedAt:new Date().toISOString()
-  };
-  try{ localStorage.setItem(storageKey(), JSON.stringify(state)); }catch(e){}
+  fields.forEach(id=>{const el=document.getElementById(id);if(el)fieldVals[id]=el.value;});
+  const state={fieldVals,matSel:Object.assign({},matSel),customPrices:Object.assign({},customPrices),ventCounts:JSON.parse(JSON.stringify(ventCounts)),bootCount,claimMode,hoOverride,existingShingle:document.getElementById('existing-shingle')?.value||'arch',savedAt:new Date().toISOString()};
+  try{localStorage.setItem(storageKey(),JSON.stringify(state));}catch(e){}
 }
-
 function loadState(){
-  if(!me) return;
+  if(!me)return;
   let state;
-  try{ const raw=localStorage.getItem(storageKey()); if(!raw) return; state=JSON.parse(raw); }catch(e){ return; }
-
-  // Restore field values
-  if(state.fieldVals){
-    Object.entries(state.fieldVals).forEach(([id,val])=>{
-      const el=document.getElementById(id); if(el) el.value=val;
-    });
-  }
-  // Restore material selections
-  if(state.matSel) Object.assign(matSel, state.matSel);
-  if(state.customPrices) Object.assign(customPrices, state.customPrices);
-  if(state.ventCounts) ventCounts=state.ventCounts;
-  if(typeof state.bootCount==='number') bootCount=state.bootCount;
-  if(state.claimMode){ claimMode=state.claimMode; setMode(claimMode); }
-  if(typeof state.hoOverride==='boolean') hoOverride=state.hoOverride;
-  if(state.existingShingle){
-    const el=document.getElementById('existing-shingle'); if(el) el.value=state.existingShingle;
-  }
-
-  // Rebuild UI with restored selections then calc
+  try{const raw=localStorage.getItem(storageKey());if(!raw)return;state=JSON.parse(raw);}catch(e){return;}
+  if(state.fieldVals)Object.entries(state.fieldVals).forEach(([id,val])=>{const el=document.getElementById(id);if(el)el.value=val;});
+  if(state.matSel)Object.assign(matSel,state.matSel);
+  if(state.customPrices)Object.assign(customPrices,state.customPrices);
+  if(state.ventCounts)ventCounts=state.ventCounts;
+  if(typeof state.bootCount==='number')bootCount=state.bootCount;
+  if(state.claimMode){claimMode=state.claimMode;setMode(claimMode);}
+  if(typeof state.hoOverride==='boolean')hoOverride=state.hoOverride;
+  if(state.existingShingle){const el=document.getElementById('existing-shingle');if(el)el.value=state.existingShingle;}
   buildMatUI();
-  // Restore vent counts in the rebuilt UI
-  if(state.ventCounts){
-    Object.entries(ventCounts).forEach(([k,v])=>{
-      const inputs=document.querySelectorAll(`[oninput*="setVent('${k}'"]`);
-      if(inputs[0]) inputs[0].value=v.exist;
-      if(inputs[1]) inputs[1].value=v.desired;
-    });
-  }
-  // Restore boot count
-  const bootEl=document.querySelector('[oninput*="setBootCount"]');
-  if(bootEl) bootEl.value=bootCount;
-
-  // Restore HO override note
-  if(state.hoOverride){
-    const n=document.getElementById('ho-auto-note');
-    if(n) n.textContent='⚠️ Manually overridden — clear field to return to auto-calc';
-  }
-
+  if(state.ventCounts){Object.entries(ventCounts).forEach(([k,v])=>{const inputs=document.querySelectorAll(`[oninput*="setVent('${k}'"]`);if(inputs[0])inputs[0].value=v.exist;if(inputs[1])inputs[1].value=v.desired;});}
+  const bootEl=document.querySelector('[oninput*="setBootCount"]');if(bootEl)bootEl.value=bootCount;
+  if(state.hoOverride){const n=document.getElementById('ho-auto-note');if(n)n.textContent='⚠️ Manually overridden — clear field to return to auto-calc';}
   calc();
-  if(state.savedAt){
-    const d=new Date(state.savedAt);
-    toast(`↩ Restored your work from ${d.toLocaleDateString('en-US',{month:'short',day:'numeric'})}`);
-  }
+  if(state.savedAt){const d=new Date(state.savedAt);toast(`↩ Restored from ${d.toLocaleDateString('en-US',{month:'short',day:'numeric'})}`);}
 }
-
-function clearState(){
-  if(!me) return;
-  try{ localStorage.removeItem(storageKey()); }catch(e){}
-}
+function clearState(){if(!me)return;try{localStorage.removeItem(storageKey());}catch(e){}}
 
 function resetCalc(){
-  MATS.forEach(m=>{matSel[m.key]=0; customPrices[m.key]=null;});
+  MATS.forEach(m=>{matSel[m.key]=0;customPrices[m.key]=null;});
   ventCounts={ridge:{exist:0,desired:0},box:{exist:0,desired:0},power:{exist:0,desired:0},solar:{exist:0,desired:0},turbine:{exist:0,desired:0}};
   bootCount=0;claimMode='full';hoOverride=false;
-  ['fc-name','fc-wo','fc-addr','fc-claim','fc-notes'].forEach(id=>{ const el=document.getElementById(id); if(el)el.value='';});
+  ['fc-name','fc-wo','fc-addr','fc-claim','fc-notes'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
   document.getElementById('fc-date').value=new Date().toISOString().slice(0,10);
   document.getElementById('ho-auto-note').textContent='Auto-calculated from selections above';
   ['g-sq','g-rdg','g-hip','g-val','g-rak','g-eav'].forEach(id=>document.getElementById(id).value='0');
-  setMode('full');
-  activeVer=getVer();updateBanner();buildMatUI();calc();
-  clearState();
-  toast('↺ Reset');
+  setMode('full');activeVer=getVer();updateBanner();buildMatUI();calc();
+  clearState();toast('↺ Reset');
 }
 
-// ══════════ PDF ══════════
+// PDF
 function exportPDF(){
   updateBanner();
   const notes=document.getElementById('fc-notes').value.trim();
@@ -1348,143 +787,69 @@ function exportPDF(){
   document.getElementById('pnotes').style.display=notes?'block':'none';
   document.getElementById('psig').style.display='block';
   document.getElementById('ph').style.display='block';
-  setTimeout(()=>{
-    window.print();
-    setTimeout(()=>{['psig','ph','pnotes'].forEach(id=>document.getElementById(id).style.display='none');},500);
-  },120);
+  setTimeout(()=>{window.print();setTimeout(()=>{['psig','ph','pnotes'].forEach(id=>document.getElementById(id).style.display='none');},500);},120);
 }
 
-// ══════════ HISTORY ══════════
+// HISTORY
 function renderHistory(){
   const today=new Date().toISOString().slice(0,10);
-  const hdz=MATS.find(c=>c.key==='shingle').opts[2]; // GAF HDZ & HDZ Bold
+  const hdz=MATS.find(c=>c.key==='shingle').opts[2];
   document.getElementById('hist-body').innerHTML=[...VERSIONS].reverse().map(v=>{
     const s=vst(v,today);
-    return `<tr class="${s==='Active'?'arow':''}">
-      <td style="color:var(--txt);font-weight:700">${v.id.toUpperCase()}</td>
-      <td style="color:var(--txt)">${v.label}</td>
-      <td>${fd(v.eff)}</td>
-      <td>${v.exp?fd(v.exp):'—'}</td>
-      <td><span class="badge ${s==='Active'?'b-green':s==='Upcoming'?'b-blue':'b-gray'}">${s}</span></td>
-      <td>$${hdz.costTaxSq.toFixed(2)}</td>
-    </tr>`;
+    return`<tr class="${s==='Active'?'arow':''}"><td style="color:var(--txt);font-weight:700">${v.id.toUpperCase()}</td><td style="color:var(--txt)">${v.label}</td><td>${fd(v.eff)}</td><td>${v.exp?fd(v.exp):'—'}</td><td><span class="badge ${s==='Active'?'b-green':s==='Upcoming'?'b-blue':'b-gray'}">${s}</span></td><td>$${hdz.costTaxSq.toFixed(2)}</td></tr>`;
   }).join('');
 }
-function vst(v,t){if(v.eff>t)return 'Upcoming';if(!v.exp||v.exp>=t)return 'Active';return 'Expired';}
+function vst(v,t){if(v.eff>t)return'Upcoming';if(!v.exp||v.exp>=t)return'Active';return'Expired';}
 
-// ══════════ ADMIN PRICING ══════════
+// ADMIN
 const ADMIN_CATS=[
-  {key:'shingle',label:'Shingles (Our Cost+Tax per sq)',      pk:'costTaxSq'},
-  {key:'ridge',  label:'Ridge Cap (Our Cost+Tax per bundle)', pk:'costTaxBd'},
-  {key:'starter',label:'Starter Strip (per bundle)',          pk:'costTaxBd'},
-  {key:'under',  label:'Underlayment (per 10-sq roll)',       pk:'costTaxRoll'},
-  {key:'valley', label:'Valley / Ice & Water (per unit)',     pk:'costTaxUnit'},
-  {key:'drip',   label:"Drip Edge (per piece, 10')",          pk:'costTaxEa'},
-  {key:'boot',   label:'Pipe Boots (per ea)',                 pk:'costTaxEa'},
-  {key:'warr',   label:'Warranty (flat fee / per-sq)',         pk:'costFlat50'},
+  {key:'shingle',label:'Shingles (Our Cost+Tax per sq)',pk:'costTaxSq'},
+  {key:'ridge',label:'Ridge Cap (Our Cost+Tax per bundle)',pk:'costTaxBd'},
+  {key:'starter',label:'Starter Strip (per bundle)',pk:'costTaxBd'},
+  {key:'under',label:'Underlayment (per 10-sq roll)',pk:'costTaxRoll'},
+  {key:'valley',label:'Valley / Ice & Water (per unit)',pk:'costTaxUnit'},
+  {key:'drip',label:"Drip Edge (per piece, 10')",pk:'costTaxEa'},
+  {key:'boot',label:'Pipe Boots (per ea)',pk:'costTaxEa'},
+  {key:'warr',label:'Warranty (flat fee / per-sq)',pk:'costFlat50'},
 ];
-const VENT_CATS=[
-  {k:'ridge', label:'Ridge Vent (per LF, our cost+tax)', pk:'costTaxLf'},
-  {k:'box',   label:'Box Vents (per ea)',                 pk:'costTaxEa'},
-  {k:'power', label:'Power Vents (per ea)',               pk:'costTaxEa'},
-  {k:'solar', label:'Solar Vent (per ea)',                 pk:'costTaxEa'},
-  {k:'turbine',label:'Turbine (per ea)',                  pk:'costTaxEa'},
-];
-
+const VENT_CATS=[{k:'ridge',label:'Ridge Vent (per LF)',pk:'costTaxLf'},{k:'box',label:'Box Vents (per ea)',pk:'costTaxEa'},{k:'power',label:'Power Vents (per ea)',pk:'costTaxEa'},{k:'solar',label:'Solar Vent (per ea)',pk:'costTaxEa'},{k:'turbine',label:'Turbine (per ea)',pk:'costTaxEa'}];
 function buildAdminFields(){
   let html='';
   ADMIN_CATS.forEach(cat=>{
     const m=MATS.find(x=>x.key===cat.key);
-    html+=`<div class="dvl">${cat.label}</div>
-    <div class="g2">
-      ${m.opts.map((o,i)=>`<div class="f" style="margin-bottom:6px">
-        <label>${o.name.substring(0,30)}</label>
-        <div class="pfx"><div class="pfx-lbl">$</div>
-          <input type="number" id="af-${cat.key}-${i}" value="${(o[cat.pk]||0).toFixed(4)}" step="0.01" min="0"/>
-        </div>
-      </div>`).join('')}
-    </div>`;
+    html+=`<div class="dvl">${cat.label}</div><div class="g2">${m.opts.map((o,i)=>`<div class="f" style="margin-bottom:6px"><label>${o.name.substring(0,30)}</label><div class="pfx"><div class="pfx-lbl">$</div><input type="number" id="af-${cat.key}-${i}" value="${(o[cat.pk]||0).toFixed(4)}" step="0.01" min="0"/></div></div>`).join('')}</div>`;
   });
-  // Ventilation separately
-  html+=`<div class="dvl">Ventilation (per unit our cost+tax)</div><div class="g2">`;
+  html+=`<div class="dvl">Ventilation (our cost+tax)</div><div class="g2">`;
   const ventM=MATS.find(m=>m.key==='vent');
-  VENT_CATS.forEach((vc,i)=>{
-    const opt=ventM.opts[i];
-    const val=opt.costTaxLf||opt.costTaxEa||0;
-    html+=`<div class="f" style="margin-bottom:6px">
-      <label>${vc.label.substring(0,28)}</label>
-      <div class="pfx"><div class="pfx-lbl">$</div>
-        <input type="number" id="afv-${vc.k}" value="${val.toFixed(4)}" step="0.01" min="0"/>
-      </div>
-    </div>`;
-  });
+  VENT_CATS.forEach((vc,i)=>{const opt=ventM.opts[i];const val=opt.costTaxLf||opt.costTaxEa||0;html+=`<div class="f" style="margin-bottom:6px"><label>${vc.label.substring(0,28)}</label><div class="pfx"><div class="pfx-lbl">$</div><input type="number" id="afv-${vc.k}" value="${val.toFixed(4)}" step="0.01" min="0"/></div></div>`;});
   html+='</div>';
   document.getElementById('admin-fields').innerHTML=html;
 }
-
 function publishVer(){
-  const eff=document.getElementById('n-eff').value;
-  const lbl=document.getElementById('n-lbl').value.trim()||`Version ${vidx}`;
+  const eff=document.getElementById('n-eff').value;const lbl=document.getElementById('n-lbl').value.trim()||`Version ${vidx}`;
   if(!eff){toast('Set an effective date');return;}
-  // Close current
-  VERSIONS.forEach(v=>{
-    if(!v.exp&&v.eff<eff){const d=new Date(eff);d.setDate(d.getDate()-1);v.exp=d.toISOString().slice(0,10);}
-  });
-  // Read fields and update MATS in-place
-  ADMIN_CATS.forEach(cat=>{
-    const m=MATS.find(x=>x.key===cat.key);
-    m.opts.forEach((o,i)=>{
-      const inp=document.getElementById(`af-${cat.key}-${i}`);
-      if(inp)o[cat.pk]=parseFloat(inp.value)||0;
-    });
-  });
-  // Vent
+  VERSIONS.forEach(v=>{if(!v.exp&&v.eff<eff){const d=new Date(eff);d.setDate(d.getDate()-1);v.exp=d.toISOString().slice(0,10);}});
+  ADMIN_CATS.forEach(cat=>{const m=MATS.find(x=>x.key===cat.key);m.opts.forEach((o,i)=>{const inp=document.getElementById(`af-${cat.key}-${i}`);if(inp)o[cat.pk]=parseFloat(inp.value)||0;});});
   const ventM=MATS.find(m=>m.key==='vent');
-  VENT_CATS.forEach((vc,i)=>{
-    const inp=document.getElementById(`afv-${vc.k}`);
-    if(!inp)return;
-    const val=parseFloat(inp.value)||0;
-    if(vc.pk==='costTaxLf')ventM.opts[i].costTaxLf=val;
-    else ventM.opts[i].costTaxEa=val;
-  });
-
+  VENT_CATS.forEach((vc,i)=>{const inp=document.getElementById(`afv-${vc.k}`);if(!inp)return;const val=parseFloat(inp.value)||0;if(vc.pk==='costTaxLf')ventM.opts[i].costTaxLf=val;else ventM.opts[i].costTaxEa=val;});
   VERSIONS.push({id:'v'+vidx++,label:lbl,eff,exp:null,by:me});
-  renderAdminVers();renderHistory();
-  activeVer=getVer();updateBanner();buildMatUI();calc();
+  renderAdminVers();renderHistory();activeVer=getVer();updateBanner();buildMatUI();calc();
   toast('✅ Published: '+lbl);setPage('pg-hist');
 }
-
 function renderAdminVers(){
-  const today=new Date().toISOString().slice(0,10);
-  const hdz=MATS.find(c=>c.key==='shingle').opts[2]; // GAF HDZ & HDZ Bold
-  document.getElementById('adm-ver-body').innerHTML=[...VERSIONS].reverse().map(v=>{
-    const s=vst(v,today);
-    return `<tr class="${s==='Active'?'arow':''}">
-      <td style="color:var(--txt);font-weight:700">${v.id.toUpperCase()}</td>
-      <td style="color:var(--txt)">${v.label}</td>
-      <td>${fd(v.eff)}</td>
-      <td>${v.exp?fd(v.exp):'<span style="color:var(--green)">Present</span>'}</td>
-      <td><span class="badge ${s==='Active'?'b-green':s==='Upcoming'?'b-blue':'b-gray'}">${s}</span></td>
-      <td>$${hdz.costTaxSq.toFixed(2)}</td>
-    </tr>`;
-  }).join('');
+  const today=new Date().toISOString().slice(0,10);const hdz=MATS.find(c=>c.key==='shingle').opts[2];
+  document.getElementById('adm-ver-body').innerHTML=[...VERSIONS].reverse().map(v=>{const s=vst(v,today);return`<tr class="${s==='Active'?'arow':''}"><td style="color:var(--txt);font-weight:700">${v.id.toUpperCase()}</td><td style="color:var(--txt)">${v.label}</td><td>${fd(v.eff)}</td><td>${v.exp?fd(v.exp):'<span style="color:var(--green)">Present</span>'}</td><td><span class="badge ${s==='Active'?'b-green':s==='Upcoming'?'b-blue':'b-gray'}">${s}</span></td><td>$${hdz.costTaxSq.toFixed(2)}</td></tr>`;}).join('');
 }
 
-// ══════════ USERS ══════════
+// USERS
 function renderReps(){
   const sales=Object.entries(USERS).filter(([,r])=>r.role==='sales');
   const admins=Object.entries(USERS).filter(([,r])=>r.role==='admin');
-  const row=([u,r])=>`
-    <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--bdr)">
-      <div><div style="font-weight:500;color:var(--txt)">${r.name}</div><div style="font-size:11px;color:var(--txt3)">@${u}</div></div>
-    </div>`;
-  const rList=document.getElementById('reps-list');
-  const aList=document.getElementById('admins-list');
-  if(rList) rList.innerHTML=sales.map(row).join('');
-  if(aList) aList.innerHTML=admins.map(row).join('');
+  const row=([u,r])=>`<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--bdr)"><div><div style="font-weight:500;color:var(--txt)">${r.name}</div><div style="font-size:11px;color:var(--txt3)">@${u}</div></div></div>`;
+  const rList=document.getElementById('reps-list');const aList=document.getElementById('admins-list');
+  if(rList)rList.innerHTML=sales.map(row).join('');if(aList)aList.innerHTML=admins.map(row).join('');
 }
 
-// ══════════ UTILS ══════════
 function fd(d){if(!d)return'—';const[y,m,dy]=d.split('-');return`${+m}/${+dy}/${y}`;}
 let _tt;
 function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('on');clearTimeout(_tt);_tt=setTimeout(()=>el.classList.remove('on'),2800);}
