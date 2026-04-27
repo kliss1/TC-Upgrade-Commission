@@ -173,7 +173,7 @@ input[type=range].margin-slider::-moz-range-thumb{width:22px;height:22px;border-
       <button class="btn-login" onclick="login()">Sign In →</button>
       <div class="aerr" id="aerr"></div>
     </div>
-    <div style="text-align:center;margin-top:14px;font-size:11px;color:var(--txt3)">Last updated: April 23, 2026 · 6:50 PM ET</div>
+    <div style="text-align:center;margin-top:14px;font-size:11px;color:var(--txt3)">Last updated: April 27, 2026 · 1:05 PM ET</div>
   </div>
 </div>
 
@@ -501,6 +501,33 @@ function oc(mat,opt){if(mat.key==='shingle')return opt.costTaxSq||0;if(mat.key==
 function unitStr(mat){if(mat.key==='shingle')return'/sq';if(mat.key==='ridge')return'/bd';if(mat.key==='starter')return'/bd';if(mat.key==='under')return'/roll';if(mat.key==='valley')return'/unit';if(mat.key==='drip')return'/pc';if(mat.key==='boot')return'/ea';return'';}
 function warrantyJobCost(opt,adjSq){if(!opt||opt.std)return 0;if(opt.perSq)return(opt.costPerSq||0)*adjSq;if(adjSq<=50)return opt.costFlat50||0;return opt.costFlat51||0;}
 
+// Golden Pledge eligibility check
+// Requires: GAF shingle (any EXCEPT Natural Shadow idx 1), any GAF ridge cap (all are GAF),
+// GAF starter (both are GAF), GAF underlayment (Feltbuster idx 1 or Tiger Paw idx 2),
+// GAF valley (Stormguard idx 2 only). Ventilation handled by production.
+// Note: Ridge cap and starter always pass since all available options are GAF.
+function goldenEligibility(){
+  const shingleIdx = matSel['shingle']||0;
+  const underIdx   = matSel['under']||0;
+  const valleyIdx  = matSel['valley']||0;
+
+  const issues=[];
+
+  // Shingle: must be GAF but NOT Natural Shadow (idx 1)
+  if(shingleIdx===1) issues.push('Shingle cannot be Natural Shadow');
+
+  // Ridge cap: all 4 options are GAF — always passes
+  // Starter: both options are GAF — always passes
+
+  // Underlayment: must be Feltbuster (idx 1) or Tiger Paw (idx 2) — not Secure Grip (idx 0)
+  if(underIdx===0) issues.push('Underlayment must be GAF (Feltbuster or Tiger Paw)');
+
+  // Valley: must be GAF Stormguard (idx 2)
+  if(valleyIdx!==2) issues.push('Valley must be GAF Stormguard');
+
+  return issues; // empty array = eligible
+}
+
 // MARGIN SLIDER SECTION
 // 0% = charge our cost (zero margin), 100% = charge 2× our cost (100% markup)
 // Charge = ourCost + (pct/100) * ourCost = ourCost * (1 + pct/100)
@@ -534,6 +561,7 @@ function buildMatUI(){
         ${m.note?`<div style="font-size:10px;color:var(--txt3);margin-bottom:8px">${m.note}</div>`:''}
         <div class="mat-sel">${m.opts.map((o,i)=>`<div class="mat-opt ${i===selIdx?(o.std?'std-sel':'sel'):''}" id="mo-${m.key}-${i}" onclick="pickMat('${m.key}',${i})">${o.name}</div>`).join('')}</div>
         <div class="mat-result"><span class="mat-result-label">Unit cost (our cost+tax)</span><span class="mat-result-val" id="mrc-${m.key}"></span></div>
+        ${m.key==='warr'?`<div id="warr-elig" style="display:none;margin-top:8px;padding:9px 11px;background:var(--red-bg);border:1px solid var(--red-bdr);border-radius:var(--rsm);font-size:11px;color:var(--red);line-height:1.5"></div>`:''}
         ${sliderSection(m.key)}
       </div>
     </div>`;
@@ -671,6 +699,32 @@ function calc(){
       maxComm+=Math.max(0,tMaxCost-tStdCost);
       totStdCost+=tStdCost;totSelCost+=tSelCost;totHOCharge+=hoCharge;totComm+=hoCharge;
       rows.push({name:m.name,selName:selOpt.name,selIdx,selCost:tSelCost,insAllows:tStdCost,hoCharge,comm:hoCharge,qty:qtyLabel(m,selIdx,geo),isStd:selIdx===0});
+      // Silver & Golden Pledge eligibility warning
+      const eligEl=document.getElementById('warr-elig');
+      if(eligEl){
+        const isUpgradeWarr = selIdx===1 || selIdx===2; // Silver=1, Golden=2
+        if(isUpgradeWarr){
+          const issues=goldenEligibility();
+          if(issues.length>0){
+            eligEl.style.display='block';
+            eligEl.style.background='var(--red-bg)';
+            eligEl.style.borderColor='var(--red-bdr)';
+            eligEl.style.color='var(--red)';
+            eligEl.innerHTML='⚠️ <strong>Warranty requirements not met:</strong><br>'+issues.map(i=>'• '+i).join('<br>');
+          } else {
+            eligEl.style.display='block';
+            eligEl.style.background='var(--green-bg)';
+            eligEl.style.borderColor='var(--green-bdr)';
+            eligEl.style.color='var(--green)';
+            eligEl.innerHTML='✅ All warranty requirements met';
+          }
+        } else {
+          eligEl.style.display='none';
+          eligEl.style.background='var(--red-bg)';
+          eligEl.style.borderColor='var(--red-bdr)';
+          eligEl.style.color='var(--red)';
+        }
+      }
       return;
     }
 
