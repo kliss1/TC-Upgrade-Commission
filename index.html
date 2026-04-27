@@ -173,7 +173,7 @@ input[type=range].margin-slider::-moz-range-thumb{width:22px;height:22px;border-
       <button class="btn-login" onclick="login()">Sign In →</button>
       <div class="aerr" id="aerr"></div>
     </div>
-    <div style="text-align:center;margin-top:14px;font-size:11px;color:var(--txt3)">Last updated: April 27, 2026 · 1:05 PM ET</div>
+    <div style="text-align:center;margin-top:14px;font-size:11px;color:var(--txt3)">Last updated: April 27, 2026 · 1:11 PM ET</div>
   </div>
 </div>
 
@@ -224,12 +224,7 @@ input[type=range].margin-slider::-moz-range-thumb{width:22px;height:22px;border-
       <div class="card">
         <div class="card-ttl">Job Info</div>
         <div class="g2">
-          <div class="f"><label>Customer Name</label><input type="text" id="fc-name" placeholder="Last, First"/></div>
-          <div class="f"><label>Work Order #</label><input type="text" id="fc-wo" placeholder="WO-2026-001"/></div>
-        </div>
-        <div class="g2">
-          <div class="f"><label>Property Address</label><input type="text" id="fc-addr" placeholder="123 Main St, City, GA"/></div>
-          <div class="f"><label>Claim #</label><input type="text" id="fc-claim" placeholder="Claim / Adjuster #"/></div>
+        <div class="f"><label>Job Number</label><input type="text" id="fc-wo" placeholder="Job #"/></div>
         </div>
       </div>
 
@@ -420,7 +415,7 @@ const MATS=[
   ]},
 ];
 
-let VERSIONS=[{id:'v1',label:'Apr 24, 2026 – Present',eff:'2026-04-24',exp:null,by:'admin'}];
+let VERSIONS=[{id:'v1',label:'Apr 28, 2026 – Present',eff:'2026-04-28',exp:null,by:'admin'}];
 let vidx=2;
 
 const USERS={
@@ -814,7 +809,7 @@ function fmt(n){return'$'+Math.abs(n).toLocaleString('en-US',{minimumFractionDig
 function storageKey(){return`upgcomm_${me}`;}
 function saveState(){
   if(!me)return;
-  const fields=['fc-name','fc-wo','fc-addr','fc-claim','fc-notes','fc-date','g-sq','g-rdg','g-hip','g-val','g-rak','g-eav'];
+  const fields=['fc-wo','fc-notes','fc-date','g-sq','g-rdg','g-hip','g-val','g-rak','g-eav'];
   const fieldVals={};
   fields.forEach(id=>{const el=document.getElementById(id);if(el)fieldVals[id]=el.value;});
   const state={fieldVals,matSel:Object.assign({},matSel),sliderPct:Object.assign({},sliderPct),ventCounts:JSON.parse(JSON.stringify(ventCounts)),bootCount,claimMode,hoOverride,existingShingle:document.getElementById('existing-shingle')?.value||'arch',savedAt:new Date().toISOString()};
@@ -854,7 +849,7 @@ function resetCalc(){
   MATS.forEach(m=>{matSel[m.key]=0;sliderPct[m.key]=0;});
   ventCounts={ridge:{exist:0,desired:0},box:{exist:0,desired:0},power:{exist:0,desired:0},solar:{exist:0,desired:0},turbine:{exist:0,desired:0}};
   bootCount=0;claimMode='full';hoOverride=false;
-  ['fc-name','fc-wo','fc-addr','fc-claim','fc-notes'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  ['fc-wo','fc-notes'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
   document.getElementById('fc-date').value=new Date().toISOString().slice(0,10);
   document.getElementById('ho-auto-note').textContent='Auto-calculated from selections above';
   ['g-sq','g-rdg','g-hip','g-val','g-rak','g-eav'].forEach(id=>document.getElementById(id).value='0');
