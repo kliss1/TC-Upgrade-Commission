@@ -173,7 +173,7 @@ input[type=range].margin-slider::-moz-range-thumb{width:22px;height:22px;border-
       <button class="btn-login" onclick="login()">Sign In →</button>
       <div class="aerr" id="aerr"></div>
     </div>
-    <div style="text-align:center;margin-top:14px;font-size:11px;color:var(--txt3)">Last updated: April 27, 2026 · 1:11 PM ET</div>
+    <div style="text-align:center;margin-top:14px;font-size:11px;color:var(--txt3)">Last updated: May 7, 2026 · 3:40 PM ET</div>
   </div>
 </div>
 
@@ -538,8 +538,8 @@ function sliderSection(key){
     <input type="range" class="margin-slider" min="0" max="100" step="1" value="${pct}"
       id="sl-${key}" oninput="setSlider('${key}',this.value)"/>
     <div class="slider-result">
-      <div><div style="font-size:9px;color:var(--txt3);text-transform:uppercase;letter-spacing:.05em;font-weight:700;margin-bottom:2px">Charge to HO</div><span class="slider-charge" id="sc-${key}">—</span></div>
-      <div style="text-align:right"><div style="font-size:9px;color:var(--txt3);text-transform:uppercase;letter-spacing:.05em;font-weight:700;margin-bottom:2px">Your Commission</div><span class="slider-comm" id="sk-${key}">—</span></div>
+      <div><div style="font-size:9px;color:var(--txt3);text-transform:uppercase;letter-spacing:.05em;font-weight:700;margin-bottom:2px">HO Margin Charge</div><span class="slider-charge" id="sc-${key}">$0.00</span></div>
+      <div style="text-align:right"><div style="font-size:9px;color:var(--txt3);text-transform:uppercase;letter-spacing:.05em;font-weight:700;margin-bottom:2px">Your Commission</div><span class="slider-comm" id="sk-${key}">$0.00</span></div>
     </div>
   </div>`;
 }
@@ -610,12 +610,11 @@ function setBootCount(val){bootCount=Math.max(0,parseInt(val)||0);calc();}
 function setSlider(key,val){sliderPct[key]=parseInt(val)||0;document.getElementById('sp-'+key).textContent=sliderPct[key]+'%';calc();}
 
 function showSliderResult(key,ourCost,pct){
-  const charge=ourCost*(1+pct/100);
-  const comm=ourCost*(pct/100);
+  const margin=ourCost*(pct/100);  // what HO pays above our cost
   const sc=document.getElementById('sc-'+key);
   const sk=document.getElementById('sk-'+key);
-  if(sc) sc.textContent='$'+charge.toFixed(2);
-  if(sk) sk.textContent=comm>0?('$'+comm.toFixed(2)):'$0.00';
+  if(sc) sc.textContent='$'+margin.toFixed(2);
+  if(sk) sk.textContent='$'+margin.toFixed(2);
   const sl=document.getElementById('sl-'+key);
   if(sl) sl.style.background=`linear-gradient(to right,var(--gold) ${pct}%,var(--surf3) ${pct}%)`;
 }
@@ -728,12 +727,14 @@ function calc(){
     const tStdCost=stdCostUnit*qStd;const tSelCost=selCostUnit*qSel;const tMaxCost=maxCostUnit*qMax;
 
     const pct=sliderPct[m.key]||0;
-    // 0% = charge our cost (zero margin/commission), 100% = charge 2× our cost
-    // charge = tSelCost * (1 + pct/100), commission = tSelCost * (pct/100)
-    const hoCharge=tSelCost*(1+pct/100);
-    const actualComm=tSelCost*(pct/100);
+    // 0% = charging our cost, no margin, no HO charge above cost, no commission
+    // 100% = charging 2× our cost, HO pays our cost + 100% margin on top
+    // hoCharge = the margin above our cost = tSelCost * (pct/100)
+    // commission = same as hoCharge (rep keeps full margin)
+    const hoCharge=tSelCost*(pct/100);
+    const actualComm=hoCharge;
 
-    maxComm+=tSelCost; // max possible = 100% markup on selected cost
+    maxComm+=tSelCost;
     totStdCost+=tStdCost;totSelCost+=tSelCost;
     totHOCharge+=hoCharge;totComm+=actualComm;
     showSliderResult(m.key,tSelCost,pct);
@@ -757,13 +758,13 @@ function calc(){
 
   // Ventilation slider
   const ventPct=sliderPct['vent']||0;
-  const finalVentHO=ventSelCost*(1+ventPct/100);
-  const finalVentComm=ventSelCost*(ventPct/100);
+  const finalVentHO=ventSelCost*(ventPct/100);
+  const finalVentComm=finalVentHO;
   totHOCharge+=finalVentHO;totComm+=finalVentComm;
   showSliderResult('vent',ventSelCost,ventPct);
 
   const ventTotal=Object.values(ventCounts).reduce((a,v)=>a+v.desired,0);
-  rows.push({name:'Ventilation',selName:'Mixed (see counts)',selIdx:0,selCost:ventSelCost,insAllows:ventStdCost,hoCharge:finalVentHO,comm:finalVentComm,qty:ventTotal+' units',isStd:ventHO===0});
+  rows.push({name:'Ventilation',selName:'Mixed (see counts)',selIdx:0,selCost:ventSelCost,insAllows:ventStdCost,hoCharge:finalVentHO,comm:finalVentComm,qty:ventTotal+' units',isStd:finalVentHO===0});
 
   let finalHOCharge=totHOCharge;
   if(hoOverride){const ov=parseFloat(document.getElementById('ho-charge').value)||0;finalHOCharge=ov;}
