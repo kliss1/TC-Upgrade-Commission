@@ -366,58 +366,11 @@ input[type=range].margin-slider::-moz-range-thumb{width:22px;height:22px;border-
 <div class="toast" id="toast"></div>
 
 <script>
-// ── PRICING ENGINE ──
-// Upgrade cost = priceDiff * 1.08 (tax included)
-// priceDiff tables keyed by existing tier -> chosen product index
-
-// SHINGLE: upgrade cost per adjusted SQ (priceDiff * 1.08)
-// Idx: 0=Royal Sov, 1=Nat Shadow, 2=HDZ, 3=UHDZ, 4=ArmorshieldII, 5=Slateline, 6=Camelot II
-const SHINGLE_UPGRADES={
-  '3tab':  [0,0,2.7216,25.92,36.7416,141.3612,145.8864],
-  'arch1': [0,0,0,23.1984,34.02,138.6396,143.1648],
-  'arch2': [0,0,0,0,34.02,138.6396,143.1648],
-  'des1':  [0,0,0,0,0,0,4.5252],
-  'des2':  [0,0,0,0,0,0,0],
-};
-// RIDGE CAP: upgrade cost per LF (priceDiff/LF * 1.08)
-// Idx: 0=Royal Sov Ridge, 1=Z Ridge, 2=SAR Armorshield, 3=Timbertex
-const RIDGE_UPGRADES={
-  '3tab':  [0,1.5012,2.7324,3.0564],
-  'tier1': [0,0,1.2312,1.5552],
-  'tier2': [0,0,0,0.324],
-  'tier3': [0,0,0,0],
-};
-// STARTER: upgrade cost per bundle (priceDiff * 1.08)
-// Idx: 0=Pro Start, 1=Weatherblocker
-const STARTER_UPGRADES={
-  'tier1': [0,60.48],
-  'tier2': [0,0],
-};
-// UNDERLAYMENT: upgrade cost per roll (priceDiff * 1.08)
-// Idx: 0=Secure Grip, 1=Feltbuster, 2=Tiger Paw
-const UNDER_UPGRADES={
-  'tier1': [0,20.034,206.118],
-  'tier2': [0,0,186.084],
-  'tier3': [0,0,0],
-};
-// VALLEY: upgrade cost per LF (priceDiff/LF * 1.08)
-// Idx: 0=Ice&Water, 1=Stormguard, 2=W Metal Valley
-const VALLEY_UPGRADES={
-  'tier1': [0,0.4752,5.94],
-  'tier2': [0,0,5.4756],
-  'tier3': [0,0,0],
-};
-// PIPE BOOTS: upgrade cost per boot (priceDiff * 1.08)
-// Idx: 0=3n1 Neoprene, 1=Lead Pipeboot
-const BOOT_UPGRADES={
-  'tier1': [0,25.866],
-  'tier2': [0,0],
-};
 
 const MATS=[
   // upgDiff values = priceDiff * 1.08 (tax) per unit, keyed by existing tier
   {key:'shingle',name:'Shingles',unitType:'sq',unitLabel:'per square',
-    note:'Camelot II = 4 bundles/sq. All others = 3 bundles/sq.',
+    note:"Camelot II = 4 bundles/sq. All others = 3 bundles/sq.",
     existingOpts:[
       {val:'3tab',  label:'3-Tab'},
       {val:'arch1', label:'Arch Tier 1 (Natural Shadow)'},
@@ -554,8 +507,6 @@ const MATS=[
   ]},
 ];
 
-];
-
 let VERSIONS=[{id:'v1',label:'Apr 28, 2026 – Present',eff:'2026-04-28',exp:null,by:'admin'}];
 let vidx=2;
 
@@ -582,7 +533,8 @@ const USERS={
 
 let me=null,myRole=null,authTab='sales',activeVer=null,claimMode='full',hoOverride=false;
 let matSel={};
-let sliderPct={}; // key -> 0-100 (null = slider at 0, not engaged)
+let sliderPct={};
+let existingTier={};
 let ventCounts={ridge:{exist:0,desired:0},box:{exist:0,desired:0},power:{exist:0,desired:0},solar:{exist:0,desired:0},turbine:{exist:0,desired:0}};
 let bootCount=0;
 
@@ -617,7 +569,7 @@ function setPage(id){document.querySelectorAll('.page').forEach(p=>p.classList.r
 function getVer(d){const date=d||new Date().toISOString().slice(0,10);return [...VERSIONS].sort((a,b)=>b.eff.localeCompare(a.eff)).find(v=>v.eff<=date&&(!v.exp||v.exp>=date))||VERSIONS[VERSIONS.length-1];}
 function initCalc(){
   document.getElementById('fc-date').value=new Date().toISOString().slice(0,10);
-  MATS.forEach(m=>{matSel[m.key]=0;sliderPct[m.key]=0;});
+  MATS.forEach(m=>{matSel[m.key]=0;sliderPct[m.key]=0;existingTier[m.key]=(m.existingOpts&&m.existingOpts[0].val)||'tier1';});
   ventCounts={ridge:{exist:0,desired:0},box:{exist:0,desired:0},power:{exist:0,desired:0},solar:{exist:0,desired:0},turbine:{exist:0,desired:0}};
   bootCount=0;claimMode='full';hoOverride=false;
   activeVer=getVer();updateBanner();buildMatUI();calc();
@@ -1064,7 +1016,7 @@ function loadState(){
 function clearState(){if(!me)return;try{localStorage.removeItem(storageKey());}catch(e){}}
 
 function resetCalc(){
-  MATS.forEach(m=>{matSel[m.key]=0;sliderPct[m.key]=0;});
+  MATS.forEach(m=>{matSel[m.key]=0;sliderPct[m.key]=0;existingTier[m.key]=(m.existingOpts&&m.existingOpts[0].val)||'tier1';});
   ventCounts={ridge:{exist:0,desired:0},box:{exist:0,desired:0},power:{exist:0,desired:0},solar:{exist:0,desired:0},turbine:{exist:0,desired:0}};
   bootCount=0;claimMode='full';hoOverride=false;
   ['fc-wo','fc-notes'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
