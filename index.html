@@ -941,7 +941,7 @@ function calc(){
   const commRate=claimMode==='dap'?0.33:1.00;
   const upgComm=totComm*commRate;
   const rateLbl=document.getElementById('comm-rate-lbl');
-  if(rateLbl)rateLbl.textContent=claimMode==='dap'?'DAP — 33% of upgrades commission':'Full Deductible — 100% of upgrades commission';
+  if(rateLbl){if(claimMode==='dap'){rateLbl.textContent='DAP — 33% of upgrades commission';rateLbl.style.color='#ff2222';rateLbl.style.display='';}else{rateLbl.textContent='';rateLbl.style.display='none';}}
 
   document.getElementById('grand-total').textContent=fmt(grandTotal);
   document.getElementById('c-matcost').textContent=fmt(totUpgradeCost);
