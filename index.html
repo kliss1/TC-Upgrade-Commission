@@ -870,7 +870,7 @@ function qtyLabel(m,selIdx,geo){
 // MAIN CALC
 
 
-function calc(){
+function calc(){try{
   const geo=getGeo();
   const shingleOpt=MATS.find(m=>m.key==='shingle').opts[matSel['shingle']||0];
   const bdPerSq=shingleOpt.bdPerSq||3;
@@ -990,6 +990,7 @@ function calc(){
   document.getElementById('ft-ho').textContent='$'+Math.round(finalHOCharge).toLocaleString();
   document.getElementById('ft-com').textContent='$'+Math.round(upgComm).toLocaleString();
   saveState();
+  }catch(e){console.error('calc error:',e);}
 }
 
 function fmt(n){return'$'+Math.abs(n).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});}
@@ -1014,9 +1015,9 @@ function loadState(){
   if(state.existingTier)Object.assign(existingTier,state.existingTier);
   if(state.ventCounts)ventCounts=state.ventCounts;
   if(typeof state.bootCount==='number')bootCount=state.bootCount;
-  if(state.claimMode){claimMode=state.claimMode;setMode(claimMode);}
   if(typeof state.hoOverride==='boolean')hoOverride=state.hoOverride;
   buildMatUI();
+  if(state.claimMode){claimMode=state.claimMode;document.getElementById('mode-full').className='mode-btn full '+(state.claimMode==='full'?'on':'off');document.getElementById('mode-dap').className='mode-btn dap '+(state.claimMode==='dap'?'on':'off');}
   // Restore slider positions
   if(state.sliderPct){
     Object.entries(sliderPct).forEach(([key,pct])=>{
