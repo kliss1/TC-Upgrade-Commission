@@ -367,8 +367,8 @@ const MATS=[
       '3tab':   [0, 0, 2.52,  24.00, 34.02, 130.89, 135.08],
       'arch1':  [0, 0, 0,     21.48, 31.50, 128.37, 132.56],
       'arch2':  [0, 0, 0,     0,     31.50, 128.37, 132.56],
-      'archir1':[0, 0, 0,     0,     0,     128.37, 132.56],
-      'archir2':[0, 0, 0,     0,     0,     128.37, 132.56],
+      'archir1':[0, 0, 0,     0,     10.02, 106.89, 111.08],
+      'archir2':[0, 0, 0,     0,     0,     96.87,  101.06],
       'des1':   [0, 0, 0,     0,     0,     0,      4.19],
       'des2':   [0, 0, 0,     0,     0,     0,      0],
     },
@@ -914,9 +914,9 @@ function calc(){
     maxComm+=getUpgradeCost(m.key,tier,m.opts.length-1,geo);
 
     const pct=sliderPct[m.key]||0;
-    // Min charge = upgrade cost (0%). Commission = upgrade cost × (pct/100)
+    // Min charge = upgrade cost (0%). Commission = upgrade cost × (pct/100) or manual override
     const minCharge=upgCost;
-    const commission=upgCost*(pct/100);
+    const commission=(upgradeAmtOverride[m.key]!==undefined)?upgradeAmtOverride[m.key]:upgCost*(pct/100);
     const hoCharge=minCharge+commission;
 
     totUpgradeCost+=upgCost;
@@ -947,8 +947,8 @@ function calc(){
   });
 
   const ventPct=sliderPct['vent']||0;
-  const finalVentHO=ventUpgradeCost+ventUpgradeCost*(ventPct/100);
-  const finalVentComm=ventUpgradeCost*(ventPct/100);
+  const finalVentComm=(upgradeAmtOverride['vent']!==undefined)?upgradeAmtOverride['vent']:ventUpgradeCost*(ventPct/100);
+  const finalVentHO=ventUpgradeCost+finalVentComm;
   totHOCharge+=finalVentHO;totComm+=finalVentComm;
   showSliderResult('vent',ventUpgradeCost,ventPct);
   totUpgradeCost+=ventUpgradeCost;
@@ -970,8 +970,6 @@ function calc(){
   document.getElementById('c-charged').textContent=fmt(finalHOCharge);
   const margin2=finalHOCharge-totUpgradeCost;
   document.getElementById('c-margin').textContent=fmt(margin2);
-  document.getElementById('c-gp').textContent=fmt(margin2-upgComm);
-  document.getElementById('c-upgcomm').textContent=fmt(upgComm);
   document.getElementById('c-total-comm').textContent=fmt(upgComm);
 
   const pct2=maxComm>0?Math.min(100,upgComm/maxComm*100):0;
