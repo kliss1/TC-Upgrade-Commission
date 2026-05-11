@@ -868,7 +868,7 @@ function qtyLabel(m,selIdx,geo){
 
 
 // MAIN CALC
-function onHOOverride(){hoOverride=true;document.getElementById('ho-auto-note').textContent='⚠️ Manually overridden — clear field to return to auto-calc';calc();}
+
 
 function calc(){
   const geo=getGeo();
@@ -1028,7 +1028,6 @@ function loadState(){
   }
   if(state.ventCounts){Object.entries(ventCounts).forEach(([k,v])=>{const inputs=document.querySelectorAll(`[oninput*="setVent('${k}'"]`);if(inputs[0])inputs[0].value=v.exist;if(inputs[1])inputs[1].value=v.desired;});}
   const bootEl=document.querySelector('[oninput*="setBootCount"]');if(bootEl)bootEl.value=bootCount;
-  if(state.hoOverride){const n=document.getElementById('ho-auto-note');if(n)n.textContent='⚠️ Manually overridden — clear field to return to auto-calc';}
   calc();
   if(state.savedAt){const d=new Date(state.savedAt);toast(`↩ Restored from ${d.toLocaleDateString('en-US',{month:'short',day:'numeric'})}`);}
 }
@@ -1040,7 +1039,6 @@ function resetCalc(){
   bootCount=0;claimMode='full';hoOverride=false;
   ['fc-wo','fc-notes'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
   document.getElementById('fc-date').value=new Date().toISOString().slice(0,10);
-  document.getElementById('ho-auto-note').textContent='Auto-calculated from selections above';
   ['g-sq','g-rdg','g-hip','g-val','g-rak','g-eav'].forEach(id=>document.getElementById(id).value='0');
   setMode('full');activeVer=getVer();updateBanner();buildMatUI();calc();
   clearState();toast('↺ Reset');
