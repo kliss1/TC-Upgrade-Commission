@@ -140,7 +140,7 @@ input,select,textarea,button{font-family:'Karla',sans-serif;font-size:15px}
   .comm-detail{border:1px solid #ccc}.comm-row{border-bottom:1px solid #ddd}
 }
 /* ── MARGIN SLIDER ── */
-.slider-wrap{margin-top:8px;border-top:1px solid var(--bdr);padding-top:10px}
+.slider-wrap{margin-top:8px}
 .slider-hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
 .slider-lbl{font-size:9px;font-weight:700;color:var(--txt3);text-transform:uppercase;letter-spacing:.06em}
 .slider-pct{font-size:13px;font-weight:800;font-family:'Syne',sans-serif;color:var(--gold)}
@@ -173,7 +173,7 @@ input[type=range].margin-slider::-moz-range-thumb{width:22px;height:22px;border-
       <button class="btn-login" onclick="login()">Sign In →</button>
       <div class="aerr" id="aerr"></div>
     </div>
-    <div style="text-align:center;margin-top:14px;font-size:11px;color:var(--txt3)">Last updated: May 11, 2026 · 5:40 PM ET</div>
+    <div style="text-align:center;margin-top:14px;font-size:11px;color:var(--txt3)">Last updated: May 11, 2026 · 5:43 PM ET</div>
   </div>
 </div>
 
@@ -665,7 +665,7 @@ function goldenEligibility(){
 // Commission = charge - ourCost = ourCost * (pct/100)
 function sliderSection(key){
   const pct=sliderPct[key]||0;
-  return `<div class="slider-wrap">
+  return `<div class="slider-wrap" style="background:var(--green-bg);border:1px solid var(--green-bdr);border-radius:var(--rsm);padding:10px 11px;margin-top:8px">
     <div class="slider-hd">
       <span class="slider-lbl">Margin on Upgrade</span>
       <span class="slider-pct" id="sp-${key}">${pct}%</span>
@@ -696,9 +696,9 @@ function sliderSection(key){
 function existingTierDropdown(m){
   if(!m.existingOpts) return '';
   const cur=existingTier[m.key]||m.existingOpts[0].val;
-  return `<div class="f" style="margin-bottom:8px">
-    <label>Existing ${m.name}</label>
-    <select style="width:100%;background:var(--surf3);border:1px solid var(--bdr2);border-radius:var(--rsm);padding:8px 10px;color:var(--txt);outline:none;-webkit-appearance:none;appearance:none;font-size:13px"
+  return `<div style="margin-bottom:8px;background:var(--blue-bg);border:1px solid rgba(90,141,224,0.25);border-radius:var(--rsm);padding:9px 11px">
+    <div style="font-size:9px;font-weight:700;color:var(--blue);text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px">Existing ${m.name}</div>
+    <select style="width:100%;background:rgba(90,141,224,0.08);border:1px solid rgba(90,141,224,0.3);border-radius:var(--rsm);padding:8px 10px;color:var(--txt);outline:none;-webkit-appearance:none;appearance:none;font-size:13px"
       onchange="setExistingTier('${m.key}',this.value)">
       ${m.existingOpts.map(o=>`<option value="${o.val}"${o.val===cur?' selected':''}>${o.label}</option>`).join('')}
     </select>
@@ -716,7 +716,7 @@ function buildMatUI(){
         ${existingTierDropdown(m)}
         ${m.note?`<div style="font-size:10px;color:var(--txt3);margin-bottom:8px">${m.note}</div>`:''}
         <div class="mat-sel">${m.opts.map((o,i)=>`<div class="mat-opt ${i===selIdx?(o.std?'std-sel':'sel'):''}" id="mo-${m.key}-${i}" onclick="pickMat('${m.key}',${i})">${o.name}</div>`).join('')}</div>
-        <div class="mat-result"><span class="mat-result-label">Upgrade cost (min charge to HO)</span><span class="mat-result-val" id="mrc-${m.key}">—</span></div>
+        <div class="mat-result"><span class="mat-result-label">Upgrade cost (min charge to HO)</span><span class="mat-result-val" style="color:var(--red)" id="mrc-${m.key}">—</span></div>
         ${m.key==='warr'?`<div id="warr-elig" style="display:none;margin-top:8px;padding:9px 11px;background:var(--red-bg);border:1px solid var(--red-bdr);border-radius:var(--rsm);font-size:11px;color:var(--red);line-height:1.5"></div>`:''}
         ${sliderSection(m.key)}
       </div>
@@ -747,7 +747,7 @@ function buildVentUI(){
           <input type="number" value="${ventCounts[r.k].exist}" min="0" style="background:var(--surf);border:1px solid var(--bdr2);border-radius:6px;padding:8px;color:var(--txt);outline:none;font-size:14px;text-align:center;width:100%;font-family:'Syne',sans-serif;-webkit-appearance:none" oninput="setVent('${r.k}','exist',this.value)"/>
           <input type="number" value="${ventCounts[r.k].desired}" min="0" style="background:var(--surf);border:1px solid var(--bdr2);border-radius:6px;padding:8px;color:var(--txt);outline:none;font-size:14px;text-align:center;width:100%;font-family:'Syne',sans-serif;-webkit-appearance:none" oninput="setVent('${r.k}','desired',this.value)"/>
         </div>`).join('')}
-      <div class="mat-result"><span class="mat-result-label">Ventilation upgrade charge</span><span class="mat-result-val" id="mrc-vent"></span></div>
+      <div class="mat-result"><span class="mat-result-label">Ventilation upgrade charge</span><span class="mat-result-val" style="color:var(--red)" id="mrc-vent"></span></div>
       ${sliderSection('vent')}
     </div>
   </div>`;
@@ -762,7 +762,7 @@ function buildBootUI(){
       ${existingTierDropdown(m)}
       <div class="mat-sel">${m.opts.map((o,i)=>`<div class="mat-opt ${i===selIdx?'sel':''}" id="mo-boot-${i}" onclick="pickMat('boot',${i})">${o.name}</div>`).join('')}</div>
       <div class="cnt-f" style="margin-top:8px"><label>Number of Pipe Boots</label><input type="number" value="${bootCount}" min="0" oninput="setBootCount(this.value)" style="background:var(--surf);border:1px solid var(--bdr2);border-radius:6px;padding:8px 10px;color:var(--txt);outline:none;font-size:16px;font-family:'Syne',sans-serif;width:100%;-webkit-appearance:none"/></div>
-      <div class="mat-result"><span class="mat-result-label">Upgrade cost (min charge to HO)</span><span class="mat-result-val" id="mrc-boot">—</span></div>
+      <div class="mat-result"><span class="mat-result-label">Upgrade cost (min charge to HO)</span><span class="mat-result-val" style="color:var(--red)" id="mrc-boot">—</span></div>
       ${sliderSection('boot')}
     </div>
   </div>`;
