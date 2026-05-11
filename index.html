@@ -213,11 +213,13 @@ input[type=range].margin-slider::-moz-range-thumb{width:22px;height:22px;border-
         <div class="g2">
           <div class="f"><label>Existing Shingle Type</label>
             <select id="existing-shingle" onchange="setExistingTier('shingle',this.value)">
-              <option value="3tab">3-Tab</option>
-              <option value="arch1">Arch Tier 1 (Natural Shadow)</option>
-              <option value="arch2">Arch Tier 2 (HDZ)</option>
-              <option value="des1">Designer Tier 1 (Slateline)</option>
-              <option value="des2">Designer Tier 2 (Camelot II)</option>
+              <option value="3tab">3Tab</option>
+              <option value="arch1">Arch Tier 1</option>
+              <option value="arch2">Arch Tier 2</option>
+              <option value="archir1">Arch IR Tier 1</option>
+              <option value="archir2">Arch IR Tier 2</option>
+              <option value="des1">Designer Tier 1</option>
+              <option value="des2">Designer Tier 2</option>
             </select>
           </div>
           <div class="f"><label>Date Signed</label><input type="date" id="fc-date" onchange="onDateChange()"/></div>
@@ -372,22 +374,26 @@ const MATS=[
   {key:'shingle',name:'Shingles',unitType:'sq',unitLabel:'per square',
     note:"Camelot II = 4 bundles/sq. All others = 3 bundles/sq.",
     existingOpts:[
-      {val:'3tab',  label:'3-Tab'},
-      {val:'arch1', label:'Arch Tier 1 (Natural Shadow)'},
-      {val:'arch2', label:'Arch Tier 2 (HDZ)'},
-      {val:'des1',  label:'Designer Tier 1 (Slateline)'},
-      {val:'des2',  label:'Designer Tier 2 (Camelot II)'},
+      {val:'3tab',   label:'3Tab'},
+      {val:'arch1',  label:'Arch Tier 1'},
+      {val:'arch2',  label:'Arch Tier 2'},
+      {val:'archir1',label:'Arch IR Tier 1'},
+      {val:'archir2',label:'Arch IR Tier 2'},
+      {val:'des1',   label:'Designer Tier 1'},
+      {val:'des2',   label:'Designer Tier 2'},
     ],
     // upgDiff[tier][selIdx] = priceDiff/sq * 1.08
     // opts order: Royal Sov(0), Natural Shadow(1), HDZ(2), UHDZ(3), Armorshield(4), Slateline(5), Camelot II(6)
     // pre-tax price diff per SQ; ×1.08 applied in getUpgradeCost
     // opts: Royal Sov(0), Nat Shadow(1), HDZ(2), UHDZ(3), Armorshield(4), Slateline(5), Camelot II(6)
     upgDiff:{
-      '3tab':  [0, 0, 2.52,  24.00, 34.02, 130.89, 135.08],
-      'arch1': [0, 0, 0,     21.48, 31.50, 128.37, 132.56],
-      'arch2': [0, 0, 0,     0,     31.50, 128.37, 132.56],
-      'des1':  [0, 0, 0,     0,     0,     0,      4.19],
-      'des2':  [0, 0, 0,     0,     0,     0,      0],
+      '3tab':   [0, 0, 2.52,  24.00, 34.02, 130.89, 135.08],
+      'arch1':  [0, 0, 0,     21.48, 31.50, 128.37, 132.56],
+      'arch2':  [0, 0, 0,     0,     31.50, 128.37, 132.56],
+      'archir1':[0, 0, 0,     0,     0,     128.37, 132.56],
+      'archir2':[0, 0, 0,     0,     0,     128.37, 132.56],
+      'des1':   [0, 0, 0,     0,     0,     0,      4.19],
+      'des2':   [0, 0, 0,     0,     0,     0,      0],
     },
     opts:[
       {name:'GAF Royal Sovereign',    bdPerSq:3},
@@ -507,7 +513,7 @@ const MATS=[
   ]},
 ];
 
-let VERSIONS=[{id:'v1',label:'May 18, 2026 – Present',eff:'2026-05-18',exp:null,by:'admin'}];
+let VERSIONS=[{id:'v1',label:'Apr 28, 2026 – Present',eff:'2026-04-28',exp:null,by:'admin'}];
 let vidx=2;
 
 const USERS={
@@ -941,7 +947,7 @@ function calc(){
   const commRate=claimMode==='dap'?0.33:1.00;
   const upgComm=totComm*commRate;
   const rateLbl=document.getElementById('comm-rate-lbl');
-  if(rateLbl){if(claimMode==='dap'){rateLbl.textContent='DAP — 33% of upgrades commission';rateLbl.style.color='#ff2222';rateLbl.style.display='';}else{rateLbl.textContent='';rateLbl.style.display='none';}}
+  if(rateLbl)rateLbl.textContent=claimMode==='dap'?'DAP — 33% of margin':'Full Deductible — 100% of margin';
 
   document.getElementById('grand-total').textContent=fmt(grandTotal);
   document.getElementById('c-matcost').textContent=fmt(totUpgradeCost);
