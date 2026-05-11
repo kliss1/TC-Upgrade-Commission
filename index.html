@@ -173,7 +173,7 @@ input[type=range].margin-slider::-moz-range-thumb{width:22px;height:22px;border-
       <button class="btn-login" onclick="login()">Sign In →</button>
       <div class="aerr" id="aerr"></div>
     </div>
-    <div style="text-align:center;margin-top:14px;font-size:11px;color:var(--txt3)">Last updated: May 11, 2026 · 4:18 PM ET</div>
+    <div style="text-align:center;margin-top:14px;font-size:11px;color:var(--txt3)">Last updated: May 11, 2026 · 4:24 PM ET</div>
   </div>
 </div>
 
@@ -233,7 +233,7 @@ input[type=range].margin-slider::-moz-range-thumb{width:22px;height:22px;border-
           <div class="f"><label>Eaves (ft)</label><input type="number" id="g-eav" value="0" min="0" oninput="calc()" placeholder="0"/></div>
         </div>
         <div style="font-size:10px;color:var(--txt3);margin-top:2px;padding:8px 10px;background:var(--surf2);border-radius:var(--rsm);border:1px solid var(--bdr)">
-          Waste factors: Shingles ×1.15 · Underlayment ×1.10 · Valley ×1.13 · Drip Edge ×1.10
+          Waste factors: Shingles ×1.15 · Underlayment ×1.10 · Valley ×1.13
         </div>
         <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:4px">
           <div style="background:var(--surf2);border-radius:var(--rsm);padding:9px 10px;border:1px solid var(--bdr)">
@@ -249,7 +249,7 @@ input[type=range].margin-slider::-moz-range-thumb{width:22px;height:22px;border-
           <div style="background:var(--surf2);border-radius:var(--rsm);padding:9px 10px;border:1px solid var(--bdr)">
             <div style="font-size:9px;font-weight:700;color:var(--txt3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px">Eave + Rake LF</div>
             <div style="font-size:18px;font-weight:700;font-family:'Syne',sans-serif" id="m-eaverake">0</div>
-            <div style="font-size:9px;color:var(--txt3)">for starter / drip</div>
+            <div style="font-size:9px;color:var(--txt3)">for starter</div>
           </div>
         </div>
       </div>
@@ -458,9 +458,6 @@ const MATS=[
       {name:'W Metal Valley (10LF)',     lfPerUnit:10},
     ],
   },
-  {key:'drip',name:'Drip Edge',unitType:'drip',opts:[
-    {name:"Drip Edge 1.5×1.5×10'", costTaxEa:9.67, std:true},
-  ]},
   {key:'boot',name:'Pipe Boots',unitType:'count',unitLabel:'per boot',
     existingOpts:[
       {val:'tier1', label:'Pipe Boot Tier 1 (Neoprene)'},
@@ -571,7 +568,7 @@ function setMode(m){claimMode=m;document.getElementById('mode-full').className='
 
 // COST HELPERS
 // oc() replaced by getUpgradeCost()
-function unitStr(mat){if(mat.key==='shingle')return'/sq';if(mat.key==='ridge')return'/bd';if(mat.key==='starter')return'/bd';if(mat.key==='under')return'/roll';if(mat.key==='valley')return'/unit';if(mat.key==='drip')return'/pc';if(mat.key==='boot')return'/ea';return'';}
+function unitStr(mat){if(mat.key==='shingle')return'/sq';if(mat.key==='ridge')return'/bd';if(mat.key==='starter')return'/bd';if(mat.key==='under')return'/roll';if(mat.key==='valley')return'/unit';if(mat.key==='boot')return'/ea';return'';}
 
 // warrantyJobCost: Silver = $5/sq * adjSq + flat (≤50sq: $170, >50sq: $340), Golden = $8/sq
 function warrantyJobCost(opt,adjSq){
@@ -721,7 +718,7 @@ function buildMatUI(){
         <div class="mat-sel">${m.opts.map((o,i)=>`<div class="mat-opt ${i===selIdx?(o.std?'std-sel':'sel'):''}" id="mo-${m.key}-${i}" onclick="pickMat('${m.key}',${i})">${o.name}</div>`).join('')}</div>
         <div class="mat-result"><span class="mat-result-label">Upgrade cost (min charge to HO)</span><span class="mat-result-val" id="mrc-${m.key}">—</span></div>
         ${m.key==='warr'?`<div id="warr-elig" style="display:none;margin-top:8px;padding:9px 11px;background:var(--red-bg);border:1px solid var(--red-bdr);border-radius:var(--rsm);font-size:11px;color:var(--red);line-height:1.5"></div>`:''}
-        ${m.key==='drip'?'':`${sliderSection(m.key)}`}
+        ${sliderSection(m.key)}
       </div>
     </div>`;
   }).join('');
@@ -733,7 +730,7 @@ function buildVentUI(){
     {k:'ridge',lbl:'Ridge Vent',sub:'enter LF (÷4 = sticks needed)'},
     {k:'box',lbl:'Box Vents',sub:'count, ins. standard'},
     {k:'power',lbl:'Power Vents',sub:'count, upgrade'},
-    {k:'solar',lbl:'Solar Vent',sub:'count, upgrade'},
+    {k:'solar',lbl:'Solar Power Vent',sub:'count, upgrade'},
     {k:'turbine',lbl:'Turbine',sub:'count, upgrade'},
   ];
   return `<div class="mat-row" id="mr-vent">
@@ -854,7 +851,6 @@ function matQty(m,selIdx,geo){
   if(m.key==='starter'){const lfpb=(m.opts[selIdx]||{}).lfPerBd||120;return Math.ceil(((geo.eav||0)+(geo.rak||0))/lfpb);}
   if(m.key==='under')return Math.ceil((geo.sq||0)*1.10/10);
   if(m.key==='valley'){const lfpu=(m.opts[selIdx]||{}).lfPerUnit||62;return Math.ceil((geo.val||0)*1.13/lfpu);}
-  if(m.key==='drip')return Math.ceil(((geo.eav||0)+(geo.rak||0))*1.10/10);
   if(m.key==='boot')return bootCount;
   if(m.key==='warr'){const bdps=(m.opts[0]||{}).bdPerSq||3;return Math.ceil((geo.sq||0)*1.15*bdps)/bdps;}
   return 0;
@@ -865,7 +861,6 @@ function qtyLabel(m,selIdx,geo){
   if(m.key==='starter'){const lfpb=(m.opts[selIdx]||{}).lfPerBd||120;return`${Math.ceil(((geo.eav||0)+(geo.rak||0))/lfpb)} bd`;}
   if(m.key==='under')return`${Math.ceil((geo.sq||0)*1.10/10)} rolls`;
   if(m.key==='valley'){const lfpu=(m.opts[selIdx]||{}).lfPerUnit||62;return`${Math.ceil((geo.val||0)*1.13/lfpu)} units`;}
-  if(m.key==='drip')return`${Math.ceil(((geo.eav||0)+(geo.rak||0))*1.10/10)} pcs`;
   if(m.key==='boot')return`${bootCount} ea`;
   if(m.key==='warr')return geo.sq<=50?'≤50 sq':'> 50 sq';
   return'—';
@@ -887,7 +882,7 @@ function calc(){
   let totUpgradeCost=0,totHOCharge=0,totComm=0,maxComm=0;
   const rows=[];
 
-  MATS.filter(m=>m.key!=='vent'&&m.key!=='drip').forEach(m=>{
+  MATS.filter(m=>m.key!=='vent').forEach(m=>{
     const selIdx=matSel[m.key]||0;
     const selOpt=m.opts[selIdx];
     const tier=existingTier[m.key]||((m.existingOpts&&m.existingOpts[0].val)||'tier1');
@@ -1082,11 +1077,10 @@ const ADMIN_CATS=[
   {key:'starter',label:'Starter Strip (per bundle)',pk:'costTaxBd'},
   {key:'under',label:'Underlayment (per 10-sq roll)',pk:'costTaxRoll'},
   {key:'valley',label:'Valley / Ice & Water (per unit)',pk:'costTaxUnit'},
-  {key:'drip',label:"Drip Edge (per piece, 10')",pk:'costTaxEa'},
   {key:'boot',label:'Pipe Boots (per ea)',pk:'costTaxEa'},
   {key:'warr',label:'Warranty (flat fee / per-sq)',pk:'costFlat50'},
 ];
-const VENT_CATS=[{k:'ridge',label:'Ridge Vent (per LF)',pk:'costTaxLf'},{k:'box',label:'Box Vents (per ea)',pk:'costTaxEa'},{k:'power',label:'Power Vents (per ea)',pk:'costTaxEa'},{k:'solar',label:'Solar Vent (per ea)',pk:'costTaxEa'},{k:'turbine',label:'Turbine (per ea)',pk:'costTaxEa'}];
+const VENT_CATS=[{k:'ridge',label:'Ridge Vent (per LF)',pk:'costTaxLf'},{k:'box',label:'Box Vents (per ea)',pk:'costTaxEa'},{k:'power',label:'Power Vents (per ea)',pk:'costTaxEa'},{k:'solar',label:'Solar Power Vent (per ea)',pk:'costTaxEa'},{k:'turbine',label:'Turbine (per ea)',pk:'costTaxEa'}];
 function buildAdminFields(){
   let html='';
   ADMIN_CATS.forEach(cat=>{
