@@ -173,7 +173,7 @@ input[type=range].margin-slider::-moz-range-thumb{width:22px;height:22px;border-
       <button class="btn-login" onclick="login()">Sign In →</button>
       <div class="aerr" id="aerr"></div>
     </div>
-    <div style="text-align:center;margin-top:14px;font-size:11px;color:var(--txt3)">Last updated: May 7, 2026 · 3:40 PM ET</div>
+    <div style="text-align:center;margin-top:14px;font-size:11px;color:var(--txt3)">Last updated: May 11, 2026 · 12:34 PM ET</div>
   </div>
 </div>
 
@@ -212,9 +212,12 @@ input[type=range].margin-slider::-moz-range-thumb{width:22px;height:22px;border-
         </div>
         <div class="g2">
           <div class="f"><label>Existing Shingle Type</label>
-            <select id="existing-shingle" onchange="calc()">
-              <option value="arch">Architectural / Faux Laminate</option>
+            <select id="existing-shingle" onchange="setExistingTier('shingle',this.value)">
               <option value="3tab">3-Tab</option>
+              <option value="arch1">Arch Tier 1 (Natural Shadow)</option>
+              <option value="arch2">Arch Tier 2 (HDZ)</option>
+              <option value="des1">Designer Tier 1 (Slateline)</option>
+              <option value="des2">Designer Tier 2 (Camelot II)</option>
             </select>
           </div>
           <div class="f"><label>Date Signed</label><input type="date" id="fc-date" onchange="onDateChange()"/></div>
@@ -301,9 +304,9 @@ input[type=range].margin-slider::-moz-range-thumb{width:22px;height:22px;border-
         <div class="card-ttl">Line-Item Breakdown</div>
         <div class="tbl-wrap">
           <table class="tbl">
-            <thead><tr><th>Component</th><th>Selected</th><th>Qty</th><th>Our Cost</th><th>Ins. Allows</th><th>HO Charged</th><th>Comm</th></tr></thead>
+            <thead><tr><th>Component</th><th>Selected</th><th>Qty</th><th>Upgrade Cost</th><th>HO Charged</th><th>Comm</th></tr></thead>
             <tbody id="lbody"></tbody>
-            <tfoot><tr><td colspan="3">Totals</td><td id="ft-cost">$0</td><td id="ft-ins">$0</td><td id="ft-ho" style="color:var(--amber)">$0</td><td id="ft-com" style="color:var(--gold)">$0</td></tr></tfoot>
+            <tfoot><tr><td colspan="3">Totals</td><td id="ft-cost">$0</td><td id="ft-ho" style="color:var(--amber)">$0</td><td id="ft-com" style="color:var(--gold)">$0</td><td id="ft-ins" style="display:none"></td></tr></tfoot>
           </table>
         </div>
       </div>
@@ -331,7 +334,7 @@ input[type=range].margin-slider::-moz-range-thumb{width:22px;height:22px;border-
     <div class="page" id="pg-hist">
       <div class="pg-title">Pricing History</div>
       <div class="pg-sub">Signed date determines which version payroll uses</div>
-      <div class="card"><div class="tbl-wrap"><table class="tbl"><thead><tr><th>Ver</th><th>Label</th><th>Effective</th><th>Expires</th><th>Status</th><th>GAF HDZ/sq</th></tr></thead><tbody id="hist-body"></tbody></table></div></div>
+      <div class="card"><div class="tbl-wrap"><table class="tbl"><thead><tr><th>Ver</th><th>Label</th><th>Effective</th><th>Expires</th><th>Status</th></tr></thead><tbody id="hist-body"></tbody></table></div></div>
     </div>
 
     <div class="page" id="pg-admin">
@@ -347,7 +350,7 @@ input[type=range].margin-slider::-moz-range-thumb{width:22px;height:22px;border-
         <div id="admin-fields"></div>
         <button class="btn btn-gold btn-full" style="margin-top:10px" onclick="publishVer()">Publish New Pricing Version</button>
       </div>
-      <div class="card"><div class="card-ttl">All Versions</div><div class="tbl-wrap"><table class="tbl"><thead><tr><th>Ver</th><th>Label</th><th>Effective</th><th>Expires</th><th>Status</th><th>GAF HDZ/sq</th></tr></thead><tbody id="adm-ver-body"></tbody></table></div></div>
+      <div class="card"><div class="card-ttl">All Versions</div><div class="tbl-wrap"><table class="tbl"><thead><tr><th>Ver</th><th>Label</th><th>Effective</th><th>Expires</th><th>Status</th></tr></thead><tbody id="adm-ver-body"></tbody></table></div></div>
     </div>
 
     <div class="page" id="pg-users">
@@ -363,56 +366,194 @@ input[type=range].margin-slider::-moz-range-thumb{width:22px;height:22px;border-
 <div class="toast" id="toast"></div>
 
 <script>
+// ── PRICING ENGINE ──
+// Upgrade cost = priceDiff * 1.08 (tax included)
+// priceDiff tables keyed by existing tier -> chosen product index
+
+// SHINGLE: upgrade cost per adjusted SQ (priceDiff * 1.08)
+// Idx: 0=Royal Sov, 1=Nat Shadow, 2=HDZ, 3=UHDZ, 4=ArmorshieldII, 5=Slateline, 6=Camelot II
+const SHINGLE_UPGRADES={
+  '3tab':  [0,0,2.7216,25.92,36.7416,141.3612,145.8864],
+  'arch1': [0,0,0,23.1984,34.02,138.6396,143.1648],
+  'arch2': [0,0,0,0,34.02,138.6396,143.1648],
+  'des1':  [0,0,0,0,0,0,4.5252],
+  'des2':  [0,0,0,0,0,0,0],
+};
+// RIDGE CAP: upgrade cost per LF (priceDiff/LF * 1.08)
+// Idx: 0=Royal Sov Ridge, 1=Z Ridge, 2=SAR Armorshield, 3=Timbertex
+const RIDGE_UPGRADES={
+  '3tab':  [0,1.5012,2.7324,3.0564],
+  'tier1': [0,0,1.2312,1.5552],
+  'tier2': [0,0,0,0.324],
+  'tier3': [0,0,0,0],
+};
+// STARTER: upgrade cost per bundle (priceDiff * 1.08)
+// Idx: 0=Pro Start, 1=Weatherblocker
+const STARTER_UPGRADES={
+  'tier1': [0,60.48],
+  'tier2': [0,0],
+};
+// UNDERLAYMENT: upgrade cost per roll (priceDiff * 1.08)
+// Idx: 0=Secure Grip, 1=Feltbuster, 2=Tiger Paw
+const UNDER_UPGRADES={
+  'tier1': [0,20.034,206.118],
+  'tier2': [0,0,186.084],
+  'tier3': [0,0,0],
+};
+// VALLEY: upgrade cost per LF (priceDiff/LF * 1.08)
+// Idx: 0=Ice&Water, 1=Stormguard, 2=W Metal Valley
+const VALLEY_UPGRADES={
+  'tier1': [0,0.4752,5.94],
+  'tier2': [0,0,5.4756],
+  'tier3': [0,0,0],
+};
+// PIPE BOOTS: upgrade cost per boot (priceDiff * 1.08)
+// Idx: 0=3n1 Neoprene, 1=Lead Pipeboot
+const BOOT_UPGRADES={
+  'tier1': [0,25.866],
+  'tier2': [0,0],
+};
+
 const MATS=[
-  {key:'shingle',name:'Shingles',unitType:'sq',unitLabel:'per square',note:'Camelot II = 4 bundles/sq. All others = 3 bundles/sq.',opts:[
-    {name:'GAF Royal Sovereign',costTaxSq:113.40,std:true,bdPerSq:3},
-    {name:'GAF Natural Shadow',costTaxSq:118.26,bdPerSq:3},
-    {name:'GAF HDZ & HDZ Bold',costTaxSq:118.26,bdPerSq:3},
-    {name:'GAF UHDZ',costTaxSq:140.39,bdPerSq:3},
-    {name:'GAF Armorshield II',costTaxSq:159.83,bdPerSq:3},
-    {name:'GAF Camelot II (4bd/sq)',costTaxSq:265.68,bdPerSq:4},
-    {name:'GAF Slateline',costTaxSq:260.27,bdPerSq:3},
+  // upgDiff values = priceDiff * 1.08 (tax) per unit, keyed by existing tier
+  {key:'shingle',name:'Shingles',unitType:'sq',unitLabel:'per square',
+    note:'Camelot II = 4 bundles/sq. All others = 3 bundles/sq.',
+    existingOpts:[
+      {val:'3tab',  label:'3-Tab'},
+      {val:'arch1', label:'Arch Tier 1 (Natural Shadow)'},
+      {val:'arch2', label:'Arch Tier 2 (HDZ)'},
+      {val:'des1',  label:'Designer Tier 1 (Slateline)'},
+      {val:'des2',  label:'Designer Tier 2 (Camelot II)'},
+    ],
+    // upgDiff[tier][selIdx] = priceDiff/sq * 1.08
+    // opts order: Royal Sov(0), Natural Shadow(1), HDZ(2), UHDZ(3), Armorshield(4), Slateline(5), Camelot II(6)
+    // pre-tax price diff per SQ; ×1.08 applied in getUpgradeCost
+    // opts: Royal Sov(0), Nat Shadow(1), HDZ(2), UHDZ(3), Armorshield(4), Slateline(5), Camelot II(6)
+    upgDiff:{
+      '3tab':  [0, 0, 2.52,  24.00, 34.02, 130.89, 135.08],
+      'arch1': [0, 0, 0,     21.48, 31.50, 128.37, 132.56],
+      'arch2': [0, 0, 0,     0,     31.50, 128.37, 132.56],
+      'des1':  [0, 0, 0,     0,     0,     0,      4.19],
+      'des2':  [0, 0, 0,     0,     0,     0,      0],
+    },
+    opts:[
+      {name:'GAF Royal Sovereign',    bdPerSq:3},
+      {name:'GAF Natural Shadow',     bdPerSq:3},
+      {name:'GAF HDZ & HDZ Bold',     bdPerSq:3},
+      {name:'GAF UHDZ',               bdPerSq:3},
+      {name:'GAF Armorshield II',     bdPerSq:3},
+      {name:'GAF Slateline',          bdPerSq:3},
+      {name:'GAF Camelot II (4BD)',   bdPerSq:4},
+    ],
+  },
+  {key:'ridge',name:'Ridge Cap',unitType:'ridgehip',unitLabel:'per bundle',
+    existingOpts:[
+      {val:'3tab',  label:'3-Tab (Royal Sov. Ridge)'},
+      {val:'tier1', label:'Ridge Cap Tier 1 (Z Ridge)'},
+      {val:'tier2', label:'Ridge Cap Tier 2 (SAR Armorshield)'},
+      {val:'tier3', label:'Ridge Cap Tier 3 (Timbertex)'},
+    ],
+    // upgDiffLF[tier][selIdx] = pre-tax price diff per LF (×1.08 applied in getUpgradeCost)
+    // formula: bundles * lfPerBd * diffPerLF * 1.08
+    // opts order: Royal Sov(0), Z Ridge(1), SAR Armorshield(2), Timbertex(3)
+    upgDiffLF:{
+      '3tab':  [0, 1.39, 2.53, 2.83],
+      'tier1': [0, 0,    1.14, 1.44],
+      'tier2': [0, 0,    0,    0.30],
+      'tier3': [0, 0,    0,    0],
+    },
+    opts:[
+      {name:'GAF Royal Sov. Ridge (30LF)',   lfPerBd:30},
+      {name:'GAF Z Ridge (33LF)',            lfPerBd:33},
+      {name:'GAF SAR Armorshield II (25LF)', lfPerBd:25},
+      {name:'GAF Timbertex (20LF)',          lfPerBd:20},
+    ],
+  },
+  {key:'starter',name:'Starter Strip',unitType:'eave',unitLabel:'per bundle',
+    existingOpts:[
+      {val:'tier1', label:'Starter Tier 1 (Pro Start)'},
+      {val:'tier2', label:'Starter Tier 2 (Weatherblocker)'},
+    ],
+    // pre-tax price diff per LF; formula: bundles * lfPerBd * diff * 1.08
+    upgDiffLF:{
+      'tier1': [0, 0.65],
+      'tier2': [0, 0],
+    },
+    opts:[
+      {name:'GAF Pro Start (120LF)',      lfPerBd:120},
+      {name:'GAF Weatherblocker (100LF)', lfPerBd:100},
+    ],
+  },
+  {key:'under',name:'Underlayment',unitType:'under',unitLabel:'per 10-sq roll',
+    existingOpts:[
+      {val:'tier1', label:'Underlayment Tier 1 (Secure Grip)'},
+      {val:'tier2', label:'Underlayment Tier 2 (Feltbuster)'},
+      {val:'tier3', label:'Underlayment Tier 3 (Tiger Paw)'},
+    ],
+    // pre-tax price diff per roll; ×1.08 applied in getUpgradeCost
+    upgDiffRl:{
+      'tier1': [0, 18.55,  190.85],
+      'tier2': [0, 0,      172.30],
+      'tier3': [0, 0,      0],
+    },
+    opts:[
+      {name:'Secure Grip Synthetic'},
+      {name:'GAF Feltbuster'},
+      {name:'GAF Tiger Paw'},
+    ],
+  },
+  {key:'valley',name:'Valley / Ice & Water',unitType:'valley',unitLabel:'per unit',
+    existingOpts:[
+      {val:'tier1', label:'Valley Tier 1 (Ice & Water)'},
+      {val:'tier2', label:'Valley Tier 2 (Stormguard)'},
+      {val:'tier3', label:'Valley Tier 3 (W Metal)'},
+    ],
+    // upgDiffLF[tier][selIdx] = pre-tax price diff per LF (×1.08 applied in getUpgradeCost)
+    // formula: units * lfPerUnit * diffPerLF * 1.08
+    // opts order: Ice&Water(0), Stormguard(1), W Metal(2)
+    upgDiffLF:{
+      'tier1': [0, 0.44, 5.50],
+      'tier2': [0, 0,    5.07],
+      'tier3': [0, 0,    0],
+    },
+    opts:[
+      {name:'Ice & Water Shield (62LF)', lfPerUnit:62},
+      {name:'GAF Stormguard (62LF)',     lfPerUnit:62},
+      {name:'W Metal Valley (10LF)',     lfPerUnit:10},
+    ],
+  },
+  {key:'drip',name:'Drip Edge',unitType:'drip',opts:[
+    {name:"Drip Edge 1.5×1.5×10'", costTaxEa:9.67, std:true},
   ]},
-  {key:'ridge',name:'Ridge Cap',unitType:'ridgehip',unitLabel:'per bundle',lfPerBd:[30,25,20,33],opts:[
-    {name:'GAF Royal Sov. Ridge (30LF)',costTaxBd:42.12,std:true},
-    {name:'GAF SAR Armorshield II (25LF)',costTaxBd:102.60},
-    {name:'GAF Timbertex (20LF)',costTaxBd:88.02},
-    {name:'GAF Z Ridge (33LF)',costTaxBd:97.15},
-  ]},
-  {key:'starter',name:'Starter Strip',unitType:'eave',unitLabel:'per bundle (100LF)',lfPerBd:[100,100],opts:[
-    {name:'GAF Pro Start (100LF)',costTaxBd:58.32,std:true},
-    {name:'GAF Weatherblocker (100LF)',costTaxBd:116.856},
-  ]},
-  {key:'under',name:'Underlayment',unitType:'under',unitLabel:'per 10-sq roll',opts:[
-    {name:'Secure Grip Synthetic',costTaxRoll:81.00,std:true},
-    {name:'GAF Feltbuster',costTaxRoll:102.546},
-    {name:'GAF Tiger Paw',costTaxRoll:279.72},
-  ]},
-  {key:'valley',name:'Valley / Ice & Water',unitType:'valley',unitLabel:'per unit',lfPerUnit:[62,10,62],opts:[
-    {name:'Ice & Water Shield (62LF)',costTaxUnit:86.35,std:true},
-    {name:'W Metal Valley (10LF)',costTaxUnit:261.14},
-    {name:'GAF Stormguard (62LF)',costTaxUnit:111.24},
-  ]},
-  {key:'drip',name:'Drip Edge',unitType:'drip',unitLabel:"per piece (10')",opts:[
-    {name:"Drip Edge 1.5×1.5×10'",costTaxEa:9.67,std:true},
-  ]},
-  {key:'boot',name:'Pipe Boots',unitType:'count',unitLabel:'per boot',opts:[
-    {name:'3-in-1 Neoprene',costTaxEa:9.07,std:true},
-    {name:'Silicone Lifetime',costTaxEa:66.42},
-    {name:'Lead Pipe Boot',costTaxEa:33.53},
-  ]},
+  {key:'boot',name:'Pipe Boots',unitType:'count',unitLabel:'per boot',
+    existingOpts:[
+      {val:'tier1', label:'Pipe Boot Tier 1 (Neoprene)'},
+      {val:'tier2', label:'Pipe Boot Tier 2 (Lead)'},
+    ],
+    // pre-tax price diff per ea; ×1.08 applied in getUpgradeCost
+    upgDiffEa:{
+      'tier1': [0, 23.95],
+      'tier2': [0, 0],
+    },
+    opts:[
+      {name:'3-in-1 Neoprene'},
+      {name:'Lead Pipe Boot'},
+    ],
+  },
   {key:'vent',name:'Ventilation',unitType:'vent',unitLabel:'mixed units',opts:[
-    {name:'Ridge Vent',costTaxLf:20.27/4,std:true,unit:'LF',note:'4LF/stick · $20.27/stick'},
-    {name:'Box Vents (metal)',costTaxEa:21.60,std:true,unit:'ea'},
-    {name:'Power Vents',costTaxEa:202.068,unit:'ea'},
-    {name:'Solar Vent',costTaxEa:491.40,unit:'ea'},
-    {name:'Turbine',costTaxEa:96.12,unit:'ea'},
+    {name:'Ridge Vent',       costEa:17.70, unit:'LF', lfPer:4},
+    {name:'Box Vents',        costEa:20.60, unit:'ea'},
+    {name:'Power Vents',      costEa:187.10,unit:'ea'},
+    {name:'Solar Power Vent', costEa:455.00,unit:'ea'},
+    {name:'Turbine',          costEa:92.75, unit:'ea'},
   ]},
-  {key:'warr',name:'Warranty',unitType:'warr',unitLabel:'per job (sq-based)',opts:[
-    {name:'No Warranty / GAF Lim. Lifetime (incl.)',std:true,costFlat50:0,costFlat51:0,perSq:false},
-    {name:'GAF Silver Pledge',std:false,costFlat50:183.60,costFlat51:367.20,perSq:false},
-    {name:'GAF Golden Pledge',std:false,costPerSq:8.64,perSq:true},
+  {key:'warr',name:'Warranty',unitType:'warr',opts:[
+    {name:'No Warranty / GAF Lim. Lifetime (incl.)',std:true, costPerSq:0, flatLte50:0,   flatGt50:0},
+    {name:'GAF Silver Pledge',                       std:false,costPerSq:5, flatLte50:170, flatGt50:340},
+    {name:'GAF Golden Pledge',                       std:false,costPerSq:8, flatLte50:0,   flatGt50:0},
   ]},
+];
+
 ];
 
 let VERSIONS=[{id:'v1',label:'Apr 28, 2026 – Present',eff:'2026-04-28',exp:null,by:'admin'}];
@@ -492,9 +633,76 @@ function updateBanner(){
 function setMode(m){claimMode=m;document.getElementById('mode-full').className='mode-btn full '+(m==='full'?'on':'off');document.getElementById('mode-dap').className='mode-btn dap '+(m==='dap'?'on':'off');calc();}
 
 // COST HELPERS
-function oc(mat,opt){if(mat.key==='shingle')return opt.costTaxSq||0;if(mat.key==='ridge')return opt.costTaxBd||0;if(mat.key==='starter')return opt.costTaxBd||0;if(mat.key==='under')return opt.costTaxRoll||0;if(mat.key==='valley')return opt.costTaxUnit||0;if(mat.key==='drip')return opt.costTaxEa||0;if(mat.key==='boot')return opt.costTaxEa||0;if(mat.key==='vent')return opt.costTaxLf||opt.costTaxEa||0;return 0;}
+// oc() replaced by getUpgradeCost()
 function unitStr(mat){if(mat.key==='shingle')return'/sq';if(mat.key==='ridge')return'/bd';if(mat.key==='starter')return'/bd';if(mat.key==='under')return'/roll';if(mat.key==='valley')return'/unit';if(mat.key==='drip')return'/pc';if(mat.key==='boot')return'/ea';return'';}
-function warrantyJobCost(opt,adjSq){if(!opt||opt.std)return 0;if(opt.perSq)return(opt.costPerSq||0)*adjSq;if(adjSq<=50)return opt.costFlat50||0;return opt.costFlat51||0;}
+
+// warrantyJobCost: Silver = $5/sq * adjSq + flat (≤50sq: $170, >50sq: $340), Golden = $8/sq
+function warrantyJobCost(opt,adjSq){
+  if(!opt||opt.std)return 0;
+  const perSqCost=(opt.costPerSq||0)*adjSq;
+  const flatFee=adjSq<=50?(opt.flatLte50||0):(opt.flatGt50||0);
+  return perSqCost+flatFee;
+}
+
+// getUpgradeCost: returns the minimum upgrade cost for a material selection
+// Formula: priceDiff * qty * 1.08 (tax applied to price diff, not base cost)
+function getUpgradeCost(key, tier, selIdx, geo){
+  const m=MATS.find(x=>x.key===key);
+  if(!m||selIdx===0) return 0;
+
+  if(key==='shingle'){
+    // adjSq = ceil(sq * 1.15 * bdPerSq) / bdPerSq
+    // upgCost = adjSq * priceDiff * 1.08
+    const diff=(m.upgDiff&&m.upgDiff[tier]&&m.upgDiff[tier][selIdx])||0;
+    if(diff===0) return 0;
+    const bdps=(m.opts[selIdx]||{}).bdPerSq||3;
+    const adjSq=Math.ceil((geo.sq||0)*1.15*bdps)/bdps;
+    return adjSq*diff*1.08;
+  }
+  if(key==='ridge'){
+    // bundles = ceil(ridgehip / lfPerBd)
+    // upgCost = bundles * lfPerBd * diffPerLF * 1.08
+    const diff=(m.upgDiffLF&&m.upgDiffLF[tier]&&m.upgDiffLF[tier][selIdx])||0;
+    if(diff===0) return 0;
+    const lfpb=(m.opts[selIdx]||{}).lfPerBd||30;
+    const bundles=Math.ceil((geo.ridgehip||0)/lfpb);
+    return bundles*lfpb*diff*1.08;
+  }
+  if(key==='starter'){
+    // bundles = ceil((eav+rak) / lfPerBd)
+    // upgCost = bundles * lfPerBd * diffPerLF * 1.08
+    const diff=(m.upgDiffLF&&m.upgDiffLF[tier]&&m.upgDiffLF[tier][selIdx])||0;
+    if(diff===0) return 0;
+    const lfpb=(m.opts[selIdx]||{}).lfPerBd||120;
+    const totalLF=(geo.eav||0)+(geo.rak||0);
+    const bundles=Math.ceil(totalLF/lfpb);
+    return bundles*lfpb*diff*1.08;
+  }
+  if(key==='under'){
+    // rolls = ceil(sq * 1.10 / 10)
+    // upgCost = rolls * diffPerRoll * 1.08
+    const diff=(m.upgDiffRl&&m.upgDiffRl[tier]&&m.upgDiffRl[tier][selIdx])||0;
+    if(diff===0) return 0;
+    const rolls=Math.ceil((geo.sq||0)*1.10/10);
+    return rolls*diff*1.08;
+  }
+  if(key==='valley'){
+    // units = ceil(valley * 1.13 / lfPerUnit)
+    // upgCost = units * lfPerUnit * diffPerLF * 1.08
+    const diff=(m.upgDiffLF&&m.upgDiffLF[tier]&&m.upgDiffLF[tier][selIdx])||0;
+    if(diff===0) return 0;
+    const lfpu=(m.opts[selIdx]||{}).lfPerUnit||62;
+    const units=Math.ceil((geo.val||0)*1.13/lfpu);
+    return units*lfpu*diff*1.08;
+  }
+  if(key==='boot'){
+    // upgCost = bootCount * diffPerEa * 1.08
+    const diff=(m.upgDiffEa&&m.upgDiffEa[tier]&&m.upgDiffEa[tier][selIdx])||0;
+    if(diff===0) return 0;
+    return bootCount*diff*1.08;
+  }
+  return 0;
+}
 
 // Golden Pledge eligibility check
 // Requires: GAF shingle (any EXCEPT Natural Shadow idx 1), any GAF ridge cap (all are GAF),
@@ -505,22 +713,16 @@ function goldenEligibility(){
   const shingleIdx = matSel['shingle']||0;
   const underIdx   = matSel['under']||0;
   const valleyIdx  = matSel['valley']||0;
-
   const issues=[];
-
-  // Shingle: must be GAF but NOT Natural Shadow (idx 1)
-  if(shingleIdx===1) issues.push('Shingle cannot be Natural Shadow');
-
-  // Ridge cap: all 4 options are GAF — always passes
-  // Starter: both options are GAF — always passes
-
-  // Underlayment: must be Feltbuster (idx 1) or Tiger Paw (idx 2) — not Secure Grip (idx 0)
-  if(underIdx===0) issues.push('Underlayment must be GAF (Feltbuster or Tiger Paw)');
-
-  // Valley: must be GAF Stormguard (idx 2)
-  if(valleyIdx!==2) issues.push('Valley must be GAF Stormguard');
-
-  return issues; // empty array = eligible
+  // Shingle: cannot be Royal Sovereign (0) or Natural Shadow (1) — must be HDZ or better
+  if(shingleIdx<=1) issues.push('Shingle must be HDZ or better (not Royal Sovereign or Natural Shadow)');
+  // Ridge cap: all GAF — always passes
+  // Starter: all GAF — always passes
+  // Underlayment: must be Feltbuster (1) or Tiger Paw (2)
+  if(underIdx===0) issues.push('Underlayment must be GAF Feltbuster or Tiger Paw');
+  // Valley: must be GAF Stormguard (1) or W Metal (2)
+  if(valleyIdx===0) issues.push('Valley must be GAF Stormguard or W Metal Valley');
+  return issues;
 }
 
 // MARGIN SLIDER SECTION
@@ -534,17 +736,29 @@ function sliderSection(key){
       <span class="slider-lbl">Margin on Upgrade</span>
       <span class="slider-pct" id="sp-${key}">${pct}%</span>
     </div>
-    <div class="slider-info"><span>0% — at cost</span><span>50% markup</span><span>100% — 2× cost</span></div>
-    <input type="range" class="margin-slider" min="0" max="100" step="1" value="${pct}"
+    <div class="slider-info"><span>0% — at cost</span><span>100%</span><span>200% — 3× cost</span></div>
+    <input type="range" class="margin-slider" min="0" max="200" step="1" value="${pct}"
       id="sl-${key}" oninput="setSlider('${key}',this.value)"/>
     <div class="slider-result">
-      <div><div style="font-size:9px;color:var(--txt3);text-transform:uppercase;letter-spacing:.05em;font-weight:700;margin-bottom:2px">HO Margin Charge</div><span class="slider-charge" id="sc-${key}">$0.00</span></div>
+      <div><div style="font-size:9px;color:var(--txt3);text-transform:uppercase;letter-spacing:.05em;font-weight:700;margin-bottom:2px">Min HO Charge</div><span class="slider-charge" id="sc-${key}">$0.00</span></div>
       <div style="text-align:right"><div style="font-size:9px;color:var(--txt3);text-transform:uppercase;letter-spacing:.05em;font-weight:700;margin-bottom:2px">Your Commission</div><span class="slider-comm" id="sk-${key}">$0.00</span></div>
     </div>
   </div>`;
 }
 
 // MATERIAL UI
+function existingTierDropdown(m){
+  if(!m.existingOpts) return '';
+  const cur=existingTier[m.key]||m.existingOpts[0].val;
+  return `<div class="f" style="margin-bottom:8px">
+    <label>Existing ${m.name}</label>
+    <select style="width:100%;background:var(--surf3);border:1px solid var(--bdr2);border-radius:var(--rsm);padding:8px 10px;color:var(--txt);outline:none;-webkit-appearance:none;appearance:none;font-size:13px"
+      onchange="setExistingTier('${m.key}',this.value)">
+      ${m.existingOpts.map(o=>`<option value="${o.val}"${o.val===cur?' selected':''}>${o.label}</option>`).join('')}
+    </select>
+  </div>`;
+}
+
 function buildMatUI(){
   document.getElementById('mat-ui').innerHTML=MATS.map(m=>{
     if(m.key==='vent') return buildVentUI();
@@ -553,11 +767,12 @@ function buildMatUI(){
     return `<div class="mat-row" id="mr-${m.key}">
       <div class="mat-hd"><span class="mat-hd-name">${m.name}</span><span class="mat-hd-cost" id="mhc-${m.key}"></span></div>
       <div class="mat-body">
+        ${existingTierDropdown(m)}
         ${m.note?`<div style="font-size:10px;color:var(--txt3);margin-bottom:8px">${m.note}</div>`:''}
         <div class="mat-sel">${m.opts.map((o,i)=>`<div class="mat-opt ${i===selIdx?(o.std?'std-sel':'sel'):''}" id="mo-${m.key}-${i}" onclick="pickMat('${m.key}',${i})">${o.name}</div>`).join('')}</div>
-        <div class="mat-result"><span class="mat-result-label">Unit cost (our cost+tax)</span><span class="mat-result-val" id="mrc-${m.key}"></span></div>
+        <div class="mat-result"><span class="mat-result-label">Upgrade cost (min charge to HO)</span><span class="mat-result-val" id="mrc-${m.key}">—</span></div>
         ${m.key==='warr'?`<div id="warr-elig" style="display:none;margin-top:8px;padding:9px 11px;background:var(--red-bg);border:1px solid var(--red-bdr);border-radius:var(--rsm);font-size:11px;color:var(--red);line-height:1.5"></div>`:''}
-        ${sliderSection(m.key)}
+        ${m.key==='drip'?'':`${sliderSection(m.key)}`}
       </div>
     </div>`;
   }).join('');
@@ -593,41 +808,53 @@ function buildVentUI(){
 }
 
 function buildBootUI(){
+  const m=MATS.find(m=>m.key==='boot');
+  const selIdx=matSel['boot']||0;
   return `<div class="mat-row" id="mr-boot">
     <div class="mat-hd"><span class="mat-hd-name">Pipe Boots</span><span class="mat-hd-cost" id="mhc-boot"></span></div>
     <div class="mat-body">
-      <div class="mat-sel">${MATS.find(m=>m.key==='boot').opts.map((o,i)=>`<div class="mat-opt ${i===(matSel['boot']||0)?(o.std?'std-sel':'sel'):''}" id="mo-boot-${i}" onclick="pickMat('boot',${i})">${o.name}</div>`).join('')}</div>
+      ${existingTierDropdown(m)}
+      <div class="mat-sel">${m.opts.map((o,i)=>`<div class="mat-opt ${i===selIdx?'sel':''}" id="mo-boot-${i}" onclick="pickMat('boot',${i})">${o.name}</div>`).join('')}</div>
       <div class="cnt-f" style="margin-top:8px"><label>Number of Pipe Boots</label><input type="number" value="${bootCount}" min="0" oninput="setBootCount(this.value)" style="background:var(--surf);border:1px solid var(--bdr2);border-radius:6px;padding:8px 10px;color:var(--txt);outline:none;font-size:16px;font-family:'Syne',sans-serif;width:100%;-webkit-appearance:none"/></div>
-      <div class="mat-result"><span class="mat-result-label">Total boot cost</span><span class="mat-result-val" id="mrc-boot"></span></div>
+      <div class="mat-result"><span class="mat-result-label">Upgrade cost (min charge to HO)</span><span class="mat-result-val" id="mrc-boot">—</span></div>
       ${sliderSection('boot')}
     </div>
   </div>`;
 }
 
-function pickMat(key,idx){matSel[key]=idx;const m=MATS.find(x=>x.key===key);m.opts.forEach((_,i)=>{const el=document.getElementById(`mo-${key}-${i}`);if(!el)return;el.className='mat-opt '+(i===idx?(m.opts[i].std?'std-sel':'sel'):'');});updateMatDisplay();calc();}
+function setExistingTier(key,val){existingTier[key]=val;calc();}
+function pickMat(key,idx){matSel[key]=idx;const m=MATS.find(x=>x.key===key);m.opts.forEach((_,i)=>{const el=document.getElementById(`mo-${key}-${i}`);if(!el)return;el.className='mat-opt '+(i===idx?'sel':'');});updateMatDisplay();calc();}
 function setVent(k,type,val){ventCounts[k][type]=Math.max(0,parseInt(val)||0);calc();}
 function setBootCount(val){bootCount=Math.max(0,parseInt(val)||0);calc();}
 function setSlider(key,val){sliderPct[key]=parseInt(val)||0;document.getElementById('sp-'+key).textContent=sliderPct[key]+'%';calc();}
 
-function showSliderResult(key,ourCost,pct){
-  const margin=ourCost*(pct/100);  // what HO pays above our cost
+function showSliderResult(key,upgCost,pct){
+  const commission=upgCost*(pct/100);
+  const totalCharge=upgCost+commission;
   const sc=document.getElementById('sc-'+key);
   const sk=document.getElementById('sk-'+key);
-  if(sc) sc.textContent='$'+margin.toFixed(2);
-  if(sk) sk.textContent='$'+margin.toFixed(2);
+  if(sc) sc.textContent='$'+totalCharge.toFixed(2);
+  if(sk) sk.textContent='$'+commission.toFixed(2);
   const sl=document.getElementById('sl-'+key);
-  if(sl) sl.style.background=`linear-gradient(to right,var(--gold) ${pct}%,var(--surf3) ${pct}%)`;
+  if(sl) sl.style.background=`linear-gradient(to right,var(--gold) ${pct/2}%,var(--surf3) ${pct/2}%)`;
 }
 
 function updateMatDisplay(){
   MATS.forEach(m=>{
-    if(m.key==='vent')return;
-    const selIdx=matSel[m.key]||0;const opt=m.opts[selIdx];
-    const hc=document.getElementById(`mhc-${m.key}`);const rc=document.getElementById(`mrc-${m.key}`);
-    if(hc)hc.textContent=opt.name;
-    if(!rc)return;
-    if(m.key==='warr'){if(opt.std)rc.textContent='Included';else if(opt.perSq)rc.textContent=`$${opt.costPerSq}/sq (all sizes)`;else rc.textContent=`≤50sq: $${opt.costFlat50} / >50sq: $${opt.costFlat51}`;}
-    else{const cost=oc(m,opt);rc.textContent='$'+cost.toFixed(2)+unitStr(m);}
+    if(m.key==='vent') return;
+    const selIdx=matSel[m.key]||0;
+    const opt=m.opts[selIdx];
+    const hc=document.getElementById(`mhc-${m.key}`);
+    if(hc) hc.textContent=opt.name;
+    // warranty cost display
+    if(m.key==='warr'){
+      const rc=document.getElementById(`mrc-${m.key}`);
+      if(rc){
+        if(opt.std) rc.textContent='Included';
+        else if(opt.costPerSq&&(opt.flatLte50||opt.flatGt50)) rc.textContent=`$${opt.costPerSq}/sq + flat fee`;
+        else rc.textContent=`$${opt.costPerSq}/sq`;
+      }
+    }
   });
 }
 
@@ -642,25 +869,25 @@ function getGeo(){
   return{sq,rdg,hip,val,rak,eav,ridgehip:rdg+hip};
 }
 function matQty(m,selIdx,geo){
-  if(m.key==='shingle'){const bdps=(MATS.find(x=>x.key==='shingle').opts[selIdx]||{}).bdPerSq||3;return Math.ceil(geo.sq*1.15*bdps)/bdps;}
-  if(m.key==='ridge')return Math.ceil(geo.ridgehip/((m.lfPerBd&&m.lfPerBd[selIdx])||30));
-  if(m.key==='starter')return Math.ceil((geo.eav+geo.rak)/100);
-  if(m.key==='under')return Math.ceil(geo.sq*1.10/10);
-  if(m.key==='valley')return Math.ceil((geo.val*1.13)/((m.lfPerUnit&&m.lfPerUnit[selIdx])||50));
-  if(m.key==='drip')return Math.ceil((geo.eav+geo.rak)*1.10/10);
+  if(m.key==='shingle'){const bdps=(m.opts[selIdx]||{}).bdPerSq||3;return Math.ceil((geo.sq||0)*1.15*bdps)/bdps;}
+  if(m.key==='ridge'){const lfpb=(m.opts[selIdx]||{}).lfPerBd||30;return Math.ceil((geo.ridgehip||0)/lfpb);}
+  if(m.key==='starter'){const lfpb=(m.opts[selIdx]||{}).lfPerBd||120;return Math.ceil(((geo.eav||0)+(geo.rak||0))/lfpb);}
+  if(m.key==='under')return Math.ceil((geo.sq||0)*1.10/10);
+  if(m.key==='valley'){const lfpu=(m.opts[selIdx]||{}).lfPerUnit||62;return Math.ceil((geo.val||0)*1.13/lfpu);}
+  if(m.key==='drip')return Math.ceil(((geo.eav||0)+(geo.rak||0))*1.10/10);
   if(m.key==='boot')return bootCount;
-  if(m.key==='warr'){const bdps=(MATS.find(x=>x.key==='shingle').opts[0]||{}).bdPerSq||3;return Math.ceil(geo.sq*1.15*bdps)/bdps;}
+  if(m.key==='warr'){const bdps=(m.opts[0]||{}).bdPerSq||3;return Math.ceil((geo.sq||0)*1.15*bdps)/bdps;}
   return 0;
 }
 function qtyLabel(m,selIdx,geo){
-  if(m.key==='shingle'){const bdps=(m.opts[selIdx]||{}).bdPerSq||3;return`${Math.ceil(geo.sq*1.15*bdps)} bundles`;}
-  if(m.key==='ridge'){const lfpb=(m.lfPerBd&&m.lfPerBd[selIdx])||30;return`${Math.ceil(geo.ridgehip/lfpb)} bd`;}
-  if(m.key==='starter')return`${Math.ceil((geo.eav+geo.rak)/100)} bd`;
-  if(m.key==='under')return`${Math.ceil(geo.sq*1.10/10)} rolls`;
-  if(m.key==='valley'){const lfpu=(m.lfPerUnit&&m.lfPerUnit[selIdx])||50;return`${Math.ceil((geo.val*1.13)/lfpu)} units`;}
-  if(m.key==='drip')return`${Math.ceil((geo.eav+geo.rak)*1.10/10)} pcs`;
+  if(m.key==='shingle'){const bdps=(m.opts[selIdx]||{}).bdPerSq||3;return`${Math.ceil((geo.sq||0)*1.15*bdps)} bundles`;}
+  if(m.key==='ridge'){const lfpb=(m.opts[selIdx]||{}).lfPerBd||30;return`${Math.ceil((geo.ridgehip||0)/lfpb)} bd`;}
+  if(m.key==='starter'){const lfpb=(m.opts[selIdx]||{}).lfPerBd||120;return`${Math.ceil(((geo.eav||0)+(geo.rak||0))/lfpb)} bd`;}
+  if(m.key==='under')return`${Math.ceil((geo.sq||0)*1.10/10)} rolls`;
+  if(m.key==='valley'){const lfpu=(m.opts[selIdx]||{}).lfPerUnit||62;return`${Math.ceil((geo.val||0)*1.13/lfpu)} units`;}
+  if(m.key==='drip')return`${Math.ceil(((geo.eav||0)+(geo.rak||0))*1.10/10)} pcs`;
   if(m.key==='boot')return`${bootCount} ea`;
-  if(m.key==='warr')return geo.sq<=50?'≤50 sq (flat fee)':`${geo.sq.toFixed(1)} sq (>50 flat)`;
+  if(m.key==='warr')return geo.sq<=50?'≤50 sq':'> 50 sq';
   return'—';
 }
 
@@ -677,128 +904,117 @@ function calc(){
   document.getElementById('m-ridgehip').textContent=geo.ridgehip.toFixed(0);
   document.getElementById('m-eaverake').textContent=(geo.eav+geo.rak).toFixed(0);
 
-  let totStdCost=0,totSelCost=0,totHOCharge=0,totComm=0,maxComm=0;
+  let totUpgradeCost=0,totHOCharge=0,totComm=0,maxComm=0;
   const rows=[];
 
-  MATS.filter(m=>m.key!=='vent').forEach(m=>{
+  MATS.filter(m=>m.key!=='vent'&&m.key!=='drip').forEach(m=>{
     const selIdx=matSel[m.key]||0;
-    let stdIdx=0;
-    if(m.key==='shingle'){const et=document.getElementById('existing-shingle').value;stdIdx=(et==='arch')?1:0;}
-    const stdOpt=m.opts[stdIdx];const selOpt=m.opts[selIdx];const maxOpt=m.opts[m.opts.length-1];
+    const selOpt=m.opts[selIdx];
+    const tier=existingTier[m.key]||((m.existingOpts&&m.existingOpts[0].val)||'tier1');
 
     if(m.key==='warr'){
-      const adjSq=matQty(m,selIdx,geo);
-      const tStdCost=warrantyJobCost(stdOpt,adjSq);const tSelCost=warrantyJobCost(selOpt,adjSq);const tMaxCost=warrantyJobCost(maxOpt,adjSq);
-      const hoCharge=Math.max(0,tSelCost-tStdCost);
-      maxComm+=Math.max(0,tMaxCost-tStdCost);
-      totStdCost+=tStdCost;totSelCost+=tSelCost;totHOCharge+=hoCharge;totComm+=hoCharge;
-      rows.push({name:m.name,selName:selOpt.name,selIdx,selCost:tSelCost,insAllows:tStdCost,hoCharge,comm:hoCharge,qty:qtyLabel(m,selIdx,geo),isStd:selIdx===0});
-      // Silver & Golden Pledge eligibility warning
+      const adjSq=Math.ceil((geo.sq||0)*1.15*3)/3;
+      const upgCost=warrantyJobCost(selOpt,adjSq);
+      const maxCost=warrantyJobCost(m.opts[m.opts.length-1],adjSq);
+      maxComm+=maxCost;
+      totUpgradeCost+=upgCost;totHOCharge+=upgCost;totComm+=upgCost;
+      const rc=document.getElementById('mrc-warr');
+      if(rc) rc.textContent=upgCost>0?('$'+upgCost.toFixed(2)):'Included';
+      rows.push({name:m.name,selName:selOpt.name,upgCost,hoCharge:upgCost,comm:upgCost,qty:geo.sq<=50?'≤50 sq':'> 50 sq',isStd:selOpt.std});
+      // Warranty eligibility warning
       const eligEl=document.getElementById('warr-elig');
       if(eligEl){
-        const isUpgradeWarr = selIdx===1 || selIdx===2; // Silver=1, Golden=2
+        const isUpgradeWarr=selIdx===1||selIdx===2;
         if(isUpgradeWarr){
           const issues=goldenEligibility();
-          if(issues.length>0){
-            eligEl.style.display='block';
-            eligEl.style.background='var(--red-bg)';
-            eligEl.style.borderColor='var(--red-bdr)';
-            eligEl.style.color='var(--red)';
-            eligEl.innerHTML='⚠️ <strong>Warranty requirements not met:</strong><br>'+issues.map(i=>'• '+i).join('<br>');
-          } else {
-            eligEl.style.display='block';
-            eligEl.style.background='var(--green-bg)';
-            eligEl.style.borderColor='var(--green-bdr)';
-            eligEl.style.color='var(--green)';
-            eligEl.innerHTML='✅ All warranty requirements met';
-          }
-        } else {
-          eligEl.style.display='none';
-          eligEl.style.background='var(--red-bg)';
-          eligEl.style.borderColor='var(--red-bdr)';
-          eligEl.style.color='var(--red)';
-        }
+          if(issues.length>0){eligEl.style.display='block';eligEl.style.background='var(--red-bg)';eligEl.style.borderColor='var(--red-bdr)';eligEl.style.color='var(--red)';eligEl.innerHTML='⚠️ <strong>Warranty requirements not met:</strong><br>'+issues.map(i=>'• '+i).join('<br>');}
+          else{eligEl.style.display='block';eligEl.style.background='var(--green-bg)';eligEl.style.borderColor='var(--green-bdr)';eligEl.style.color='var(--green)';eligEl.innerHTML='✅ All warranty requirements met';}
+        } else {eligEl.style.display='none';}
       }
       return;
     }
 
-    const qSel=matQty(m,selIdx,geo);const qStd=matQty(m,stdIdx,geo);const qMax=matQty(m,m.opts.length-1,geo);
-    const stdCostUnit=oc(m,stdOpt);const selCostUnit=oc(m,selOpt);const maxCostUnit=oc(m,maxOpt);
-    const tStdCost=stdCostUnit*qStd;const tSelCost=selCostUnit*qSel;const tMaxCost=maxCostUnit*qMax;
+    // Get upgrade cost from tier-based lookup
+    const upgCost=getUpgradeCost(m.key,tier,selIdx,geo);
+    maxComm+=getUpgradeCost(m.key,tier,m.opts.length-1,geo);
 
     const pct=sliderPct[m.key]||0;
-    // 0% = charging our cost, no margin, no HO charge above cost, no commission
-    // 100% = charging 2× our cost, HO pays our cost + 100% margin on top
-    // hoCharge = the margin above our cost = tSelCost * (pct/100)
-    // commission = same as hoCharge (rep keeps full margin)
-    const hoCharge=tSelCost*(pct/100);
-    const actualComm=hoCharge;
+    // Min charge = upgrade cost (0%). Commission = upgrade cost × (pct/100)
+    const minCharge=upgCost;
+    const commission=upgCost*(pct/100);
+    const hoCharge=minCharge+commission;
 
-    maxComm+=tSelCost;
-    totStdCost+=tStdCost;totSelCost+=tSelCost;
-    totHOCharge+=hoCharge;totComm+=actualComm;
-    showSliderResult(m.key,tSelCost,pct);
-    rows.push({name:m.name,selName:selOpt.name,selIdx,selCost:tSelCost,insAllows:tStdCost,hoCharge,comm:actualComm,qty:qtyLabel(m,selIdx,geo),isStd:selIdx===stdIdx});
+    totUpgradeCost+=upgCost;
+    totHOCharge+=hoCharge;totComm+=commission;
+
+    // Update upgrade cost display and slider
+    const rc=document.getElementById(`mrc-${m.key}`);
+    if(rc) rc.textContent=upgCost>0?('$'+upgCost.toFixed(2)):'$0.00 (no upgrade)';
+    showSliderResult(m.key,upgCost,pct);
+
+    const qty=qtyLabel(m,selIdx,geo);
+    rows.push({name:m.name,selName:selOpt.name,upgCost,hoCharge,comm:commission,qty,isStd:upgCost===0});
   });
 
-  // VENTILATION
-  let ventStdCost=0,ventSelCost=0;
-  const ventDefs={ridge:{opt:MATS.find(m=>m.key==='vent').opts[0]},box:{opt:MATS.find(m=>m.key==='vent').opts[1]},power:{opt:MATS.find(m=>m.key==='vent').opts[2]},solar:{opt:MATS.find(m=>m.key==='vent').opts[3]},turbine:{opt:MATS.find(m=>m.key==='vent').opts[4]}};
-  ['ridge','box','power','solar','turbine'].forEach(k=>{
-    const opt=ventDefs[k].opt;
-    const existing=ventCounts[k].exist||0;const desired=ventCounts[k].desired||0;
-    const isStd=(k==='ridge'||k==='box');
-    let selCostItem=0,stdCostItem=0;
-    if(k==='ridge'){const sticks=Math.ceil(Math.max(0,desired-existing)/4);const cps=(opt.costTaxLf||0)*4;selCostItem=sticks*cps;stdCostItem=selCostItem;}
-    else{selCostItem=desired*(opt.costTaxEa||0);stdCostItem=isStd?selCostItem:0;}
-    if(!isStd)maxComm+=selCostItem;
-    ventStdCost+=stdCostItem;ventSelCost+=selCostItem;
-    totStdCost+=stdCostItem;totSelCost+=selCostItem;
+  // VENTILATION — upgrade cost = net new units × costTaxEa
+  let ventUpgradeCost=0;
+  const ventM=MATS.find(m=>m.key==='vent');
+  ['ridge','box','power','solar','turbine'].forEach((k,i)=>{
+    const opt=ventM.opts[i];
+    const existing=ventCounts[k].exist||0;
+    const desired=ventCounts[k].desired||0;
+    const netNew=Math.max(0,desired-existing);
+    let cost=0;
+    if(k==='ridge'){const sticks=Math.ceil(netNew/4);cost=sticks*(opt.costEa||0)*1.08;}
+    else cost=netNew*(opt.costEa||0)*1.08;
+    ventUpgradeCost+=cost;
+    maxComm+=cost;
   });
 
-  // Ventilation slider
   const ventPct=sliderPct['vent']||0;
-  const finalVentHO=ventSelCost*(ventPct/100);
-  const finalVentComm=finalVentHO;
+  const finalVentHO=ventUpgradeCost+ventUpgradeCost*(ventPct/100);
+  const finalVentComm=ventUpgradeCost*(ventPct/100);
   totHOCharge+=finalVentHO;totComm+=finalVentComm;
-  showSliderResult('vent',ventSelCost,ventPct);
+  showSliderResult('vent',ventUpgradeCost,ventPct);
+  totUpgradeCost+=ventUpgradeCost;
 
   const ventTotal=Object.values(ventCounts).reduce((a,v)=>a+v.desired,0);
-  rows.push({name:'Ventilation',selName:'Mixed (see counts)',selIdx:0,selCost:ventSelCost,insAllows:ventStdCost,hoCharge:finalVentHO,comm:finalVentComm,qty:ventTotal+' units',isStd:finalVentHO===0});
+  rows.push({name:'Ventilation',selName:'Mixed (see counts)',upgCost:ventUpgradeCost,hoCharge:finalVentHO,comm:finalVentComm,qty:ventTotal+' units',isStd:ventUpgradeCost===0});
 
   let finalHOCharge=totHOCharge;
   if(hoOverride){const ov=parseFloat(document.getElementById('ho-charge').value)||0;finalHOCharge=ov;}
   else{document.getElementById('ho-charge').value=totHOCharge.toFixed(2);}
 
   const grandTotal=finalHOCharge;
-  const commRate = claimMode==='dap' ? 0.33 : 1.00;
-  const upgComm=totComm * commRate;
+  const commRate=claimMode==='dap'?0.33:1.00;
+  const upgComm=totComm*commRate;
   const rateLbl=document.getElementById('comm-rate-lbl');
-  if(rateLbl) rateLbl.textContent=claimMode==='dap'?'DAP — 33% of margin':'Full Deductible — 100% of margin';
-  const upgradeCost = totSelCost - totStdCost; // our cost on upgrades only
+  if(rateLbl)rateLbl.textContent=claimMode==='dap'?'DAP — 33% of margin':'Full Deductible — 100% of margin';
+
   document.getElementById('grand-total').textContent=fmt(grandTotal);
-  document.getElementById('c-matcost').textContent=fmt(upgradeCost);
+  document.getElementById('c-matcost').textContent=fmt(totUpgradeCost);
   document.getElementById('c-charged').textContent=fmt(finalHOCharge);
-  const margin2=finalHOCharge-upgradeCost;
+  const margin2=finalHOCharge-totUpgradeCost;
   document.getElementById('c-margin').textContent=fmt(margin2);
   document.getElementById('c-gp').textContent=fmt(margin2-upgComm);
   document.getElementById('c-upgcomm').textContent=fmt(upgComm);
   document.getElementById('c-total-comm').textContent=fmt(upgComm);
-  const pct=maxComm>0?Math.min(100,upgComm/maxComm*100):0;
-  document.getElementById('cbar').style.width=pct.toFixed(1)+'%';
-  document.getElementById('bar-pct').textContent=pct.toFixed(0)+'%';
+
+  const pct2=maxComm>0?Math.min(100,upgComm/maxComm*100):0;
+  document.getElementById('cbar').style.width=pct2.toFixed(1)+'%';
+  document.getElementById('bar-pct').textContent=pct2.toFixed(0)+'%';
 
   document.getElementById('lbody').innerHTML=rows.map(r=>`<tr>
     <td style="color:var(--txt);font-weight:500;font-size:11px">${r.name}</td>
     <td style="font-size:10px;max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${r.selName}</td>
     <td style="font-size:10px;color:var(--txt3)">${r.qty}</td>
-    <td>$${Math.max(0,r.selCost-r.insAllows).toFixed(0)}</td>
-    <td>$${r.insAllows.toFixed(0)}</td>
-    <td style="color:${r.hoCharge>0?'var(--amber)':'var(--txt3)'}">$${r.hoCharge.toFixed(0)}</td>
-    <td style="color:var(--gold);font-weight:600">$${r.comm.toFixed(0)}</td>
+    <td>$${(r.upgCost||0).toFixed(0)}</td>
+    <td style="color:${(r.hoCharge||0)>0?'var(--amber)':'var(--txt3)'}">$${(r.hoCharge||0).toFixed(0)}</td>
+    <td style="color:var(--gold);font-weight:600">$${(r.comm||0).toFixed(0)}</td>
   </tr>`).join('');
-  document.getElementById('ft-cost').textContent='$'+Math.round(upgradeCost).toLocaleString();
-  document.getElementById('ft-ins').textContent='$'+Math.round(totStdCost).toLocaleString();
+
+  document.getElementById('ft-cost').textContent='$'+Math.round(totUpgradeCost).toLocaleString();
+  document.getElementById('ft-ins').textContent='—';
   document.getElementById('ft-ho').textContent='$'+Math.round(finalHOCharge).toLocaleString();
   document.getElementById('ft-com').textContent='$'+Math.round(upgComm).toLocaleString();
   saveState();
@@ -813,7 +1029,7 @@ function saveState(){
   const fields=['fc-wo','fc-notes','fc-date','g-sq','g-rdg','g-hip','g-val','g-rak','g-eav'];
   const fieldVals={};
   fields.forEach(id=>{const el=document.getElementById(id);if(el)fieldVals[id]=el.value;});
-  const state={fieldVals,matSel:Object.assign({},matSel),sliderPct:Object.assign({},sliderPct),ventCounts:JSON.parse(JSON.stringify(ventCounts)),bootCount,claimMode,hoOverride,existingShingle:document.getElementById('existing-shingle')?.value||'arch',savedAt:new Date().toISOString()};
+  const state={fieldVals,matSel:Object.assign({},matSel),sliderPct:Object.assign({},sliderPct),existingTier:Object.assign({},existingTier),ventCounts:JSON.parse(JSON.stringify(ventCounts)),bootCount,claimMode,hoOverride,existingShingle:document.getElementById('existing-shingle')?.value||'3tab',savedAt:new Date().toISOString()};
   try{localStorage.setItem(storageKey(),JSON.stringify(state));}catch(e){}
 }
 function loadState(){
@@ -823,6 +1039,7 @@ function loadState(){
   if(state.fieldVals)Object.entries(state.fieldVals).forEach(([id,val])=>{const el=document.getElementById(id);if(el)el.value=val;});
   if(state.matSel)Object.assign(matSel,state.matSel);
   if(state.sliderPct)Object.assign(sliderPct,state.sliderPct);
+  if(state.existingTier)Object.assign(existingTier,state.existingTier);
   if(state.ventCounts)ventCounts=state.ventCounts;
   if(typeof state.bootCount==='number')bootCount=state.bootCount;
   if(state.claimMode){claimMode=state.claimMode;setMode(claimMode);}
@@ -872,10 +1089,10 @@ function exportPDF(){
 // HISTORY
 function renderHistory(){
   const today=new Date().toISOString().slice(0,10);
-  const hdz=MATS.find(c=>c.key==='shingle').opts[2];
+  
   document.getElementById('hist-body').innerHTML=[...VERSIONS].reverse().map(v=>{
     const s=vst(v,today);
-    return`<tr class="${s==='Active'?'arow':''}"><td style="color:var(--txt);font-weight:700">${v.id.toUpperCase()}</td><td style="color:var(--txt)">${v.label}</td><td>${fd(v.eff)}</td><td>${v.exp?fd(v.exp):'—'}</td><td><span class="badge ${s==='Active'?'b-green':s==='Upcoming'?'b-blue':'b-gray'}">${s}</span></td><td>$${hdz.costTaxSq.toFixed(2)}</td></tr>`;
+    return`<tr class="${s==='Active'?'arow':''}"><td style="color:var(--txt);font-weight:700">${v.id.toUpperCase()}</td><td style="color:var(--txt)">${v.label}</td><td>${fd(v.eff)}</td><td>${v.exp?fd(v.exp):'—'}</td><td><span class="badge ${s==='Active'?'b-green':s==='Upcoming'?'b-blue':'b-gray'}">${s}</span></td></tr>`;
   }).join('');
 }
 function vst(v,t){if(v.eff>t)return'Upcoming';if(!v.exp||v.exp>=t)return'Active';return'Expired';}
@@ -916,8 +1133,8 @@ function publishVer(){
   toast('✅ Published: '+lbl);setPage('pg-hist');
 }
 function renderAdminVers(){
-  const today=new Date().toISOString().slice(0,10);const hdz=MATS.find(c=>c.key==='shingle').opts[2];
-  document.getElementById('adm-ver-body').innerHTML=[...VERSIONS].reverse().map(v=>{const s=vst(v,today);return`<tr class="${s==='Active'?'arow':''}"><td style="color:var(--txt);font-weight:700">${v.id.toUpperCase()}</td><td style="color:var(--txt)">${v.label}</td><td>${fd(v.eff)}</td><td>${v.exp?fd(v.exp):'<span style="color:var(--green)">Present</span>'}</td><td><span class="badge ${s==='Active'?'b-green':s==='Upcoming'?'b-blue':'b-gray'}">${s}</span></td><td>$${hdz.costTaxSq.toFixed(2)}</td></tr>`;}).join('');
+  const today=new Date().toISOString().slice(0,10);
+  document.getElementById('adm-ver-body').innerHTML=[...VERSIONS].reverse().map(v=>{const s=vst(v,today);return`<tr class="${s==='Active'?'arow':''}"><td style="color:var(--txt);font-weight:700">${v.id.toUpperCase()}</td><td style="color:var(--txt)">${v.label}</td><td>${fd(v.eff)}</td><td>${v.exp?fd(v.exp):'—'}</td><td><span class="badge ${s==='Active'?'b-green':s==='Upcoming'?'b-blue':'b-gray'}">${s}</span></td></tr>`;}).join('');
 }
 
 // USERS
