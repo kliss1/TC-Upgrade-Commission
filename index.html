@@ -173,7 +173,7 @@ input[type=range].margin-slider::-moz-range-thumb{width:22px;height:22px;border-
       <button class="btn-login" onclick="login()">Sign In →</button>
       <div class="aerr" id="aerr"></div>
     </div>
-    <div style="text-align:center;margin-top:14px;font-size:11px;color:var(--txt3)">Last updated: May 11, 2026 · 3:47 PM ET</div>
+    <div style="text-align:center;margin-top:14px;font-size:11px;color:var(--txt3)">Last updated: May 11, 2026 · 4:22 PM ET</div>
   </div>
 </div>
 
@@ -210,20 +210,7 @@ input[type=range].margin-slider::-moz-range-thumb{width:22px;height:22px;border-
           <button class="mode-btn full on" id="mode-full" onclick="setMode('full')">FULL DEDUCTIBLE</button>
           <button class="mode-btn dap off" id="mode-dap" onclick="setMode('dap')">DAP ONLY</button>
         </div>
-        <div class="g2">
-          <div class="f"><label>Existing Shingle Type</label>
-            <select id="existing-shingle" onchange="setExistingTier('shingle',this.value)">
-              <option value="3tab">3Tab</option>
-              <option value="arch1">Arch Tier 1</option>
-              <option value="arch2">Arch Tier 2</option>
-              <option value="archir1">Arch IR Tier 1</option>
-              <option value="archir2">Arch IR Tier 2</option>
-              <option value="des1">Designer Tier 1</option>
-              <option value="des2">Designer Tier 2</option>
-            </select>
-          </div>
-          <div class="f"><label>Date Signed</label><input type="date" id="fc-date" onchange="onDateChange()"/></div>
-        </div>
+        <div class="f"><label>Date Signed</label><input type="date" id="fc-date" onchange="onDateChange()"/></div>
       </div>
 
       <div class="card">
@@ -1031,7 +1018,7 @@ function saveState(){
   const fields=['fc-wo','fc-notes','fc-date','g-sq','g-rdg','g-hip','g-val','g-rak','g-eav'];
   const fieldVals={};
   fields.forEach(id=>{const el=document.getElementById(id);if(el)fieldVals[id]=el.value;});
-  const state={fieldVals,matSel:Object.assign({},matSel),sliderPct:Object.assign({},sliderPct),existingTier:Object.assign({},existingTier),ventCounts:JSON.parse(JSON.stringify(ventCounts)),bootCount,claimMode,hoOverride,existingShingle:document.getElementById('existing-shingle')?.value||'3tab',savedAt:new Date().toISOString()};
+  const state={fieldVals,matSel:Object.assign({},matSel),sliderPct:Object.assign({},sliderPct),existingTier:Object.assign({},existingTier),ventCounts:JSON.parse(JSON.stringify(ventCounts)),bootCount,claimMode,hoOverride,savedAt:new Date().toISOString()};
   try{localStorage.setItem(storageKey(),JSON.stringify(state));}catch(e){}
 }
 function loadState(){
@@ -1046,7 +1033,6 @@ function loadState(){
   if(typeof state.bootCount==='number')bootCount=state.bootCount;
   if(state.claimMode){claimMode=state.claimMode;setMode(claimMode);}
   if(typeof state.hoOverride==='boolean')hoOverride=state.hoOverride;
-  if(state.existingShingle){const el=document.getElementById('existing-shingle');if(el)el.value=state.existingShingle;}
   buildMatUI();
   // Restore slider positions
   if(state.sliderPct){
