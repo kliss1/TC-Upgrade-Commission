@@ -484,6 +484,7 @@ const MATS=[
     {name:'Power Vents',      costEa:187.10,unit:'ea'},
     {name:'Solar Power Vent', costEa:455.00,unit:'ea'},
     {name:'Turbine',          costEa:92.75, unit:'ea'},
+    {name:'Dome Vents',       costEa:36.15, unit:'ea'},
   ]},
   {key:'warr',name:'Warranty',unitType:'warr',opts:[
     {name:'No Warranty / GAF Lim. Lifetime (incl.)',std:true, costPerSq:0, flatLte50:0,   flatGt50:0},
@@ -522,7 +523,7 @@ let sliderPct={};
 let upgradeAmtOverride={};
 let lastUpgCost={};
 let existingTier={};
-let ventCounts={ridge:{exist:0,desired:0},box:{exist:0,desired:0},power:{exist:0,desired:0},solar:{exist:0,desired:0},turbine:{exist:0,desired:0}};
+let ventCounts={ridge:{exist:0,desired:0},box:{exist:0,desired:0},power:{exist:0,desired:0},solar:{exist:0,desired:0},turbine:{exist:0,desired:0},dome:{exist:0,desired:0}};
 let bootCount=0;
 
 // AUTH
@@ -557,7 +558,7 @@ function getVer(d){const date=d||new Date().toISOString().slice(0,10);return [..
 function initCalc(){
   document.getElementById('fc-date').value=new Date().toISOString().slice(0,10);
   MATS.forEach(m=>{matSel[m.key]=0;sliderPct[m.key]=0;existingTier[m.key]=(m.existingOpts&&m.existingOpts[0].val)||'tier1';delete upgradeAmtOverride[m.key];delete lastUpgCost[m.key];});
-  ventCounts={ridge:{exist:0,desired:0},box:{exist:0,desired:0},power:{exist:0,desired:0},solar:{exist:0,desired:0},turbine:{exist:0,desired:0}};
+  ventCounts={ridge:{exist:0,desired:0},box:{exist:0,desired:0},power:{exist:0,desired:0},solar:{exist:0,desired:0},turbine:{exist:0,desired:0},dome:{exist:0,desired:0}};
   bootCount=0;claimMode='full';hoOverride=false;
   activeVer=getVer();updateBanner();buildMatUI();calc();
 }
@@ -737,6 +738,7 @@ function buildVentUI(){
     {k:'power',lbl:'Power Vents',sub:'count, upgrade'},
     {k:'solar',lbl:'Solar Power Vent',sub:'count, upgrade'},
     {k:'turbine',lbl:'Turbine',sub:'count, upgrade'},
+    {k:'dome',lbl:'Dome Vents',sub:'count, upgrade'},
   ];
   return `<div class="mat-row" id="mr-vent">
     <div class="mat-hd"><span class="mat-hd-name">Ventilation</span><span class="mat-hd-cost" id="mhc-vent"></span></div>
@@ -939,7 +941,7 @@ function calc(){try{
   // VENTILATION — upgrade cost = net new units × costTaxEa
   let ventUpgradeCost=0;
   const ventM=MATS.find(m=>m.key==='vent');
-  ['ridge','box','power','solar','turbine'].forEach((k,i)=>{
+  ['ridge','box','power','solar','turbine','dome'].forEach((k,i)=>{
     const opt=ventM.opts[i];
     const existing=ventCounts[k].exist||0;
     const desired=ventCounts[k].desired||0;
@@ -1041,7 +1043,7 @@ function clearState(){if(!me)return;try{localStorage.removeItem(storageKey());}c
 
 function resetCalc(){
   MATS.forEach(m=>{matSel[m.key]=0;sliderPct[m.key]=0;existingTier[m.key]=(m.existingOpts&&m.existingOpts[0].val)||'tier1';delete upgradeAmtOverride[m.key];delete lastUpgCost[m.key];});
-  ventCounts={ridge:{exist:0,desired:0},box:{exist:0,desired:0},power:{exist:0,desired:0},solar:{exist:0,desired:0},turbine:{exist:0,desired:0}};
+  ventCounts={ridge:{exist:0,desired:0},box:{exist:0,desired:0},power:{exist:0,desired:0},solar:{exist:0,desired:0},turbine:{exist:0,desired:0},dome:{exist:0,desired:0}};
   bootCount=0;claimMode='full';hoOverride=false;
   ['fc-wo','fc-notes'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
   document.getElementById('fc-date').value=new Date().toISOString().slice(0,10);
@@ -1082,7 +1084,7 @@ const ADMIN_CATS=[
   {key:'boot',label:'Pipe Boots (per ea)',pk:'costTaxEa'},
   {key:'warr',label:'Warranty (flat fee / per-sq)',pk:'costFlat50'},
 ];
-const VENT_CATS=[{k:'ridge',label:'Ridge Vent (per LF)',pk:'costTaxLf'},{k:'box',label:'Box Vents (per ea)',pk:'costTaxEa'},{k:'power',label:'Power Vents (per ea)',pk:'costTaxEa'},{k:'solar',label:'Solar Power Vent (per ea)',pk:'costTaxEa'},{k:'turbine',label:'Turbine (per ea)',pk:'costTaxEa'}];
+const VENT_CATS=[{k:'ridge',label:'Ridge Vent (per LF)',pk:'costTaxLf'},{k:'box',label:'Box Vents (per ea)',pk:'costTaxEa'},{k:'power',label:'Power Vents (per ea)',pk:'costTaxEa'},{k:'solar',label:'Solar Power Vent (per ea)',pk:'costTaxEa'},{k:'turbine',label:'Turbine (per ea)',pk:'costTaxEa'},{k:'dome',label:'Dome Vents (per ea)',pk:'costTaxEa'}];
 function buildAdminFields(){
   let html='';
   ADMIN_CATS.forEach(cat=>{
@@ -1127,12 +1129,12 @@ function toast(msg){const el=document.getElementById('toast');el.textContent=msg
 // GOOGLE SHEETS INTEGRATION
 const _SHEET_ID='1pgp5aW8e24JuYGDZGO9Wt5koer-sSU7FrBlwL55jevU';
 const _SHEETS_KEY='AIzaSyAmRLupl4GwVHbnb509Sm5QhWbsqVdjG2g';
-// Column indices (0-based) after Job # was inserted as column A:
+// Column indices (0-based):
 // 0:Job# 1:Timestamp 2:RidgeVentFT 3:PowerVents 4:SolarVents 5:Turbine
 // 6:DomeVents 7:BoxVents 8:PipeBoots 9:SatDishes 10-22:pitches
 // 23:TotalAreaSQ 24:MetalSQ 25:RidgesFT 26:HipsFT 27:ValleysFT
-// 28:RakesFT 29:FlashingFT 30:StepFlashingFT 31:HighRoofSQ
-// 32:Facets 33:TransitionsFT 34:GeneralNotes
+// 28:RakesFT 29:EavesFT 30:FlashingFT 31:StepFlashingFT 32:HighRoofSQ
+// 33:Facets 34:TransitionsFT 35:GeneralNotes
 async function fetchJobData(){
   const jobNum=(document.getElementById('fc-wo').value||'').trim();
   const status=document.getElementById('fetch-status');
@@ -1155,15 +1157,17 @@ async function fetchJobData(){
     document.getElementById('g-hip').value=n(26)||'';
     document.getElementById('g-val').value=n(27)||'';
     document.getElementById('g-rak').value=n(28)||'';
+    document.getElementById('g-eav').value=n(29)||'';
     // Ventilation desired counts
     ventCounts.power.desired=Math.max(0,parseInt(match[3])||0);
     ventCounts.solar.desired=Math.max(0,parseInt(match[4])||0);
     ventCounts.turbine.desired=Math.max(0,parseInt(match[5])||0);
     ventCounts.box.desired=Math.max(0,parseInt(match[7])||0);
+    ventCounts.dome.desired=Math.max(0,parseInt(match[6])||0);
     // Pipe boots
     bootCount=Math.max(0,parseInt(match[8])||0);
     // Notes
-    const notes=(match[34]||'').trim();
+    const notes=(match[35]||'').trim();
     if(notes)document.getElementById('fc-notes').value=notes;
     // Rebuild and recalc
     buildMatUI();calc();saveState();
