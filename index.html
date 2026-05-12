@@ -817,7 +817,7 @@ function showSliderResult(key,upgCost,pct){
   }
   const sc=document.getElementById('sc-'+key);
   const sk=document.getElementById('sk-'+key);
-  if(sc) sc.textContent='$'+totalCharge.toFixed(2);
+  if(sc) sc.textContent='$'+upgCost.toFixed(2);
   if(sk) sk.textContent='$'+commission.toFixed(2);
   const sl=document.getElementById('sl-'+key);
   if(sl) sl.style.background=`linear-gradient(to right,var(--gold) ${pct/2}%,var(--surf3) ${pct/2}%)`;
@@ -906,7 +906,7 @@ function calc(){try{
       const sc=document.getElementById('sc-warr');const sk=document.getElementById('sk-warr');
       if(sc) sc.textContent='$'+upgCost.toFixed(2);
       if(sk) sk.textContent='$'+upgCost.toFixed(2);
-      rows.push({name:m.name,selName:selOpt.name,upgCost,hoCharge:upgCost,comm:upgCost,qty:geo.sq<=50?'≤50 sq':'> 50 sq',isStd:selOpt.std});
+      rows.push({name:m.name,selName:selOpt.name,upgCost,hoCharge:upgCost,comm:upgCost,qty:geo.sq+' sq',isStd:selOpt.std});
       // Warranty eligibility warning
       const eligEl=document.getElementById('warr-elig');
       if(eligEl){
