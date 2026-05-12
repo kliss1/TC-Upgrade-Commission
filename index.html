@@ -902,6 +902,10 @@ function calc(){try{
       totUpgradeCost+=upgCost;totHOCharge+=upgCost;totComm+=upgCost;
       const rc=document.getElementById('mrc-warr');
       if(rc) rc.textContent=upgCost>0?('$'+upgCost.toFixed(2)):'Included';
+      lastUpgCost['warr']=upgCost;
+      const sc=document.getElementById('sc-warr');const sk=document.getElementById('sk-warr');
+      if(sc) sc.textContent='$'+upgCost.toFixed(2);
+      if(sk) sk.textContent='$'+upgCost.toFixed(2);
       rows.push({name:m.name,selName:selOpt.name,upgCost,hoCharge:upgCost,comm:upgCost,qty:geo.sq<=50?'≤50 sq':'> 50 sq',isStd:selOpt.std});
       // Warranty eligibility warning
       const eligEl=document.getElementById('warr-elig');
@@ -1143,7 +1147,7 @@ async function fetchJobData(){
   btn.disabled=true;btn.style.opacity='.5';btn.textContent='Loading…';
   status.style.color='var(--txt3)';status.textContent='Fetching from Google Sheets…';
   try{
-    const url=`https://sheets.googleapis.com/v4/spreadsheets/${_SHEET_ID}/values/A%3AAI?key=${_SHEETS_KEY}`;
+    const url=`https://sheets.googleapis.com/v4/spreadsheets/${_SHEET_ID}/values/A%3AAJ?key=${_SHEETS_KEY}`;
     const res=await fetch(url);
     if(!res.ok){const e=await res.json().catch(()=>({}));throw new Error(e.error?.message||`HTTP ${res.status}`);}
     const data=await res.json();
