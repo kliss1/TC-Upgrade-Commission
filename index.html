@@ -215,8 +215,13 @@ input[type=range].margin-slider::-moz-range-thumb{width:22px;height:22px;border-
 
       <div class="card">
         <div class="card-ttl">Job Info</div>
-        <div class="g2">
-        <div class="f"><label>Job Number</label><input type="text" id="fc-wo" placeholder="Job #"/></div>
+        <div class="f">
+          <label>Job Number</label>
+          <div style="display:flex;gap:8px;align-items:stretch">
+            <input type="text" id="fc-wo" placeholder="Job #" style="flex:1"/>
+            <button onclick="fetchJobData()" id="btn-fetch" style="background:var(--blue);color:#fff;border:none;border-radius:var(--rsm);padding:10px 16px;font-family:'Syne',sans-serif;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0;transition:opacity .15s">Fetch</button>
+          </div>
+          <div id="fetch-status" style="font-size:11px;margin-top:5px;min-height:14px"></div>
         </div>
       </div>
 
@@ -1118,6 +1123,57 @@ function renderReps(){
 function fd(d){if(!d)return'—';const[y,m,dy]=d.split('-');return`${+m}/${+dy}/${y}`;}
 let _tt;
 function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('on');clearTimeout(_tt);_tt=setTimeout(()=>el.classList.remove('on'),2800);}
+
+// GOOGLE SHEETS INTEGRATION
+const _SHEET_ID='1pgp5aW8e24JuYGDZGO9Wt5koer-sSU7FrBlwL55jevU';
+const _SHEETS_KEY='AIzaSyAmRLupl4GwVHbnb509Sm5QhWbsqVdjG2g';
+// Column indices (0-based) after Job # was inserted as column A:
+// 0:Job# 1:Timestamp 2:RidgeVentFT 3:PowerVents 4:SolarVents 5:Turbine
+// 6:DomeVents 7:BoxVents 8:PipeBoots 9:SatDishes 10-22:pitches
+// 23:TotalAreaSQ 24:MetalSQ 25:RidgesFT 26:HipsFT 27:ValleysFT
+// 28:RakesFT 29:FlashingFT 30:StepFlashingFT 31:HighRoofSQ
+// 32:Facets 33:TransitionsFT 34:GeneralNotes
+async function fetchJobData(){
+  const jobNum=(document.getElementById('fc-wo').value||'').trim();
+  const status=document.getElementById('fetch-status');
+  const btn=document.getElementById('btn-fetch');
+  if(!jobNum){status.style.color='var(--red)';status.textContent='Enter a job number first.';return;}
+  btn.disabled=true;btn.style.opacity='.5';btn.textContent='Loading…';
+  status.style.color='var(--txt3)';status.textContent='Fetching from Google Sheets…';
+  try{
+    const url=`https://sheets.googleapis.com/v4/spreadsheets/${_SHEET_ID}/values/A%3AAI?key=${_SHEETS_KEY}`;
+    const res=await fetch(url);
+    if(!res.ok){const e=await res.json().catch(()=>({}));throw new Error(e.error?.message||`HTTP ${res.status}`);}
+    const data=await res.json();
+    const rows=(data.values||[]).slice(1);
+    const match=rows.find(r=>(r[0]||'').trim().toLowerCase()===jobNum.toLowerCase());
+    if(!match){status.style.color='var(--red)';status.textContent=`No record found for job "${jobNum}".`;return;}
+    const n=(i)=>parseFloat(match[i])||0;
+    // Geometry
+    document.getElementById('g-sq').value=n(23)||'';
+    document.getElementById('g-rdg').value=n(25)||'';
+    document.getElementById('g-hip').value=n(26)||'';
+    document.getElementById('g-val').value=n(27)||'';
+    document.getElementById('g-rak').value=n(28)||'';
+    // Ventilation desired counts
+    ventCounts.power.desired=Math.max(0,parseInt(match[3])||0);
+    ventCounts.solar.desired=Math.max(0,parseInt(match[4])||0);
+    ventCounts.turbine.desired=Math.max(0,parseInt(match[5])||0);
+    ventCounts.box.desired=Math.max(0,parseInt(match[7])||0);
+    // Pipe boots
+    bootCount=Math.max(0,parseInt(match[8])||0);
+    // Notes
+    const notes=(match[34]||'').trim();
+    if(notes)document.getElementById('fc-notes').value=notes;
+    // Rebuild and recalc
+    buildMatUI();calc();saveState();
+    status.style.color='var(--green)';status.textContent=`✓ Loaded data for job ${jobNum}`;
+  }catch(e){
+    status.style.color='var(--red)';status.textContent=`Error: ${e.message}`;
+  }finally{
+    btn.disabled=false;btn.style.opacity='1';btn.textContent='Fetch';
+  }
+}
 </script>
 </body>
 </html>
