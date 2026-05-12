@@ -1158,12 +1158,13 @@ async function fetchJobData(){
     document.getElementById('g-val').value=n(27)||'';
     document.getElementById('g-rak').value=n(28)||'';
     document.getElementById('g-eav').value=n(29)||'';
-    // Ventilation desired counts
-    ventCounts.power.desired=Math.max(0,parseInt(match[3])||0);
-    ventCounts.solar.desired=Math.max(0,parseInt(match[4])||0);
-    ventCounts.turbine.desired=Math.max(0,parseInt(match[5])||0);
-    ventCounts.box.desired=Math.max(0,parseInt(match[7])||0);
-    ventCounts.dome.desired=Math.max(0,parseInt(match[6])||0);
+    // Ventilation existing counts from sheet
+    ventCounts.ridge.exist=Math.max(0,parseFloat(match[2])||0);
+    ventCounts.power.exist=Math.max(0,parseInt(match[3])||0);
+    ventCounts.solar.exist=Math.max(0,parseInt(match[4])||0);
+    ventCounts.turbine.exist=Math.max(0,parseInt(match[5])||0);
+    ventCounts.dome.exist=Math.max(0,parseInt(match[6])||0);
+    ventCounts.box.exist=Math.max(0,parseInt(match[7])||0);
     // Pipe boots
     bootCount=Math.max(0,parseInt(match[8])||0);
     // Notes
