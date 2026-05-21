@@ -173,7 +173,7 @@ input[type=range].margin-slider::-moz-range-thumb{width:22px;height:22px;border-
       <button class="btn-login" onclick="login()">Sign In →</button>
       <div class="aerr" id="aerr"></div>
     </div>
-    <div style="text-align:center;margin-top:14px;font-size:11px;color:var(--txt3)">Last updated: May 22, 2026 · 1:48 PM ET</div>
+    <div style="text-align:center;margin-top:14px;font-size:11px;color:var(--txt3)">Last updated: May 11, 2026 · 5:43 PM ET</div>
   </div>
 </div>
 
@@ -273,12 +273,8 @@ input[type=range].margin-slider::-moz-range-thumb{width:22px;height:22px;border-
       </div>
 
       <div class="comm-detail">
-        <div class="comm-row"><div class="comm-row-label">Total Upgrade Cost (our cost+tax on upgrades)<small>what we pay for the upgrade portion only</small></div><div class="comm-row-val c-red" id="c-matcost">$0.00</div></div>
+        <div class="comm-row"><div class="comm-row-label">Total Upgrade Cost<small>our cost+tax on upgrades</small></div><div class="comm-row-val c-red" id="c-matcost">$0.00</div></div>
         <div class="comm-row"><div class="comm-row-label">Total Price Charged<small>HO upgrade charges</small></div><div class="comm-row-val" id="c-charged">$0.00</div></div>
-        <div class="comm-row" id="c-discount-row" style="display:none;background:var(--red-bg);border-left:3px solid var(--red)">
-          <div class="comm-row-label" style="color:var(--red)">Upgrades Discount<small style="color:var(--red);opacity:.7">Manager approval required</small></div>
-          <div class="comm-row-val" id="c-discount-val" style="color:var(--red)">-$0.00</div>
-        </div>
         <div class="comm-row" style="background:var(--red-bg);border:1px solid var(--red-bdr);border-radius:var(--rsm);margin:6px 0;padding:9px 13px;gap:10px;flex-direction:column;align-items:stretch">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
             <span style="font-size:10px;font-weight:700;color:var(--red);text-transform:uppercase;letter-spacing:.06em">Upgrades Discount</span>
@@ -294,6 +290,8 @@ input[type=range].margin-slider::-moz-range-thumb{width:22px;height:22px;border-
           </div>
           <div style="font-size:10px;color:var(--txt3);margin-top:2px">Subtracts from Total Upgrade Cost and Total Price Charged</div>
         </div>
+        <div class="comm-row" id="c-credited-cost-row" style="display:none"><div class="comm-row-label" style="color:var(--txt3)">Credited Cost<small>discount applied to upgrade cost</small></div><div class="comm-row-val" id="c-credited-cost" style="color:var(--red)">-$0.00</div></div>
+        <div class="comm-row" id="c-credited-charged-row" style="display:none"><div class="comm-row-label" style="color:var(--txt3)">Credited Price Charged<small>discount applied to HO charge</small></div><div class="comm-row-val" id="c-credited-charged" style="color:var(--red)">-$0.00</div></div>
         <div class="comm-row"><div class="comm-row-label">Charged Minus Cost (gross margin)<small>before commission split</small></div><div class="comm-row-val c-amber" id="c-margin">$0.00</div></div>
         <div class="comm-row total"><div class="comm-row-label" style="font-weight:700;color:var(--txt);font-size:13px">TOTAL COMMISSION<small id="comm-rate-lbl">Full Deductible — 100% of margin</small></div><div class="comm-row-val c-gold" style="font-size:18px" id="c-total-comm">$0.00</div></div>
       </div>
@@ -1002,25 +1000,33 @@ function calc(){try{
   const ventTotal=Object.values(ventCounts).reduce((a,v)=>a+v.desired,0);
   rows.push({name:'Ventilation',selName:'Mixed (see counts)',upgCost:ventUpgradeCost,hoCharge:finalVentHO,comm:finalVentComm,qty:ventTotal+' units',isStd:ventUpgradeCost===0});
 
-  // Apply manager discount — subtracts from Total Upgrade Cost and Total Price Charged
+  // Discount — never changes Grand Total, Total Upgrade Cost, or Total Price Charged
   const disc=upgradesDiscount||0;
-  const finalUpgradeCost=Math.max(0,totUpgradeCost-disc);
-  let finalHOCharge=Math.max(0,totHOCharge-disc);
-
-  const grandTotal=finalHOCharge;
+  const grandTotal=totHOCharge;
   const commRate=claimMode==='dap'?0.33:1.00;
   const upgComm=totComm*commRate;
   const rateLbl=document.getElementById('comm-rate-lbl');
   if(rateLbl)rateLbl.textContent=claimMode==='dap'?'DAP — 33% of margin':'Full Deductible — 100% of margin';
 
   document.getElementById('grand-total').textContent=fmt(grandTotal);
-  document.getElementById('c-matcost').textContent=fmt(finalUpgradeCost);
-  document.getElementById('c-charged').textContent=fmt(finalHOCharge);
-  const discEl=document.getElementById('c-discount-row');
-  if(discEl) discEl.style.display=disc>0?'flex':'none';
-  const discVal=document.getElementById('c-discount-val');
-  if(discVal) discVal.textContent='-'+fmt(disc);
-  const margin2=finalHOCharge-finalUpgradeCost;
+  document.getElementById('c-matcost').textContent=fmt(totUpgradeCost);
+  document.getElementById('c-charged').textContent=fmt(totHOCharge);
+
+  // Credited rows — show only when discount entered
+  const showDisc=disc>0;
+  const ccostRow=document.getElementById('c-credited-cost-row');
+  const cchgRow=document.getElementById('c-credited-charged-row');
+  if(ccostRow) ccostRow.style.display=showDisc?'flex':'none';
+  if(cchgRow) cchgRow.style.display=showDisc?'flex':'none';
+  const ccostVal=document.getElementById('c-credited-cost');
+  const cchgVal=document.getElementById('c-credited-charged');
+  if(ccostVal) ccostVal.textContent='-'+fmt(disc);
+  if(cchgVal) cchgVal.textContent='-'+fmt(disc);
+
+  // Gross margin = (Price Charged - Credited Price) - (Upgrade Cost - Credited Cost)
+  const netCharged=totHOCharge-disc;
+  const netCost=totUpgradeCost-disc;
+  const margin2=netCharged-netCost;
   document.getElementById('c-margin').textContent=fmt(margin2);
   document.getElementById('c-total-comm').textContent=fmt(upgComm);
 
@@ -1037,9 +1043,9 @@ function calc(){try{
     <td style="color:var(--gold);font-weight:600">$${(r.comm||0).toFixed(0)}</td>
   </tr>`).join('');
 
-  document.getElementById('ft-cost').textContent='$'+Math.round(finalUpgradeCost).toLocaleString();
+  document.getElementById('ft-cost').textContent='$'+Math.round(totUpgradeCost).toLocaleString();
   document.getElementById('ft-ins').textContent='—';
-  document.getElementById('ft-ho').textContent='$'+Math.round(finalHOCharge).toLocaleString();
+  document.getElementById('ft-ho').textContent='$'+Math.round(totHOCharge).toLocaleString();
   document.getElementById('ft-com').textContent='$'+Math.round(upgComm).toLocaleString();
   saveState();
   }catch(e){console.error('calc error:',e);}
