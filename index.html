@@ -173,7 +173,7 @@ input[type=range].margin-slider::-moz-range-thumb{width:22px;height:22px;border-
       <button class="btn-login" onclick="login()">Sign In →</button>
       <div class="aerr" id="aerr"></div>
     </div>
-    <div style="text-align:center;margin-top:14px;font-size:11px;color:var(--txt3)">Last updated: May 22, 2026 · 2:11 PM ET</div>
+    <div style="text-align:center;margin-top:14px;font-size:11px;color:var(--txt3)">Last updated: May 22, 2026 · 3:58 PM ET</div>
   </div>
 </div>
 
@@ -594,12 +594,19 @@ function setMode(m){claimMode=m;document.getElementById('mode-full').className='
 // oc() replaced by getUpgradeCost()
 function unitStr(mat){if(mat.key==='shingle')return'/sq';if(mat.key==='ridge')return'/bd';if(mat.key==='starter')return'/bd';if(mat.key==='under')return'/roll';if(mat.key==='valley')return'/unit';if(mat.key==='boot')return'/ea';return'';}
 
-// warrantyJobCost: Silver = $5/sq * adjSq + flat (≤50sq: $170, >50sq: $340), Golden = $8/sq
-function warrantyJobCost(opt,adjSq){
-  if(!opt||opt.std)return 0;
-  const perSqCost=(opt.costPerSq||0)*adjSq;
-  const flatFee=adjSq<=50?(opt.flatLte50||0):(opt.flatGt50||0);
-  return perSqCost+flatFee;
+// warrantyJobCost:
+// Golden Pledge = sq * 8 * 1.08
+// Silver Pledge = (sq * 5 + flat) * 1.08  where flat = $170 if sq<=50, $340 if sq>50
+function warrantyJobCost(opt, sq){
+  if(!opt||opt.std) return 0;
+  if(opt.costPerSq===8){
+    // Golden Pledge
+    return sq * 8 * 1.08;
+  } else {
+    // Silver Pledge
+    const flat = sq <= 50 ? 170 : 340;
+    return (sq * 5 + flat) * 1.08;
+  }
 }
 
 // getUpgradeCost: returns the minimum upgrade cost for a material selection
@@ -926,9 +933,9 @@ function calc(){try{
     const tier=existingTier[m.key]||((m.existingOpts&&m.existingOpts[0].val)||'tier1');
 
     if(m.key==='warr'){
-      const adjSq=Math.ceil((geo.sq||0)*1.15*3)/3;
-      const upgCost=warrantyJobCost(selOpt,adjSq);
-      const maxCost=warrantyJobCost(m.opts[m.opts.length-1],adjSq);
+      const rawSq=geo.sq||0;
+      const upgCost=warrantyJobCost(selOpt,rawSq);
+      const maxCost=warrantyJobCost(m.opts[m.opts.length-1],rawSq);
       maxComm+=maxCost;
       const warrPct=sliderPct['warr']||0;
       // upgradeAmtOverride['warr'] stores total HO charge; commission = hoCharge - upgCost
