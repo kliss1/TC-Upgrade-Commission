@@ -173,7 +173,7 @@ input[type=range].margin-slider::-moz-range-thumb{width:22px;height:22px;border-
       <button class="btn-login" onclick="login()">Sign In →</button>
       <div class="aerr" id="aerr"></div>
     </div>
-    <div style="text-align:center;margin-top:14px;font-size:11px;color:var(--txt3)">Last updated: May 22, 2026 · 1:18 PM ET</div>
+    <div style="text-align:center;margin-top:14px;font-size:11px;color:var(--txt3)">Last updated: May 22, 2026 · 1:31 PM ET</div>
   </div>
 </div>
 
@@ -215,8 +215,13 @@ input[type=range].margin-slider::-moz-range-thumb{width:22px;height:22px;border-
 
       <div class="card">
         <div class="card-ttl">Job Info</div>
-        <div class="g2">
-        <div class="f"><label>Job Number</label><input type="text" id="fc-wo" placeholder="Job #"/></div>
+        <div class="f">
+          <label>Job Number</label>
+          <div style="display:flex;gap:8px;align-items:stretch">
+            <input type="text" id="fc-wo" placeholder="Job #" style="flex:1"/>
+            <button onclick="fetchJobData()" id="btn-fetch" style="background:var(--blue);color:#fff;border:none;border-radius:var(--rsm);padding:10px 16px;font-family:'Syne',sans-serif;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0;transition:opacity .15s">Fetch</button>
+          </div>
+          <div id="fetch-status" style="font-size:11px;margin-top:5px;min-height:14px"></div>
         </div>
       </div>
 
@@ -479,6 +484,7 @@ const MATS=[
     {name:'Power Vents',      costEa:187.10,unit:'ea'},
     {name:'Solar Power Vent', costEa:455.00,unit:'ea'},
     {name:'Turbine',          costEa:92.75, unit:'ea'},
+    {name:'Dome Vents',       costEa:36.15, unit:'ea'},
   ]},
   {key:'warr',name:'Warranty',unitType:'warr',opts:[
     {name:'No Warranty / GAF Lim. Lifetime (incl.)',std:true, costPerSq:0, flatLte50:0,   flatGt50:0},
@@ -517,7 +523,7 @@ let sliderPct={};
 let upgradeAmtOverride={};
 let lastUpgCost={};
 let existingTier={};
-let ventCounts={ridge:{exist:0,desired:0},box:{exist:0,desired:0},power:{exist:0,desired:0},solar:{exist:0,desired:0},turbine:{exist:0,desired:0}};
+let ventCounts={ridge:{exist:0,desired:0},box:{exist:0,desired:0},power:{exist:0,desired:0},solar:{exist:0,desired:0},turbine:{exist:0,desired:0},dome:{exist:0,desired:0}};
 let bootCount=0;
 
 // AUTH
@@ -552,7 +558,7 @@ function getVer(d){const date=d||new Date().toISOString().slice(0,10);return [..
 function initCalc(){
   document.getElementById('fc-date').value=new Date().toISOString().slice(0,10);
   MATS.forEach(m=>{matSel[m.key]=0;sliderPct[m.key]=0;existingTier[m.key]=(m.existingOpts&&m.existingOpts[0].val)||'tier1';delete upgradeAmtOverride[m.key];delete lastUpgCost[m.key];});
-  ventCounts={ridge:{exist:0,desired:0},box:{exist:0,desired:0},power:{exist:0,desired:0},solar:{exist:0,desired:0},turbine:{exist:0,desired:0}};
+  ventCounts={ridge:{exist:0,desired:0},box:{exist:0,desired:0},power:{exist:0,desired:0},solar:{exist:0,desired:0},turbine:{exist:0,desired:0},dome:{exist:0,desired:0}};
   bootCount=0;claimMode='full';hoOverride=false;
   activeVer=getVer();updateBanner();buildMatUI();calc();
 }
@@ -732,6 +738,7 @@ function buildVentUI(){
     {k:'power',lbl:'Power Vents',sub:'count, upgrade'},
     {k:'solar',lbl:'Solar Power Vent',sub:'count, upgrade'},
     {k:'turbine',lbl:'Turbine',sub:'count, upgrade'},
+    {k:'dome',lbl:'Dome Vents',sub:'count, upgrade'},
   ];
   return `<div class="mat-row" id="mr-vent">
     <div class="mat-hd"><span class="mat-hd-name">Ventilation</span><span class="mat-hd-cost" id="mhc-vent"></span></div>
@@ -893,13 +900,15 @@ function calc(){try{
       const maxCost=warrantyJobCost(m.opts[m.opts.length-1],adjSq);
       maxComm+=maxCost;
       const warrPct=sliderPct['warr']||0;
-      const warrComm=(upgradeAmtOverride['warr']!==undefined)?upgradeAmtOverride['warr']:upgCost*(warrPct/100);
-      const warrHO=upgCost+warrComm;
-      totUpgradeCost+=upgCost;totHOCharge+=warrHO;totComm+=warrComm;
+      // Commission = slider % of upgCost, or manual upgradeAmt override
+      const warrCommission=(upgradeAmtOverride['warr']!==undefined)?upgradeAmtOverride['warr']:upgCost*(warrPct/100);
+      const warrHOCharge=upgCost+warrCommission;
+      totUpgradeCost+=upgCost;totHOCharge+=warrHOCharge;totComm+=warrCommission;
       const rc=document.getElementById('mrc-warr');
       if(rc) rc.textContent=upgCost>0?('$'+upgCost.toFixed(2)):'Included';
+      // Use showSliderResult so Min HO Charge = 0% cost, Your Commission = actual margin earned
       showSliderResult('warr',upgCost,warrPct);
-      rows.push({name:m.name,selName:selOpt.name,upgCost,hoCharge:warrHO,comm:warrComm,qty:geo.sq<=50?'≤50 sq':'> 50 sq',isStd:selOpt.std});
+      rows.push({name:m.name,selName:selOpt.name,upgCost,hoCharge:warrHOCharge,comm:warrCommission,qty:geo.sq+' sq',isStd:selOpt.std});
       // Warranty eligibility warning
       const eligEl=document.getElementById('warr-elig');
       if(eligEl){
@@ -938,7 +947,7 @@ function calc(){try{
   // VENTILATION — upgrade cost = net new units × costTaxEa
   let ventUpgradeCost=0;
   const ventM=MATS.find(m=>m.key==='vent');
-  ['ridge','box','power','solar','turbine'].forEach((k,i)=>{
+  ['ridge','box','power','solar','turbine','dome'].forEach((k,i)=>{
     const opt=ventM.opts[i];
     const existing=ventCounts[k].exist||0;
     const desired=ventCounts[k].desired||0;
@@ -1040,7 +1049,7 @@ function clearState(){if(!me)return;try{localStorage.removeItem(storageKey());}c
 
 function resetCalc(){
   MATS.forEach(m=>{matSel[m.key]=0;sliderPct[m.key]=0;existingTier[m.key]=(m.existingOpts&&m.existingOpts[0].val)||'tier1';delete upgradeAmtOverride[m.key];delete lastUpgCost[m.key];});
-  ventCounts={ridge:{exist:0,desired:0},box:{exist:0,desired:0},power:{exist:0,desired:0},solar:{exist:0,desired:0},turbine:{exist:0,desired:0}};
+  ventCounts={ridge:{exist:0,desired:0},box:{exist:0,desired:0},power:{exist:0,desired:0},solar:{exist:0,desired:0},turbine:{exist:0,desired:0},dome:{exist:0,desired:0}};
   bootCount=0;claimMode='full';hoOverride=false;
   ['fc-wo','fc-notes'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
   document.getElementById('fc-date').value=new Date().toISOString().slice(0,10);
@@ -1081,7 +1090,7 @@ const ADMIN_CATS=[
   {key:'boot',label:'Pipe Boots (per ea)',pk:'costTaxEa'},
   {key:'warr',label:'Warranty (flat fee / per-sq)',pk:'costFlat50'},
 ];
-const VENT_CATS=[{k:'ridge',label:'Ridge Vent (per LF)',pk:'costTaxLf'},{k:'box',label:'Box Vents (per ea)',pk:'costTaxEa'},{k:'power',label:'Power Vents (per ea)',pk:'costTaxEa'},{k:'solar',label:'Solar Power Vent (per ea)',pk:'costTaxEa'},{k:'turbine',label:'Turbine (per ea)',pk:'costTaxEa'}];
+const VENT_CATS=[{k:'ridge',label:'Ridge Vent (per LF)',pk:'costTaxLf'},{k:'box',label:'Box Vents (per ea)',pk:'costTaxEa'},{k:'power',label:'Power Vents (per ea)',pk:'costTaxEa'},{k:'solar',label:'Solar Power Vent (per ea)',pk:'costTaxEa'},{k:'turbine',label:'Turbine (per ea)',pk:'costTaxEa'},{k:'dome',label:'Dome Vents (per ea)',pk:'costTaxEa'}];
 function buildAdminFields(){
   let html='';
   ADMIN_CATS.forEach(cat=>{
@@ -1122,6 +1131,60 @@ function renderReps(){
 function fd(d){if(!d)return'—';const[y,m,dy]=d.split('-');return`${+m}/${+dy}/${y}`;}
 let _tt;
 function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('on');clearTimeout(_tt);_tt=setTimeout(()=>el.classList.remove('on'),2800);}
+
+// GOOGLE SHEETS INTEGRATION
+const _SHEET_ID='1pgp5aW8e24JuYGDZGO9Wt5koer-sSU7FrBlwL55jevU';
+const _SHEETS_KEY='AIzaSyAmRLupl4GwVHbnb509Sm5QhWbsqVdjG2g';
+// Column indices (0-based):
+// 0:Job# 1:Timestamp 2:RidgeVentFT 3:PowerVents 4:SolarVents 5:Turbine
+// 6:DomeVents 7:BoxVents 8:PipeBoots 9:SatDishes 10-22:pitches
+// 23:TotalAreaSQ 24:MetalSQ 25:RidgesFT 26:HipsFT 27:ValleysFT
+// 28:RakesFT 29:EavesFT 30:FlashingFT 31:StepFlashingFT 32:HighRoofSQ
+// 33:Facets 34:TransitionsFT 35:GeneralNotes
+async function fetchJobData(){
+  const jobNum=(document.getElementById('fc-wo').value||'').trim();
+  const status=document.getElementById('fetch-status');
+  const btn=document.getElementById('btn-fetch');
+  if(!jobNum){status.style.color='var(--red)';status.textContent='Enter a job number first.';return;}
+  btn.disabled=true;btn.style.opacity='.5';btn.textContent='Loading…';
+  status.style.color='var(--txt3)';status.textContent='Fetching from Google Sheets…';
+  try{
+    const url=`https://sheets.googleapis.com/v4/spreadsheets/${_SHEET_ID}/values/A%3AAJ?key=${_SHEETS_KEY}`;
+    const res=await fetch(url);
+    if(!res.ok){const e=await res.json().catch(()=>({}));throw new Error(e.error?.message||`HTTP ${res.status}`);}
+    const data=await res.json();
+    const rows=(data.values||[]).slice(1);
+    const match=rows.find(r=>(r[0]||'').trim().toLowerCase()===jobNum.toLowerCase());
+    if(!match){status.style.color='var(--red)';status.textContent=`No record found for job "${jobNum}".`;return;}
+    const n=(i)=>parseFloat(match[i])||0;
+    // Geometry
+    document.getElementById('g-sq').value=n(23)||'';
+    document.getElementById('g-rdg').value=n(25)||'';
+    document.getElementById('g-hip').value=n(26)||'';
+    document.getElementById('g-val').value=n(27)||'';
+    document.getElementById('g-rak').value=n(28)||'';
+    document.getElementById('g-eav').value=n(29)||'';
+    // Ventilation existing counts from sheet
+    ventCounts.ridge.exist=Math.max(0,parseFloat(match[2])||0);
+    ventCounts.power.exist=Math.max(0,parseInt(match[3])||0);
+    ventCounts.solar.exist=Math.max(0,parseInt(match[4])||0);
+    ventCounts.turbine.exist=Math.max(0,parseInt(match[5])||0);
+    ventCounts.dome.exist=Math.max(0,parseInt(match[6])||0);
+    ventCounts.box.exist=Math.max(0,parseInt(match[7])||0);
+    // Pipe boots
+    bootCount=Math.max(0,parseInt(match[8])||0);
+    // Notes
+    const notes=(match[35]||'').trim();
+    if(notes)document.getElementById('fc-notes').value=notes;
+    // Rebuild and recalc
+    buildMatUI();calc();saveState();
+    status.style.color='var(--green)';status.textContent=`✓ Loaded data for job ${jobNum}`;
+  }catch(e){
+    status.style.color='var(--red)';status.textContent=`Error: ${e.message}`;
+  }finally{
+    btn.disabled=false;btn.style.opacity='1';btn.textContent='Fetch';
+  }
+}
 </script>
 </body>
 </html>
