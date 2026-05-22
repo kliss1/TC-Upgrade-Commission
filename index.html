@@ -174,7 +174,7 @@ input[type=range].margin-slider::-moz-range-thumb{width:22px;height:22px;border-
       <button class="btn-login" onclick="login()">Sign In →</button>
       <div class="aerr" id="aerr"></div>
     </div>
-    <div style="text-align:center;margin-top:14px;font-size:11px;color:var(--txt3)">Last updated: May 22, 2026 · 4:06 PM ET</div>
+    <div style="text-align:center;margin-top:14px;font-size:11px;color:var(--txt3)">Last updated: May 22, 2026 · 6:36 PM ET</div>
   </div>
 </div>
 
@@ -407,10 +407,10 @@ const MATS=[
   },
   {key:'ridge',name:'Ridge Cap',unitType:'ridgehip',unitLabel:'per bundle',
     existingOpts:[
-      {val:'3tab',  label:'3-Tab (Royal Sov. Ridge)'},
-      {val:'tier1', label:'Ridge Cap Tier 1 (Z Ridge)'},
-      {val:'tier2', label:'Ridge Cap Tier 2 (SAR Armorshield)'},
-      {val:'tier3', label:'Ridge Cap Tier 3 (Timbertex)'},
+      {val:'3tab',  label:'3-Tab Ridge (Royal Sov. Ridge)'},
+      {val:'tier1', label:'Standard Ridge Cap (Z Ridge)'},
+      {val:'tier2', label:'High-Profile Ridge Cap (SAR Armorshield)'},
+      {val:'tier3', label:'Premium Ridge Cap (Timbertex)'},
     ],
     // upgDiffLF[tier][selIdx] = pre-tax price diff per LF (×1.08 applied in getUpgradeCost)
     // formula: bundles * lfPerBd * diffPerLF * 1.08
@@ -430,8 +430,8 @@ const MATS=[
   },
   {key:'starter',name:'Starter Strip',unitType:'eave',unitLabel:'per bundle',
     existingOpts:[
-      {val:'tier1', label:'Starter Tier 1 (Pro Start)'},
-      {val:'tier2', label:'Starter Tier 2 (Weatherblocker)'},
+      {val:'tier1', label:'Standard Starter (Pro Start)'},
+      {val:'tier2', label:'Premium Starter (Weatherblocker)'},
     ],
     // pre-tax price diff per LF; formula: bundles * lfPerBd * diff * 1.08
     upgDiffLF:{
@@ -445,9 +445,9 @@ const MATS=[
   },
   {key:'under',name:'Underlayment',unitType:'under',unitLabel:'per 10-sq roll',
     existingOpts:[
-      {val:'tier1', label:'Underlayment Tier 1 (Secure Grip)'},
-      {val:'tier2', label:'Underlayment Tier 2 (Feltbuster)'},
-      {val:'tier3', label:'Underlayment Tier 3 (Tiger Paw)'},
+      {val:'tier1', label:'Felt/Basic Synthetic (Secure Grip)'},
+      {val:'tier2', label:'Mid-Grade Synthetic (Feltbuster)'},
+      {val:'tier3', label:'Premium Synthetic/Peel & Stick (Tiger Paw)'},
     ],
     // pre-tax price diff per roll; ×1.08 applied in getUpgradeCost
     upgDiffRl:{
@@ -463,9 +463,9 @@ const MATS=[
   },
   {key:'valley',name:'Valley / Ice & Water',unitType:'valley',unitLabel:'per unit',
     existingOpts:[
-      {val:'tier1', label:'Valley Tier 1 (Ice & Water)'},
-      {val:'tier2', label:'Valley Tier 2 (Stormguard)'},
-      {val:'tier3', label:'Valley Tier 3 (W Metal)'},
+      {val:'tier1', label:'Ice & Water Shield'},
+      {val:'tier2', label:'Self-Adhering Underlayment (Stormguard)'},
+      {val:'tier3', label:'W Metal/Open Valley'},
     ],
     // upgDiffLF[tier][selIdx] = pre-tax price diff per LF (×1.08 applied in getUpgradeCost)
     // formula: units * lfPerUnit * diffPerLF * 1.08
@@ -483,8 +483,8 @@ const MATS=[
   },
   {key:'boot',name:'Pipe Boots',unitType:'count',unitLabel:'per boot',
     existingOpts:[
-      {val:'tier1', label:'Pipe Boot Tier 1 (Neoprene)'},
-      {val:'tier2', label:'Pipe Boot Tier 2 (Lead)'},
+      {val:'tier1', label:'3n1 Neoprene'},
+      {val:'tier2', label:'Lead Pipeboot'},
     ],
     // pre-tax price diff per ea; ×1.08 applied in getUpgradeCost
     upgDiffEa:{
